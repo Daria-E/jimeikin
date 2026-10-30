@@ -215,12 +215,24 @@ holding them is excluded from Android's backups. Restoring this app onto a diffe
 brings your playlists and settings and asks for the server login again, which is the intended
 outcome rather than a shortcoming.
 
-It asks for five permissions and uses all five: the network, a foreground service and its
-notification for playback, and an exemption from battery optimisation so the system is less
-likely to stop it. The library does not need storage access — folders are reached through the
-system picker, which grants this app that folder and nothing else. Access to music files is
-asked for only when another app hands over a file by its path rather than sharing it, which is
-the one way a file opened from elsewhere cannot be read without it.
+It declares these permissions, and each is used:
+
+- Network (`INTERNET`, `ACCESS_NETWORK_STATE`): to reach YouTube Music, radio and your music
+  server, and to know whether the connection is metered before fetching a song again.
+- Foreground service (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`): so music keeps
+  playing with the screen off, with its notification.
+- Download service (`FOREGROUND_SERVICE_DATA_SYNC`): the downloader runs as a foreground service
+  only while songs you asked for are arriving, with a notification and a Stop button.
+- Stay awake (`WAKE_LOCK`): so playback and downloads are not cut off when the screen is off.
+- Notifications (`POST_NOTIFICATIONS`): the player and download notifications.
+- Battery (`REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`): asks that the system be less likely to stop
+  playback.
+- Music files (`READ_MEDIA_AUDIO`, and `READ_EXTERNAL_STORAGE` on Android 12 and older): asked
+  for only when another app hands over a file by its path rather than sharing it, which is the
+  one way a file opened from elsewhere cannot be read without it. You can refuse.
+
+The library does not need storage access: folders are reached through the system picker, which
+grants this app that folder and nothing else.
 
 **That is all of them**, and one optional service besides. **Lock-screen controls** are an
 accessibility service, off until you turn it on in Android's Accessibility settings (Settings →

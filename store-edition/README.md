@@ -49,6 +49,20 @@ accessibility service, off until you turn it on). "Open with" for any audio file
 playing can be shown on [Glance](https://github.com/wanderwildwood/hitome)'s lock screen, if you
 turn that on.
 
+## Permissions
+
+Music Box K declares ten, and each is used. Network (`INTERNET`, `ACCESS_NETWORK_STATE`): your
+music server and radio, and knowing whether the phone is online. A foreground service for
+playback (`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) so music plays with the
+screen off, and for downloads from your server (`FOREGROUND_SERVICE_DATA_SYNC`), which runs only
+while songs are arriving. `WAKE_LOCK`, so playback and downloads are not cut off. Notifications
+(`POST_NOTIFICATIONS`), for the player and downloads. `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`,
+asking that the system be less likely to stop playback. Music files (`READ_MEDIA_AUDIO`, and
+`READ_EXTERNAL_STORAGE` on Android 12 and older), asked for only when another app hands over a
+file by its path rather than sharing it; you can refuse. Folders you add go through the system
+picker, which grants only that folder. The same list, with reasons, is in
+[PRIVACY.md](PRIVACY.md).
+
 ## What it sends
 
 Your settings and library stay on the phone. The app goes online only for what you use: your
