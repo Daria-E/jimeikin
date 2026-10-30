@@ -4,7 +4,7 @@ A music player for the [Mudita Kompakt](https://mudita.com/products/mudita-kompa
 on the phone and its card, a Navidrome or other Subsonic server of your own, and internet
 radio, on the e-ink screen and in Mudita's MMD design.
 
-Music Box K is Music Box without YouTube, and the one offered in Mudita's store. It is an app of
+Music Box K has no streaming service in it: what it plays is on the phone and card, on a server of your own, or on internet radio. It is the one offered in Mudita's store, and an app of
 its own: its own name, its own application id (`com.wanderwildwood.jimeikin.k`), its own
 version line (1.0.0 onward), its own data and its own download folder, **Music/Music Box K**. It
 installs beside Music Box, and does not replace it. It is built from the same source as Music

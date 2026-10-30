@@ -10,7 +10,7 @@ The developer collects nothing about you. There is no account, no sign-up, no an
 
 wander wildwood, the author of this version of the app. Contact: email@wanderthe.dev
 
-Music Box K is the version of Music Box without YouTube, a fork of CalmMusic by David Ray Wilson (GPL-3.0), rebuilt on Mudita's public MMD library.
+Music Box K is the version of Music Box offered in Mudita's store, with music on the phone and card, your own server and internet radio, a fork of CalmMusic by David Ray Wilson (GPL-3.0), rebuilt on Mudita's public MMD library.
 
 Because no personal data is transmitted to or held by the developer, there is no data controller relationship for the developer to administer. Where the app processes personal data, that processing happens on your own device, under your control.
 
