@@ -44,6 +44,7 @@ import com.wanderwildwood.jimeikin.R
 import com.wanderwildwood.jimeikin.data.ArtistNames
 import com.wanderwildwood.jimeikin.data.RadioAddress
 import com.wanderwildwood.jimeikin.data.RadioChannel
+import com.wanderwildwood.jimeikin.data.RadioBrowser
 import com.wanderwildwood.jimeikin.data.RadioGarden
 import com.wanderwildwood.jimeikin.data.RadioPlace
 import com.wanderwildwood.jimeikin.data.RadioSearchResults
@@ -179,7 +180,8 @@ fun RadioScreen(
                             ?.let { (lat, lon) -> RadioGarden.nearest(lat, lon) }
                             ?: emptyList()
                         searchResults = if (nearbyPlaces.isEmpty()) {
-                            RadioGarden.search(asked)
+                            // radio.garden first; Radio Browser only if it errs or finds nothing.
+                            RadioBrowser.searchWithFallback(asked, RadioGarden::search, RadioBrowser::search)
                         } else {
                             RadioSearchResults(emptyList(), emptyList())
                         }

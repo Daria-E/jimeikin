@@ -39,26 +39,6 @@ internal fun LazyListScope.onlineSwitches() {
     }
 }
 
-internal fun LazyListScope.onlineDownloadRows() {
-    item {
-        // Off by default: the songs fetched again as AAC wait for Wi-Fi. The note says why
-        // turning it on is worth a thought.
-        val context = LocalContext.current
-        val settings = (context.applicationContext as CalmMusic).settingsManager
-        var upgradeOnMobileData by remember { mutableStateOf(settings.getUpgradeOnMobileDataSync()) }
-        SwitchRow(
-            label = stringResource(R.string.settings_upgrade_on_mobile_data),
-            note = stringResource(R.string.settings_upgrade_on_mobile_data_note),
-            checked = upgradeOnMobileData,
-            onCheckedChange = { on ->
-                upgradeOnMobileData = on
-                settings.setUpgradeOnMobileData(on)
-                (context.applicationContext as CalmMusic).downloadQueue.nudge()
-            },
-        )
-    }
-}
-
 /** Whether a YouTube account is signed in, for [onlineAccountRows]. */
 @Composable
 internal fun onlineAccountConnected(): Boolean =
@@ -75,7 +55,6 @@ internal fun LazyListScope.onlineAccountRows(connected: Boolean, onConnectClick:
     }
 
     if (connected) {
-        item { Separator() }
         item {
             val account = (LocalContext.current.applicationContext as CalmMusic).youTubeAccount
             ArmedRow(

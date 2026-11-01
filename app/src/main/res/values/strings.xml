@@ -427,7 +427,7 @@
     <!-- Button: choose another folder of music for the app to read -->
     <string name="settings_add_folder">Add a folder</string>
     <!-- Button: scan the chosen folders again for new or changed songs -->
-    <string name="settings_rescan_folders">Read them again</string>
+    <string name="settings_rescan_folders">Read again</string>
     <!-- Shown in bold above a folder after one tap; a second tap removes the folder -->
     <string name="settings_remove_folder_armed">Stop reading this folder — its songs leave the library; tap again</string>
     <!-- Scan progress. %1$d is a percentage from 0 to 100, followed by a percent sign -->
@@ -479,7 +479,7 @@
     <!-- About dialog. Keep the names of the app, people, projects and licences as they are -->
     <!-- Heading. %1$s is the version number, e.g. 2.8.14 -->
     <string name="about_title">Music Box %1$s</string>
-    <string name="about_paging">Long lists turn a page at a time. The page number at the bottom right shows where you are; tap it to go to a page.</string>
+    <string name="about_paging">Long lists turn a page at a time. The scrollbar at the right shows where you are: tap an arrow to turn a page, or tap the bar to jump there.</string>
     <string name="hint_hold_song">Hold a song for Play next and Add to queue.</string>
     <string name="about_privacy_heading">Privacy</string>
     <string name="about_privacy_close">There are no ads, no analytics and no tracking. Downloaded songs are saved in Music/Music Box, where other apps on the phone can see them. Lock-screen controls, if you turn them on, are an accessibility service that draws this app\'s buttons over the lock screen and reads nothing else. Show what is playing in Glance, if you turn it on, hands the song\'s name to Glance on this phone.</string>
@@ -487,12 +487,17 @@
     <string name="about_open_source_heading">Open source</string>
     <string name="about_licences_row">Licences</string>
     <string name="licences_title">Licences</string>
+    <string name="licences_back">Back</string>
     <string name="licences_source_heading">Source code</string>
-    <string name="licences_source_link">github.com/wanderwildwood/jimeikin</string>
     <string name="licences_licence_heading">Licence</string>
     <string name="licences_licence_body">Music Box is free software under the GNU General Public License, version 3 only. Copyright wander wildwood. It comes with no warranty. Built on CalmMusic by David Ray Wilson, also GPL-3.0.</string>
     <string name="licences_built_with_heading">Built with</string>
     <string name="licences_texts_heading">Full licence texts</string>
+    <string name="licences_full_gpl" translatable="false">GNU General Public License 3.0 (full text)</string>
+    <string name="licences_full_gpl2_cpe" translatable="false">GNU General Public License 2.0 with the Classpath Exception (full text)</string>
+    <string name="licences_full_lgpl" translatable="false">GNU Lesser General Public License 2.1 (full text)</string>
+    <string name="licences_full_apache" translatable="false">Apache License 2.0 (full text)</string>
+    <string name="licences_full_ofl" translatable="false">SIL Open Font License 1.1 (full text)</string>
     <string name="about_built_on">Built on CalmMusic by David Ray Wilson, GPL-3.0.</string>
     <!-- A link that opens the app's source code in a browser -->
     <string name="about_source">Source code: github.com/wanderwildwood/jimeikin</string>
@@ -735,10 +740,4 @@
     <string name="trouble_fix_internet">Internet settings</string>
     <string name="trouble_fix_access">Permissions</string>
     <string name="trouble_close">OK</string>
-    <!-- The folio at the foot of a paged list, "2 / 6"; a tap on it asks for a page -->
-    <string name="folio_of">%1$d / %2$d</string>
-    <string name="folio_go_title">Go to page</string>
-    <string name="folio_page">Page %1$d of %2$d</string>
-    <string name="folio_go">Go</string>
-    <string name="folio_cancel">Cancel</string>
 </resources>

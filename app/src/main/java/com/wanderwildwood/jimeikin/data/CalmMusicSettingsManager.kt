@@ -175,18 +175,6 @@ class CalmMusicSettingsManager(context: Context) {
     }
 
     /**
-     * Off unless turned on: songs downloaded as Opus before 2.18.2 are fetched again as AAC only
-     * on Wi-Fi or another unmetered network. On, they may come over mobile data too.
-     */
-    fun getUpgradeOnMobileDataSync(): Boolean {
-        return prefs.getBoolean(KEY_UPGRADE_ON_MOBILE_DATA, false)
-    }
-
-    fun setUpgradeOnMobileData(enabled: Boolean) {
-        prefs.edit { putBoolean(KEY_UPGRADE_ON_MOBILE_DATA, enabled) }
-    }
-
-    /**
      * Which of the five places along the bottom was last open. The app always started on
      * Songs, so somebody who lives in Albums or Playlists paid a tap for it every time they
      * came back - and on a phone that is picked up and put down all day, that is most of
@@ -220,6 +208,5 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_LOCAL_ALBUM_KEY_VERSION = "local_album_key_version"
         private const val KEY_LAST_LIBRARY_TAB = "last_library_tab"
         private const val KEY_PLAYING_ON_LOCK_SCREEN = "playing_on_lock_screen"
-        private const val KEY_UPGRADE_ON_MOBILE_DATA = "upgrade_on_mobile_data"
     }
 }

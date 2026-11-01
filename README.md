@@ -154,6 +154,8 @@ is written down until you hold a row, so a station can be listened to without jo
 that site is worth browsing: not by searching for a station you already know, but by going
 somewhere. Keep one and it sits at the top of the screen. A kept station stores the address of
 the stream itself, so it goes on playing whatever becomes of radio.garden.
+A search that finds nothing on radio.garden is tried on Radio Browser, a community
+directory, by name, then tag, then country; a postcode is answered by radio.garden alone.
 
 **FM** is the phone's own tuner, if it has one, and the row opens it. The tuner shows the
 frequency, holds the presets and scans; there is nothing to gain from a worse copy of it here.
@@ -170,7 +172,7 @@ Music Box is offered for any audio file — "Open with" in a file manager, a dow
 attachment. The file plays at once, on its own, through the same player and notification as
 everything else, named by its own title tag or else by its file name. It is not added to the
 library; the library is the folders chosen in Settings. Audiobooks (m4b) are left to Audio
-Reading.
+Reader.
 
 ## On Glance's lock screen
 
@@ -201,7 +203,8 @@ For updates without doing this by hand, add this repository to
 
 Your settings and local library stay on the phone, and so do your downloads, in
 Music/Music Box. The app goes online only for what you use: your own music server, at the
-address you type in; radio.garden, to browse stations, and each station's own stream while it
+address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
+search finds nothing there, and each station's own stream while it
 plays; api.zippopotam.us, only for a US or Canadian postcode typed into the radio search; and
 YouTube and YouTube Music, to search, stream and download audio, to ask what plays next when
 Keep playing similar songs is on, and once to fetch again as AAC a song downloaded as Opus
@@ -278,7 +281,7 @@ Releases.
 ## Credits
 
 - Built on [CalmMusic](https://github.com/davidraywilson/CalmMusic) by David Ray Wilson (GPL-3.0).
-- Station listings from [radio.garden](https://radio.garden), used as a directory only.
+- Station listings from [radio.garden](https://radio.garden) and, as a fallback, [Radio Browser](https://www.radio-browser.info), used as directories only.
 - YouTube stream resolution via [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor) by TeamNewPipe (GPL-3.0).
 - UI built with Mudita's MMD component library for Kompakt (Apache 2.0), with the Lato typeface (SIL OFL 1.1) and Material Symbols icons (Apache 2.0).
 - Tags read and written with [jaudiotagger](https://bitbucket.org/ijabz/jaudiotagger) (LGPL 2.1). NewPipeExtractor brings jsoup (MIT), nanojson (MIT or Apache 2.0) and Rhino (MPL 2.0). AndroidX, Jetpack Compose, Media3, Room, OkHttp, Kotlin and kotlinx.coroutines are Apache 2.0.

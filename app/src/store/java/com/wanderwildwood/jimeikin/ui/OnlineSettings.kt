@@ -8,9 +8,6 @@ import androidx.compose.runtime.Composable
 @Suppress("UnusedReceiverParameter")
 internal fun LazyListScope.onlineSwitches() = Unit
 
-@Suppress("UnusedReceiverParameter")
-internal fun LazyListScope.onlineDownloadRows() = Unit
-
 @Composable
 internal fun onlineAccountConnected(): Boolean = false
 

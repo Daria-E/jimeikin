@@ -46,3 +46,10 @@ is protected by AES-GCM in the Keystore (`Secrets.kt`).
 Music Box K is built without the YouTube code and library. The strings above are the same in
 both apps; the full app additionally uses SHA-1 in the YouTube Music client
 (`src/full/.../YouTubeMusicInnertubeClient.kt`, the `SAPISIDHASH` header YouTube requires).
+
+## Plain http to the reader's own server
+
+Music Box can be pointed at a music server on the reader's own network (Navidrome, Subsonic-compatible servers), and at internet-radio streams, some of which are http. Android refuses plain http by default, so `res/xml/network_security_config.xml` permits it; permitting
+cleartext does not weaken https, it only stops Android refusing http. Android cannot allow it for a range of
+addresses only, so it is allowed everywhere. An address typed without a scheme is https; plain http is used only when the reader types http://, and the app warns, with the host named, when that host is not on a home network (`PlainHttp.kt`). A scan that flags `cleartextTrafficPermitted` is seeing this
+and not an accident: removing it would stop every home server that has no certificate from working.

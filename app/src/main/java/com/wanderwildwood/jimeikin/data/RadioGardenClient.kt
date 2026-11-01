@@ -29,6 +29,11 @@ data class RadioChannel(
     val title: String,
     val place: String,
     val country: String,
+    /**
+     * The stream address, when the directory already knows it (Radio Browser does; radio.garden
+     * answers with a redirect that [RadioGarden.resolveStream] has to follow).
+     */
+    val streamUrl: String? = null,
 )
 
 /**

@@ -66,8 +66,8 @@ picker, which grants only that folder. The same list, with reasons, is in
 ## What it sends
 
 Your settings and library stay on the phone. The app goes online only for what you use: your
-own music server, at the address you type in; radio.garden, to browse stations, and each
-station's own stream while it plays; and api.zippopotam.us, only for a US or Canadian postcode
+own music server, at the address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
+search finds nothing there, and each station's own stream while it plays; and api.zippopotam.us, only for a US or Canadian postcode
 typed into the radio search. There are no ads, no analytics and no tracking. A music server's
 password is sealed with a key in the phone's keystore. The full policy is in
 [PRIVACY.md](PRIVACY.md); the same is said in the app, under **Privacy** and **Terms** in About.

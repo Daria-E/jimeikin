@@ -14,9 +14,7 @@
     <!-- Switch row: when the last song in the queue is a YouTube song, add the songs YouTube Music would play after it -->
     <string name="settings_keep_playing_similar">Ähnliche Titel von YouTube weiter spielen</string>
     <!-- Settings switch: songs downloaded before 2.18.2 are fetched again as AAC; off, only on Wi-Fi -->
-    <string name="settings_upgrade_on_mobile_data">Ältere Downloads auch über mobile Daten erneut laden</string>
     <!-- Note under that switch: why it is off to begin with -->
-    <string name="settings_upgrade_on_mobile_data_note">Aus: Sie warten auf WLAN. An: Jeder Titel, der vor 2.18.2 heruntergeladen wurde, wird einmal erneut von YouTube geladen, was bei einer großen Bibliothek viele Daten verbrauchen kann.</string>
     <!-- Row title for the signed-in YouTube account -->
     <string name="settings_youtube_account">YouTube-Konto</string>
     <!-- Value under "YouTube account" -->
@@ -28,7 +26,7 @@
     <string name="settings_disconnect_account_armed">Konto trennen — tippe erneut</string>
     <string name="about_what">Spielt die Musik auf diesem Telefon und auf deinem eigenen Musikserver sowie Internetradio. Außerdem kann es Titel von YouTube Music suchen, streamen und herunterladen.</string>
     <string name="about_privacy_phone">Deine Bibliothek, Playlists, Warteschlange, Herzen und Einstellungen bleiben auf diesem Telefon. Das Passwort eines Musikservers und eine YouTube-Anmeldung werden mit einem Schlüssel im Keystore des Telefons versiegelt, bevor sie gespeichert werden. An den Hersteller der App wird nichts gesendet.</string>
-    <string name="about_privacy_online">Die App geht nur für das online, was du nutzt: deinen eigenen Musikserver (Navidrome oder einen anderen Subsonic-Server) unter der Adresse, die du eingibst; YouTube Music, um zu suchen, zu streamen und herunterzuladen, und, wenn du „Ähnliche Titel von YouTube weiter spielen“ einschaltest, um zu fragen, was als Nächstes läuft; radio.garden, um Sender zu durchsuchen, und den Stream des jeweiligen Senders, während er läuft; und api.zippopotam.us, nur für eine US- oder kanadische Postleitzahl in der Radiosuche. Ein Server im Heimnetz läuft oft über einfaches http, was dorthin geht, ist also nicht verschlüsselt.</string>
+    <string name="about_privacy_online">Die App geht nur für das online, was du nutzt: deinen eigenen Musikserver (Navidrome oder einen anderen Subsonic-Server) unter der Adresse, die du eingibst; YouTube Music, um zu suchen, zu streamen und herunterzuladen, und, wenn du „Ähnliche Titel von YouTube weiter spielen“ einschaltest, um zu fragen, was als Nächstes läuft; radio.garden, um Sender zu durchsuchen (und Radio Browser, wenn dort eine Suche nichts findet), und den Stream des jeweiligen Senders, während er läuft; und api.zippopotam.us, nur für eine US- oder kanadische Postleitzahl in der Radiosuche. Ein Server im Heimnetz läuft oft über einfaches http, was dorthin geht, ist also nicht verschlüsselt.</string>
     <string name="about_terms">Diese App ist freie Software unter der GNU General Public License v3. Sie kommt ohne Gewährleistung: Nutzung auf eigene Gefahr. YouTube, Radiosender und Musikserver werden von anderen betrieben, nach deren eigenen Bedingungen.</string>
     <string name="origin_online">Streams von YouTube</string>
     <string name="origin_online_download">Von YouTube heruntergeladen</string>

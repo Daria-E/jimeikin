@@ -872,7 +872,7 @@ fun CalmMusic(
         libraryScope.launch {
             // The stream url is resolved now and stored, rather than resolved at play time.
             // That is what lets a kept station outlive radio.garden's undocumented api.
-            val stream = com.wanderwildwood.jimeikin.data.RadioGarden.resolveStream(channel.id)
+            val stream = channel.streamUrl ?: com.wanderwildwood.jimeikin.data.RadioGarden.resolveStream(channel.id)
             if (stream.isNullOrBlank()) {
                 snackbarHostState.showSnackbar(
                     message = context.getString(R.string.main_station_no_stream),
@@ -911,7 +911,7 @@ fun CalmMusic(
      */
     fun playRadioChannel(channel: com.wanderwildwood.jimeikin.data.RadioChannel) {
         libraryScope.launch {
-            val stream = com.wanderwildwood.jimeikin.data.RadioGarden.resolveStream(channel.id)
+            val stream = channel.streamUrl ?: com.wanderwildwood.jimeikin.data.RadioGarden.resolveStream(channel.id)
             if (stream.isNullOrBlank()) {
                 snackbarHostState.showSnackbar(
                     message = context.getString(R.string.main_station_no_stream),
@@ -2386,7 +2386,15 @@ fun CalmMusic(
                                 data = "package:${context.packageName}".toUri()
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             }
-                            context.startActivity(intent)
+                            // Some phones have nothing that answers the request: go to the list of battery settings
+                            // instead, and if that is missing too, leave things as they are.
+                            if (runCatching { context.startActivity(intent) }.isFailure) {
+                                runCatching {
+                                    context.startActivity(
+                                        Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                                    )
+                                }
+                            }
                         }
                     }
 

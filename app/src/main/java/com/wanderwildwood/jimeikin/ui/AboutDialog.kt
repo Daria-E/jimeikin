@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +45,10 @@ import com.wanderwildwood.jimeikin.R
 fun AboutDialog(onDismiss: () -> Unit) {
     var showLicences by remember { mutableStateOf(false) }
     if (showLicences) {
-        LicencesDialog(onDismiss = { showLicences = false })
+        val room = (LocalConfiguration.current.screenHeightDp * 0.72f).dp
+        EInkDialog(onDismiss = { showLicences = false }) {
+            LicencesScreen(rememberLicencesData(), rememberLicencesLabels(), onBack = { showLicences = false }, modifier = Modifier.fillMaxWidth().height(room))
+        }
         return
     }
     EInkDialog(onDismiss = onDismiss) {
@@ -67,7 +71,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
             item { Heading(stringResource(R.string.about_open_source_heading)) }
             item { Para(stringResource(R.string.about_built_on), top = 4.dp) }
             item { LicenceRow(stringResource(R.string.about_licences_row)) { showLicences = true } }
-            item { WebLink(stringResource(R.string.about_source), SOURCE_ADDRESS) }
+            item { WebLink(stringResource(R.string.about_source), SOURCE_URL) }
             item { Spacer(Modifier.height(6.dp)); Llama() }
         }
 
@@ -163,4 +167,16 @@ private fun Llama() {
             TextMMD(text = stringResource(R.string.about_feed_the_llamas), style = MaterialTheme.typography.labelSmall)
         }
     }
+}
+
+@Composable
+internal fun LicenceRow(text: String, onClick: () -> Unit) {
+    Box(Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(onClick = onClick), contentAlignment = Alignment.CenterStart) {
+        TextMMD(text = text, style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.Underline))
+    }
+}
+
+/** Opens a web address in a real browser (never the system's WebView shell); says so, with the address, when there is none. */
+internal fun openWeb(context: Context, url: String) {
+    openLink(context, url, context.getString(R.string.about_no_browser_address, url))
 }

@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
 import kotlinx.coroutines.delay
@@ -280,8 +279,6 @@ fun SettingsScreen(
             }
         }
 
-        onlineDownloadRows()
-
         item {
             // Downloads is transient status about streaming rather than a place of its own;
             // it used to cost a row on a screen that existed only to hold three doors. The
@@ -334,14 +331,6 @@ private fun LinkRow(label: String, onClick: () -> Unit) {
     ) {
         TextMMD(text = label, style = MaterialTheme.typography.titleSmall)
     }
-}
-
-@Composable
-internal fun Separator() {
-    HorizontalDividerMMD(
-        thickness = 1.dp,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 @Composable

@@ -61,6 +61,7 @@ Hosts contacted:
 
 - **YouTube Music**: `youtubei.googleapis.com`, `music.youtube.com`, `www.youtube.com`, Google's image and audio servers such as `i.ytimg.com` and `googlevideo.com`, and `accounts.google.com` when you sign in. Contacted when you search, stream, download, or sign in; once for each song downloaded as Opus before 2.18.2, to fetch it again as AAC, only on a network that is not metered unless you allow mobile data for it in Settings; and, if you turn on "Keep playing similar songs from YouTube" (off to begin with), to ask what YouTube Music would play next, after a YouTube song or a song downloaded from YouTube. Google is an independent controller for what it then does.
 - **radio.garden** (`radio.garden`): when you browse or play a radio station.
+- **Radio Browser** (`de1.api.radio-browser.info`, `de2.api.radio-browser.info`, `all.api.radio-browser.info`): only when a radio search finds nothing on radio.garden, or radio.garden cannot be reached. What you typed in the search is sent, with the app's name and version. Nothing is sent about what you play.
 - **A station you add by its address**: when you add it (it is played once, silently, to check it) and whenever you play it. Its audio comes from the broadcaster's own stream server.
 - **api.zippopotam.us**: when you type a US ZIP code or a Canadian postcode into the radio search, to turn it into a place. Only what you typed is sent.
 - **Your own music server**: whichever Navidrome or other Subsonic server you configure.

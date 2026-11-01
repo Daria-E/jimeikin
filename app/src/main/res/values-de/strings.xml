@@ -479,7 +479,7 @@
     <!-- About dialog. Keep the names of the app, people, projects and licences as they are -->
     <!-- Heading. %1$s is the version number, e.g. 2.8.14 -->
     <string name="about_title">Music Box %1$s</string>
-    <string name="about_paging">Lange Listen blättern seitenweise. Die Seitenzahl unten rechts zeigt, wo du bist; tippe darauf, um zu einer Seite zu springen.</string>
+    <string name="about_paging">Lange Listen blättern seitenweise. Die Leiste rechts zeigt, wo du bist: tippe auf einen Pfeil, um umzublättern, oder auf die Leiste, um dorthin zu springen.</string>
     <string name="hint_hold_song">Halte einen Titel gedrückt für „Als Nächstes spielen“ und „Zur Warteschlange hinzufügen“.</string>
     <string name="about_privacy_heading">Datenschutz</string>
     <string name="about_privacy_close">Es gibt keine Werbung, keine Analysen und kein Tracking. Heruntergeladene Titel werden in Music/Music Box gespeichert, wo andere Apps auf dem Telefon sie sehen können. Die Sperrbildschirm-Steuerung ist, wenn du sie einschaltest, ein Bedienungshilfen-Dienst, der die Schaltflächen dieser App über den Sperrbildschirm legt und sonst nichts liest. „Zeigen, was in Glance läuft“ übergibt, wenn du es einschaltest, den Namen des Titels an Glance auf diesem Telefon.</string>
@@ -487,8 +487,8 @@
     <string name="about_open_source_heading">Open Source</string>
     <string name="about_licences_row">Lizenzen</string>
     <string name="licences_title">Lizenzen</string>
+    <string name="licences_back">Zurück</string>
     <string name="licences_source_heading">Quellcode</string>
-    <string name="licences_source_link">github.com/wanderwildwood/jimeikin</string>
     <string name="licences_licence_heading">Lizenz</string>
     <string name="licences_licence_body">Music Box ist freie Software unter der GNU General Public License, ausschließlich Version 3. Copyright wander wildwood. Es kommt ohne Gewährleistung. Baut auf CalmMusic von David Ray Wilson auf, ebenfalls GPL-3.0.</string>
     <string name="licences_built_with_heading">Baut auf</string>
@@ -736,9 +736,4 @@
     <string name="trouble_fix_access">Berechtigungen</string>
     <string name="trouble_close">OK</string>
     <!-- The folio at the foot of a paged list, "2 / 6"; a tap on it asks for a page -->
-    <string name="folio_of">%1$d / %2$d</string>
-    <string name="folio_go_title">Zu Seite springen</string>
-    <string name="folio_page">Seite %1$d von %2$d</string>
-    <string name="folio_go">Los</string>
-    <string name="folio_cancel">Abbrechen</string>
 </resources>
