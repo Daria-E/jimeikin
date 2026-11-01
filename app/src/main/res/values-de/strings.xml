@@ -6,9 +6,9 @@
     <!-- Main screen, navigation and the actions around it -->
 
     <!-- Screen names: the bottom navigation tabs and the title in the top bar -->
-    <string name="main_title_playlists">Wiedergabelisten</string>
+    <string name="main_title_playlists">Playlists</string>
     <!-- Top bar title on a single playlist's page (noun) -->
-    <string name="main_title_playlist">Wiedergabeliste</string>
+    <string name="main_title_playlist">Playlist</string>
     <!-- Top bar title on the screen for picking songs to put in a playlist -->
     <string name="main_title_add_songs">Titel hinzufügen</string>
     <string name="main_title_artists">Künstler</string>
@@ -25,21 +25,21 @@
     <string name="main_title_settings">Einstellungen</string>
     <string name="main_title_music_server">Musikserver</string>
     <!-- Top bar title when renaming an existing playlist -->
-    <string name="main_title_rename_playlist">Wiedergabeliste umbenennen</string>
+    <string name="main_title_rename_playlist">Playlist umbenennen</string>
     <!-- Top bar title when making a new playlist; also the button in the add-to-playlist sheet -->
-    <string name="main_title_new_playlist">Neue Wiedergabeliste</string>
+    <string name="main_title_new_playlist">Neue Playlist</string>
 
     <!-- Top bar: icon descriptions read aloud by a screen reader -->
-    <string name="main_cd_cancel_playlist_edits">Änderungen an der Wiedergabeliste verwerfen</string>
-    <string name="main_cd_cancel_playlist_edit">Änderung an der Wiedergabeliste verwerfen</string>
+    <string name="main_cd_cancel_playlist_edits">Änderungen an der Playlist verwerfen</string>
+    <string name="main_cd_cancel_playlist_edit">Änderung an der Playlist verwerfen</string>
     <string name="main_cd_back">Zurück</string>
     <string name="main_cd_clear_search">Suche löschen</string>
     <!-- The magnifying-glass button (verb or noun, whichever reads naturally as a button) -->
     <string name="main_cd_search">Suchen</string>
-    <string name="main_cd_edit_playlists">Wiedergabelisten bearbeiten</string>
+    <string name="main_cd_edit_playlists">Playlists bearbeiten</string>
     <string name="main_cd_settings">Einstellungen</string>
     <string name="main_cd_about">Über</string>
-    <string name="main_cd_playlist_options">Optionen der Wiedergabeliste</string>
+    <string name="main_cd_playlist_options">Optionen der Playlist</string>
     <string name="main_cd_now_playing">Wird gerade wiedergegeben</string>
 
     <!-- Top bar: the search field -->
@@ -80,7 +80,7 @@
     <string name="main_added_song_to_playlist">„%1$s“ zu „%2$s“ hinzugefügt</string>
     <!-- %1$s is a playlist name -->
     <string name="main_song_already_in_playlist">Dieser Titel ist bereits in „%1$s“</string>
-    <string name="main_song_not_added">Dieser Titel wurde nicht zur Wiedergabeliste hinzugefügt</string>
+    <string name="main_song_not_added">Dieser Titel wurde nicht zur Playlist hinzugefügt</string>
     <!-- %1$s is a playlist name -->
     <string name="main_all_already_in_playlist">Diese Titel sind alle bereits in „%1$s“</string>
     <!-- A whole album or artist added to a playlist. %1$d is the count, %2$s the playlist name. -->
@@ -88,7 +88,7 @@
         <item quantity="one">Ein Titel zu „%2$s“ hinzugefügt</item>
         <item quantity="other">%1$d Titel zu „%2$s“ hinzugefügt</item>
     </plurals>
-    <string name="main_songs_not_added">Diese Titel wurden nicht zur Wiedergabeliste hinzugefügt</string>
+    <string name="main_songs_not_added">Diese Titel wurden nicht zur Playlist hinzugefügt</string>
     <!-- Songs picked on the Add songs screen. %1$d is the count, %2$s the playlist name. -->
     <plurals name="main_added_picked_songs_to_playlist">
         <item quantity="one">%1$d Titel zu „%2$s“ hinzugefügt</item>
@@ -96,18 +96,18 @@
     </plurals>
     <!-- %1$s is a playlist name -->
     <string name="main_all_selected_already_in_playlist">Alle ausgewählten Titel sind bereits in „%1$s“</string>
-    <string name="main_could_not_add_songs">Titel konnten nicht zur Wiedergabeliste hinzugefügt werden</string>
+    <string name="main_could_not_add_songs">Titel konnten nicht zur Playlist hinzugefügt werden</string>
 
     <!-- The add-to-playlist sheet -->
     <!-- Sheet title when one song is being added -->
-    <string name="main_add_to_playlist">Zur Wiedergabeliste hinzufügen</string>
+    <string name="main_add_to_playlist">Zur Playlist hinzufügen</string>
     <!-- Sheet title when several songs are being added. %1$d is the count (always more than one in English). -->
     <plurals name="main_add_songs_to_playlist">
-        <item quantity="one">%1$d Titel zur Wiedergabeliste hinzufügen</item>
-        <item quantity="other">%1$d Titel zur Wiedergabeliste hinzufügen</item>
+        <item quantity="one">%1$d Titel zur Playlist hinzufügen</item>
+        <item quantity="other">%1$d Titel zur Playlist hinzufügen</item>
     </plurals>
-    <string name="main_cd_cancel_add_to_playlist">Hinzufügen zur Wiedergabeliste abbrechen</string>
-    <string name="main_no_playlists_yet">Noch keine Wiedergabelisten</string>
+    <string name="main_cd_cancel_add_to_playlist">Hinzufügen zur Playlist abbrechen</string>
+    <string name="main_no_playlists_yet">Noch keine Playlists</string>
 
     <!-- The remove-songs-from-playlist sheet. %1$s is a playlist name. -->
     <plurals name="main_remove_songs_from_playlist_title">
@@ -116,15 +116,15 @@
     </plurals>
     <string name="main_cd_cancel_song_removal">Entfernen der Titel abbrechen</string>
     <plurals name="main_remove_songs_from_playlist_body">
-        <item quantity="one">Dadurch wird der ausgewählte Titel aus dieser Wiedergabeliste entfernt. Der Titel bleibt in deiner Bibliothek.</item>
-        <item quantity="other">Dadurch werden die ausgewählten Titel aus dieser Wiedergabeliste entfernt. Die Titel bleiben in deiner Bibliothek.</item>
+        <item quantity="one">Dadurch wird der ausgewählte Titel aus dieser Playlist entfernt. Der Titel bleibt in deiner Bibliothek.</item>
+        <item quantity="other">Dadurch werden die ausgewählten Titel aus dieser Playlist entfernt. Die Titel bleiben in deiner Bibliothek.</item>
     </plurals>
     <!-- %1$d is the count, %2$s the playlist name -->
     <plurals name="main_removed_songs_from_playlist">
         <item quantity="one">%1$d Titel aus „%2$s“ entfernt</item>
         <item quantity="other">%1$d Titel aus „%2$s“ entfernt</item>
     </plurals>
-    <string name="main_could_not_remove_songs">Titel konnten nicht aus der Wiedergabeliste entfernt werden</string>
+    <string name="main_could_not_remove_songs">Titel konnten nicht aus der Playlist entfernt werden</string>
     <!-- Button (verb) confirming the removal -->
     <string name="main_button_remove">Entfernen</string>
     <!-- Button that closes the sheet without doing anything -->
@@ -132,20 +132,20 @@
 
     <!-- The delete-playlists sheet -->
     <plurals name="main_delete_playlists_title">
-        <item quantity="one">Wiedergabeliste löschen</item>
-        <item quantity="other">Wiedergabelisten löschen</item>
+        <item quantity="one">Playlist löschen</item>
+        <item quantity="other">Playlists löschen</item>
     </plurals>
-    <string name="main_cd_cancel_playlist_deletion">Löschen der Wiedergabelisten abbrechen</string>
+    <string name="main_cd_cancel_playlist_deletion">Löschen der Playlists abbrechen</string>
     <plurals name="main_delete_playlists_body">
-        <item quantity="one">Dadurch wird die ausgewählte Wiedergabeliste endgültig entfernt. Titel in deiner Bibliothek werden nicht gelöscht.</item>
-        <item quantity="other">Dadurch werden die ausgewählten Wiedergabelisten endgültig entfernt. Titel in deiner Bibliothek werden nicht gelöscht.</item>
+        <item quantity="one">Dadurch wird die ausgewählte Playlist endgültig entfernt. Titel in deiner Bibliothek werden nicht gelöscht.</item>
+        <item quantity="other">Dadurch werden die ausgewählten Playlists endgültig entfernt. Titel in deiner Bibliothek werden nicht gelöscht.</item>
     </plurals>
     <!-- %1$d is the count -->
     <plurals name="main_deleted_playlists">
-        <item quantity="one">%1$d Wiedergabeliste gelöscht</item>
-        <item quantity="other">%1$d Wiedergabelisten gelöscht</item>
+        <item quantity="one">%1$d Playlist gelöscht</item>
+        <item quantity="other">%1$d Playlists gelöscht</item>
     </plurals>
-    <string name="main_could_not_delete_playlists">Wiedergabelisten konnten nicht gelöscht werden</string>
+    <string name="main_could_not_delete_playlists">Playlists konnten nicht gelöscht werden</string>
     <!-- Button (verb) confirming the deletion -->
     <string name="main_button_delete">Löschen</string>
 
@@ -243,7 +243,7 @@
     <string name="queue_move_up">Früher spielen</string>
     <string name="queue_move_down">Später spielen</string>
     <string name="queue_remove">Aus der Warteschlange nehmen</string>
-    <string name="queue_save_as_playlist">Als Wiedergabeliste speichern</string>
+    <string name="queue_save_as_playlist">Als Playlist speichern</string>
     <!-- Album page: takes the album's downloads and saved songs out of the library -->
     <string name="library_album_remove">Aus der Bibliothek entfernen</string>
     <plurals name="library_album_remove_confirm">
@@ -259,7 +259,7 @@
     <string name="player_delete_download">Download löschen</string>
     <!-- Now Playing: button that downloads the song (a verb) -->
     <string name="player_download">Herunterladen</string>
-    <string name="player_add_to_playlist">Zur Wiedergabeliste hinzufügen</string>
+    <string name="player_add_to_playlist">Zur Playlist hinzufügen</string>
     <string name="player_shuffle_queue">Warteschlange mischen</string>
     <string name="player_repeat_off">Wiederholung aus</string>
     <string name="player_repeat_queue">Warteschlange wiederholen</string>
@@ -316,14 +316,14 @@
     </plurals>
 
     <!-- Playlist screen -->
-    <string name="player_playlist_load_failed">Wiedergabeliste konnte nicht geladen werden</string>
+    <string name="player_playlist_load_failed">Playlist konnte nicht geladen werden</string>
     <string name="player_playlist_save_order_failed">Reihenfolge konnte nicht gespeichert werden</string>
-    <string name="player_playlist_loading">Wiedergabeliste wird geladen…</string>
-    <string name="player_playlist_empty">Keine Titel in dieser Wiedergabeliste</string>
+    <string name="player_playlist_loading">Playlist wird geladen…</string>
+    <string name="player_playlist_empty">Keine Titel in dieser Playlist</string>
     <!-- Playlist screen: button and icon description, adds songs to the playlist -->
     <string name="player_playlist_add_songs">Titel hinzufügen</string>
-    <string name="player_playlist_shuffle">Wiedergabeliste mischen</string>
-    <string name="player_playlist_keep_on_phone">Wiedergabeliste herunterladen</string>
+    <string name="player_playlist_shuffle">Playlist mischen</string>
+    <string name="player_playlist_keep_on_phone">Playlist herunterladen</string>
     <string name="player_playlist_move_up">Nach oben</string>
     <string name="player_playlist_move_down">Nach unten</string>
 
@@ -334,7 +334,7 @@
     <string name="player_add_songs_no_match">Keine passenden Titel.</string>
 
     <!-- Naming a playlist -->
-    <string name="player_playlist_name">Name der Wiedergabeliste</string>
+    <string name="player_playlist_name">Name der Playlist</string>
     <string name="player_cancel">Abbrechen</string>
     <!-- Naming a playlist: confirm button when renaming (a verb) -->
     <string name="player_save">Speichern</string>
@@ -342,9 +342,9 @@
     <string name="player_create">Erstellen</string>
 
     <!-- Playlists list -->
-    <string name="player_playlists_empty">Noch keine Wiedergabelisten</string>
-    <string name="player_playlists_add">Wiedergabeliste hinzufügen</string>
-    <string name="player_playlists_new">Neue Wiedergabeliste</string>
+    <string name="player_playlists_empty">Noch keine Playlists</string>
+    <string name="player_playlists_add">Playlist hinzufügen</string>
+    <string name="player_playlists_new">Neue Playlist</string>
 
     <!-- Downloads screen -->
     <string name="player_downloads_empty">Keine neuen Downloads</string>
@@ -479,6 +479,8 @@
     <!-- About dialog. Keep the names of the app, people, projects and licences as they are -->
     <!-- Heading. %1$s is the version number, e.g. 2.8.14 -->
     <string name="about_title">Music Box %1$s</string>
+    <string name="about_paging">Lange Listen blättern seitenweise. Die Seitenzahl unten rechts zeigt, wo du bist; tippe darauf, um zu einer Seite zu springen.</string>
+    <string name="hint_hold_song">Halte einen Titel gedrückt für „Als Nächstes spielen“ und „Zur Warteschlange hinzufügen“.</string>
     <string name="about_privacy_heading">Datenschutz</string>
     <string name="about_privacy_close">Es gibt keine Werbung, keine Analysen und kein Tracking. Heruntergeladene Titel werden in Music/Music Box gespeichert, wo andere Apps auf dem Telefon sie sehen können. Die Sperrbildschirm-Steuerung ist, wenn du sie einschaltest, ein Bedienungshilfen-Dienst, der die Schaltflächen dieser App über den Sperrbildschirm legt und sonst nichts liest. „Zeigen, was in Glance läuft“ übergibt, wenn du es einschaltest, den Namen des Titels an Glance auf diesem Telefon.</string>
     <string name="about_terms_heading">Bedingungen</string>
@@ -645,7 +647,7 @@
     <string name="library_album_disc">Disc %1$d</string>
     <!-- Screen-reader labels for the album page's buttons -->
     <string name="library_album_shuffle">Album mischen</string>
-    <string name="library_album_add_to_playlist">Album zu einer Wiedergabeliste hinzufügen</string>
+    <string name="library_album_add_to_playlist">Album zu einer Playlist hinzufügen</string>
     <string name="library_album_keep_on_phone">Album herunterladen</string>
 
     <!-- Artist page (the library's, and YouTube's) -->
@@ -667,7 +669,7 @@
     <string name="library_artist_no_singles">Keine Singles oder Neuerscheinungen</string>
     <!-- Screen-reader labels for the artist page's buttons -->
     <string name="library_artist_shuffle">Titel des Künstlers mischen</string>
-    <string name="library_artist_add_to_playlist">Diese zu einer Wiedergabeliste hinzufügen</string>
+    <string name="library_artist_add_to_playlist">Diese zu einer Playlist hinzufügen</string>
     <string name="library_artist_keep_on_phone">Diese herunterladen</string>
 
     <!-- Settings: a music folder's location, shown before its path ("Phone > Music") -->
@@ -733,4 +735,10 @@
     <string name="trouble_fix_internet">Interneteinstellungen</string>
     <string name="trouble_fix_access">Berechtigungen</string>
     <string name="trouble_close">OK</string>
+    <!-- The folio at the foot of a paged list, "2 / 6"; a tap on it asks for a page -->
+    <string name="folio_of">%1$d / %2$d</string>
+    <string name="folio_go_title">Zu Seite springen</string>
+    <string name="folio_page">Seite %1$d von %2$d</string>
+    <string name="folio_go">Los</string>
+    <string name="folio_cancel">Abbrechen</string>
 </resources>

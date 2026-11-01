@@ -15,7 +15,7 @@
 
     <!-- About -->
     <string name="about_what">Spielt die Musik auf diesem Telefon und auf deinem eigenen Musikserver sowie Internetradio.</string>
-    <string name="about_privacy_phone">Deine Bibliothek, Wiedergabelisten, Warteschlange, Herzen und Einstellungen bleiben auf diesem Telefon. Das Passwort eines Musikservers wird mit einem Schlüssel im Keystore des Telefons versiegelt, bevor es gespeichert wird. An den Hersteller der App wird nichts gesendet.</string>
+    <string name="about_privacy_phone">Deine Bibliothek, Playlists, Warteschlange, Herzen und Einstellungen bleiben auf diesem Telefon. Das Passwort eines Musikservers wird mit einem Schlüssel im Keystore des Telefons versiegelt, bevor es gespeichert wird. An den Hersteller der App wird nichts gesendet.</string>
     <string name="about_privacy_online">Die App geht nur für das online, was du nutzt: deinen eigenen Musikserver (Navidrome oder einen anderen Subsonic-Server) unter der Adresse, die du eingibst; radio.garden, um Sender zu durchsuchen, und den Stream des jeweiligen Senders, während er läuft; und api.zippopotam.us, nur für eine US- oder kanadische Postleitzahl in der Radiosuche. Ein Server im Heimnetz läuft oft über einfaches http, was dorthin geht, ist also nicht verschlüsselt.</string>
     <string name="about_terms">Diese App ist freie Software unter der GNU General Public License v3. Sie kommt ohne Gewährleistung: Nutzung auf eigene Gefahr. Radiosender und Musikserver werden von anderen betrieben, nach deren eigenen Bedingungen.</string>
     <string name="library_artist_online_failed">Die übrigen Alben konnten nicht geladen werden.</string>
