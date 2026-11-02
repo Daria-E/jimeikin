@@ -489,9 +489,8 @@
     <string name="licences_title">Lizenzen</string>
     <string name="licences_back">Zurück</string>
     <string name="licences_source_heading">Quellcode</string>
-    <string name="licences_licence_heading">Lizenz</string>
+    <string name="licences_no_text">Für %s ist hier kein Lizenztext nötig.</string>
     <string name="licences_licence_body">Music Box ist freie Software unter der GNU General Public License, ausschließlich Version 3. Copyright wander wildwood. Es kommt ohne Gewährleistung. Baut auf CalmMusic von David Ray Wilson auf, ebenfalls GPL-3.0.</string>
-    <string name="licences_built_with_heading">Baut auf</string>
     <string name="licences_texts_heading">Vollständige Lizenztexte</string>
     <string name="about_built_on">Baut auf CalmMusic von David Ray Wilson auf, GPL-3.0.</string>
     <!-- A link that opens the app's source code in a browser -->

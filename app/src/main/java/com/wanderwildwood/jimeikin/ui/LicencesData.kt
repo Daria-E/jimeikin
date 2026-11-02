@@ -50,13 +50,12 @@ fun rememberLicencesData(): LicencesData = LicencesData(
 @Composable
 fun rememberLicencesLabels(): LicencesLabels {
     val none = stringResource(R.string.about_no_browser_address, "@@")
+    val noText = stringResource(R.string.licences_no_text, "@@")
     return LicencesLabels(
         title = stringResource(R.string.licences_title),
         back = stringResource(R.string.licences_back),
         sourceHeading = stringResource(R.string.licences_source_heading),
-        licenceHeading = stringResource(R.string.licences_licence_heading),
-        builtWithHeading = stringResource(R.string.licences_built_with_heading),
-        fullTextsHeading = stringResource(R.string.licences_texts_heading),
+        noText = { licence -> noText.replace("@@", licence) },
         noBrowser = { address -> none.replace("@@", address) },
     )
 }
