@@ -485,7 +485,6 @@
     <string name="about_privacy_close">There are no ads, no analytics and no tracking. Downloaded songs are saved in Music/Music Box, where other apps on the phone can see them. Lock-screen controls, if you turn them on, are an accessibility service that draws this app\'s buttons over the lock screen and reads nothing else. Show what is playing in Glance, if you turn it on, hands the song\'s name to Glance on this phone.</string>
     <string name="about_terms_heading">Terms</string>
     <string name="about_open_source_heading">Open source</string>
-    <string name="about_licences_row">Licences</string>
     <string name="licences_title">Licences</string>
     <string name="licences_back">Back</string>
     <string name="licences_source_heading">Source code</string>
@@ -498,12 +497,8 @@
     <string name="licences_full_apache" translatable="false">Apache License 2.0 (full text)</string>
     <string name="licences_full_ofl" translatable="false">SIL Open Font License 1.1 (full text)</string>
     <string name="about_built_on">Built on CalmMusic by David Ray Wilson, GPL-3.0.</string>
-    <!-- A link that opens the app's source code in a browser -->
-    <string name="about_source">Source code: github.com/wanderwildwood/jimeikin</string>
     <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
-    <string name="about_feed_the_llamas">feed the llamas</string>
-    <!-- Toast when the donation link cannot be opened -->
-    <string name="about_no_browser">There is no browser on this phone to open that with.</string>
+    <string name="about_feed_the_llamas">Feed the llamas</string>
     <string name="about_no_browser_address">No browser is installed. The address is %1$s.</string>
     <!-- Button that closes the About dialog -->
     <string name="about_close">Close</string>
