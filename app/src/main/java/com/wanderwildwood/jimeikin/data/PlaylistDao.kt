@@ -107,4 +107,26 @@ interface PlaylistDao {
      */
     @Query("DELETE FROM playlist_tracks WHERE songId = :songId")
     suspend fun deleteTracksForSongId(songId: String)
+
+    // ---------------------------------------------------------------- backup and restore
+
+    /** A playlist's rows in order, for the backup (songs that are gone keep their row). */
+    @Query("SELECT * FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY position")
+    suspend fun getTracksForPlaylist(playlistId: String): List<PlaylistTrackEntity>
+
+    /**
+     * Every playlist made in the app, and its rows; those read from .m3u files or a music
+     * server stay (the same split as [LibraryBackup.isOwn]).
+     */
+    @Query("DELETE FROM playlist_tracks WHERE playlistId NOT LIKE 'M3U:%' AND playlistId NOT LIKE 'SUBSONIC:PLAYLIST:%'")
+    suspend fun deleteOwnPlaylistTracks()
+
+    @Query("DELETE FROM playlists WHERE id NOT LIKE 'M3U:%' AND id NOT LIKE 'SUBSONIC:PLAYLIST:%'")
+    suspend fun deleteOwnPlaylists()
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertPlaylists(playlists: List<PlaylistEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertTracks(tracks: List<PlaylistTrackEntity>)
 }

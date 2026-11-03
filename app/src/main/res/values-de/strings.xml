@@ -730,4 +730,24 @@
     <string name="trouble_fix_access">Berechtigungen</string>
     <string name="trouble_close">OK</string>
     <!-- The folio at the foot of a paged list, "2 / 6"; a tap on it asks for a page -->
+    <!-- Settings: backup and restore of playlists and kept stations, through the file picker -->
+    <string name="settings_save_backup">Sicherung speichern</string>
+    <string name="settings_save_backup_note">Speichert deine Playlists und gemerkten Radiosender in einer Datei, die du wählst. Nicht gespeichert: die Titel selbst, Herzen, Einstellungen und Playlists aus .m3u-Dateien.</string>
+    <string name="settings_restore">Aus einer Sicherung wiederherstellen</string>
+    <string name="settings_restore_armed">Wiederherstellen — Playlists und Sender werden durch die der Datei ersetzt; zum Auswählen erneut tippen</string>
+    <string name="backup_saved">Sicherung gespeichert.</string>
+    <string name="backup_not_saved">Die Sicherung konnte nicht geschrieben werden.</string>
+    <string name="restore_done">Wiederhergestellt: %1$s und %2$s.</string>
+    <string name="restore_not_ours">Diese Datei ist keine Sicherung dieser App. Nichts wurde geändert.</string>
+    <string name="restore_newer">Diese Sicherung stammt von einer neueren Version der App. Aktualisiere die App und versuche es erneut. Nichts wurde geändert.</string>
+    <string name="restore_damaged">Diese Sicherung ist beschädigt und wurde nicht verwendet. Nichts wurde geändert.</string>
+    <string name="restore_unreadable">Diese Datei konnte nicht gelesen werden. Nichts wurde geändert.</string>
+    <plurals name="restore_done_playlists">
+        <item quantity="one">%1$d Playlist</item>
+        <item quantity="other">%1$d Playlists</item>
+    </plurals>
+    <plurals name="restore_done_stations">
+        <item quantity="one">%1$d Radiosender</item>
+        <item quantity="other">%1$d Radiosender</item>
+    </plurals>
 </resources>

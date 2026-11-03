@@ -2484,6 +2484,12 @@ fun CalmMusic(
                         localScanIndexedNewOrUpdated = localScanIndexedNewOrUpdated,
                         localScanDeletedMissing = localScanDeletedMissing,
                         localScanUnreadableFolders = localScanUnreadableFolders,
+                        onLibraryRestored = {
+                            libraryScope.launch {
+                                playlistsViewModel.refreshPlaylists()
+                                reloadRadioStations()
+                            }
+                        },
                     )
                 }
                 composable(Screen.MusicServer.route) {

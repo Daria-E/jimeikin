@@ -26,6 +26,8 @@ On the phone, in the app's own private storage: the library index, playlists, th
 
 **Backups.** The app allows Android's backup (`allowBackup="true"`). Android may therefore copy the library database and the preferences into your Google backup, or to a new phone when you transfer, as your phone's backup settings decide; the app's own files folder is included in a device-to-device transfer and, on Android 11 and older, in a full backup (songs saved in Music/Music Box are not in that folder, except on Android 9 and 10). The settings file, which holds the server password and the YouTube cookie, is excluded from all of these. The developer holds no backup of any of it.
 
+**Save a backup** (Settings) writes the playlists you made in the app, with each song's title, artist and where it plays from, and your kept radio stations, to one JSON file you choose through the phone's own file picker, and only when you ask. **Restore from a backup** reads such a file the same way, checks all of it first, and only then replaces those playlists and stations; a wrong file changes nothing.
+
 Uninstalling the app deletes everything in its private storage. There is no cloud copy and no copy held by the developer.
 
 ## Permissions, and what each is for
