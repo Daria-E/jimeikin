@@ -13,6 +13,11 @@
         <item quantity="other">%1$d more songs from the playlist are in the queue.</item>
     </plurals>
     <string name="link_untitled">YouTube song</string>
+    <!-- A YouTube link pasted into search -->
+    <string name="link_unreadable">Music Box could not read that YouTube link. Check that it was copied whole.</string>
+    <string name="link_album_unreadable">Music Box could not read that YouTube Music album. It may not be available here.</string>
+    <string name="link_untitled_album">YouTube Music album</string>
+    <string name="link_untitled_playlist">YouTube playlist</string>
     <string name="player_downloads_online">From YouTube</string>
     <!-- Downloads: a song already on the phone, fetched again from YouTube as AAC so every player can play it -->
     <string name="player_downloads_as_aac">From YouTube again, as AAC</string>

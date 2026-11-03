@@ -589,6 +589,14 @@
     <string name="library_search_nothing">Nichts gefunden. Versuche eine andere Suche.</string>
     <!-- Before an album's artist in the search results, where albums sit among songs and artists -->
     <string name="library_search_kind_album">Album</string>
+    <plurals name="search_link_album_count">
+        <item quantity="one">Album • %1$d Titel</item>
+        <item quantity="other">Album • %1$d Titel</item>
+    </plurals>
+    <plurals name="search_link_playlist_count">
+        <item quantity="one">Playlist • %1$d Titel</item>
+        <item quantity="other">Playlist • %1$d Titel</item>
+    </plurals>
     <!-- Second line under an artist's name in the search results, saying the result is an artist -->
     <string name="library_search_result_artist">Künstler</string>
 

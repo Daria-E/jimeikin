@@ -11,6 +11,10 @@
         <item quantity="other">%1$d weitere Titel aus der Playlist sind in der Warteschlange.</item>
     </plurals>
     <string name="link_untitled">YouTube-Titel</string>
+    <string name="link_unreadable">Music Box konnte diesen YouTube-Link nicht lesen. Prüfe, ob er vollständig kopiert wurde.</string>
+    <string name="link_album_unreadable">Music Box konnte dieses YouTube-Music-Album nicht lesen. Es ist hier vielleicht nicht verfügbar.</string>
+    <string name="link_untitled_album">YouTube-Music-Album</string>
+    <string name="link_untitled_playlist">YouTube-Playlist</string>
     <string name="main_youtube_cannot_play">YouTube meldet, dass dieser Titel nicht abgespielt werden kann. Wird übersprungen.</string>
     <string name="player_downloads_online">Von YouTube</string>
     <!-- Downloads: a song already on the phone, fetched again from YouTube as AAC so every player can play it -->

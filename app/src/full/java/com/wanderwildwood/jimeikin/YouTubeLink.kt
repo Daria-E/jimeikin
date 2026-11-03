@@ -5,15 +5,25 @@ import java.net.URLDecoder
 
 /**
  * What a YouTube or YouTube Music web address names, for a link another app hands over
- * (a tap on the link, or Share). Only the two things Music Box can use are read out: a video
- * id and a playlist id. Nothing else in the address is kept: the ids alone go on, to the player
- * and to YouTube for the playlist's songs, so a link cannot point the app anywhere but YouTube.
+ * (a tap on the link, or Share, or pasted into search). Only the things Music Box can use are
+ * read out: a video id, a playlist id, and a YouTube Music album's id (its browse/MPREb_ page).
+ * Nothing else in the address is kept: the ids alone go on, to the player and to YouTube for the
+ * playlist's or album's songs, so a link cannot point the app anywhere but YouTube.
  */
-data class YouTubeLink(val videoId: String?, val playlistId: String?) {
+data class YouTubeLink(val videoId: String?, val playlistId: String?, val albumId: String? = null) {
+
+    /**
+     * An album rather than a playlist: a YouTube Music album page, or the playlist YouTube keeps
+     * for every album (its id starts "OLAK5uy_").
+     */
+    val isAlbum: Boolean get() = albumId != null || playlistId?.startsWith(ALBUM_LIST_PREFIX) == true
 
     companion object {
         private val HOSTS = setOf("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com")
         private const val SHORT_HOST = "youtu.be"
+        private const val MUSIC_HOST = "music.youtube.com"
+        private const val ALBUM_LIST_PREFIX = "OLAK5uy_"
+        private val ALBUM_ID = Regex("MPREb_[A-Za-z0-9_-]{1,64}")
         private val VIDEO_ID = Regex("[A-Za-z0-9_-]{11}")
         private val PLAYLIST_ID = Regex("[A-Za-z0-9_-]{2,64}")
         private val ADDRESS = Regex("https?://\\S+", RegexOption.IGNORE_CASE)
@@ -22,7 +32,7 @@ data class YouTubeLink(val videoId: String?, val playlistId: String?) {
         fun addressIn(text: String?): String? =
             text?.let { ADDRESS.find(it)?.value?.trimEnd('.', ',', ')', ']', '!', '?', ';', '"', '\'') }
 
-        /** What [address] names, or null when it is not a YouTube address naming a video or a playlist. */
+        /** What [address] names, or null when it is not a YouTube address naming a video, a playlist or an album. */
         fun parse(address: String?): YouTubeLink? {
             val uri = runCatching { URI(address?.trim().orEmpty()) }.getOrNull() ?: return null
             if (uri.scheme?.lowercase() !in setOf("http", "https")) return null
@@ -30,6 +40,12 @@ data class YouTubeLink(val videoId: String?, val playlistId: String?) {
             val segments = (uri.rawPath ?: "").split('/').filter { it.isNotEmpty() }
             val query = queryOf(uri.rawQuery)
             val list = query["list"]?.takeIf { PLAYLIST_ID.matches(it) }
+
+            // An album's own page on YouTube Music: music.youtube.com/browse/MPREb_...
+            if (host == MUSIC_HOST && segments.firstOrNull() == "browse") {
+                val album = segments.getOrNull(1)?.takeIf { ALBUM_ID.matches(it) } ?: return null
+                return YouTubeLink(null, null, album)
+            }
 
             val video: String? = when {
                 host == SHORT_HOST -> segments.firstOrNull()

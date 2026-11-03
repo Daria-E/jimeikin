@@ -5,7 +5,8 @@ import com.wanderwildwood.jimeikin.data.ArtistNames
 /** One row of search results: a song, an album, or an artist from the library or YouTube. */
 sealed class SearchResult {
     data class Song(val song: SongUiModel) : SearchResult()
-    data class Album(val album: AlbumUiModel) : SearchResult()
+    /** [kindLabel], when given, stands in for the plain "Album" before its artist. */
+    data class Album(val album: AlbumUiModel, val kindLabel: String? = null) : SearchResult()
     data class LibraryArtist(val artist: ArtistUiModel) : SearchResult()
     data class OnlineArtist(val artist: OnlineArtistUiModel) : SearchResult()
 }

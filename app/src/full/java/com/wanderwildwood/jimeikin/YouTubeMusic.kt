@@ -111,13 +111,19 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
     private val albumListings = ConcurrentHashMap<String, List<SongUiModel>>()
 
     override suspend fun albumSongs(album: AlbumUiModel): List<SongUiModel> {
-        val cacheKey = listOf(album.id, YouTubeCopyMatch.key(album.title), YouTubeCopyMatch.key(album.artist.orEmpty()))
-            .joinToString("|")
+        val cacheKey = listingKey(album)
         albumListings[cacheKey]?.let { return it }
-        val songs = albumTracks(album).ifEmpty { searchAlbumSongs(album) }
+        // A playlist or album pasted into search as a link is read as the playlist it is, and
+        // never looked for by its name.
+        val songs = YouTubePlaylist.listIdOf(album.id)?.let { linkListSongs(it, album) }
+            ?: albumTracks(album).ifEmpty { searchAlbumSongs(album) }
         if (songs.isNotEmpty()) albumListings[cacheKey] = songs
         return songs
     }
+
+    private fun listingKey(album: AlbumUiModel): String =
+        listOf(album.id, YouTubeCopyMatch.key(album.title), YouTubeCopyMatch.key(album.artist.orEmpty()))
+            .joinToString("|")
 
     /** The album's own page on YouTube Music, when it came from there and so has its id. */
     private suspend fun albumTracks(album: AlbumUiModel): List<SongUiModel> {
@@ -125,7 +131,31 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
         val tracks = withContext(Dispatchers.IO) {
             runCatching { innertube.getAlbumTracks(album.id) }.getOrDefault(emptyList())
         }
-        return tracks.mapIndexed { index, track ->
+        return songsOf(tracks, album)
+    }
+
+    /**
+     * A playlist read whole (up to [YouTubePlaylist.MAX_SONGS]), numbered in its own order so an
+     * album page keeps it. Its songs carry the album's name only when it is an album's playlist.
+     */
+    private suspend fun linkListSongs(list: String, album: AlbumUiModel): List<SongUiModel> {
+        val link = YouTubeLink(null, list)
+        val address = YouTubePlaylist.address(link) ?: return emptyList()
+        val first = runCatching { firstPlaylistPage(address) }.getOrNull() ?: return emptyList()
+        val (page, next) = first
+        val all = if (next == null) page
+        else page + morePlaylistPages(address, next, page.map { it.id }, YouTubePlaylist.MAX_SONGS - page.size)
+        return all.mapIndexed { index, song ->
+            song.copy(
+                trackNumber = index + 1,
+                discNumber = 1,
+                album = if (link.isAlbum) album.title else song.album,
+            )
+        }
+    }
+
+    private fun songsOf(tracks: List<InnertubeAlbumTrack>, album: AlbumUiModel): List<SongUiModel> =
+        tracks.mapIndexed { index, track ->
             SongUiModel(
                 id = track.videoId,
                 title = track.title,
@@ -139,7 +169,6 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
                 album = album.title,
             )
         }
-    }
 
     private suspend fun searchAlbumSongs(album: AlbumUiModel): List<SongUiModel> {
         return withContext(Dispatchers.IO) {
@@ -217,8 +246,91 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
         return SimilarSongs.pick(found, queue(), copies.recorded.value, seedId, count).map { it.toSong(trackNumber = null) }
     }
 
+    private fun linkIn(text: String): YouTubeLink? = YouTubeLink.parse(YouTubeLink.addressIn(text) ?: text.trim())
+
+    override fun isLink(text: String): Boolean = linkIn(text) != null
+
+    override suspend fun searchLink(text: String): LinkSearch {
+        val link = linkIn(text) ?: return LinkSearch.Cannot(R.string.link_unreadable)
+        return try {
+            searchFor(link)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            LinkSearch.Cannot(if (link.isAlbum) R.string.link_album_unreadable else R.string.link_unreadable)
+        }
+    }
+
+    private suspend fun searchFor(link: YouTubeLink): LinkSearch {
+        link.albumId?.let { id ->
+            val album = albumPage(id) ?: return LinkSearch.Cannot(R.string.link_album_unreadable)
+            return LinkSearch.Album(album.first, album.second.size, isPlaylist = false)
+        }
+        // A song, also when the link names the playlist it was played from: the song is what
+        // the link was copied for.
+        link.videoId?.let { return LinkSearch.Song(linkSong(it)) }
+
+        val list = link.playlistId ?: return LinkSearch.Cannot(R.string.link_unreadable)
+        val unreadable = if (link.isAlbum) R.string.link_album_unreadable else R.string.link_playlist_unreadable
+        val address = YouTubePlaylist.address(YouTubeLink(null, list)) ?: return LinkSearch.Cannot(unreadable)
+        val info = runCatching {
+            withContext(Dispatchers.IO) {
+                YouTubeStreamResolver.ensureInitialized(OkHttpClient.Builder().build())
+                PlaylistInfo.getInfo(ServiceList.YouTube, address)
+            }
+        }.getOrNull() ?: return LinkSearch.Cannot(unreadable)
+        val firstPage = info.relatedItems.count { YouTubePlaylist.videoIdOf(it.url) != null }
+        val count = info.streamCount.takeIf { it > 0 }?.coerceAtMost(Int.MAX_VALUE.toLong())?.toInt() ?: firstPage
+        if (count <= 0) return LinkSearch.Cannot(unreadable)
+        val album = AlbumUiModel(
+            id = YouTubePlaylist.linkListId(list),
+            title = YouTubePlaylist.title(info.name, link.isAlbum)
+                ?: app.getString(if (link.isAlbum) R.string.link_untitled_album else R.string.link_untitled_playlist),
+            artist = YouTubePlaylist.artist(info.uploaderName).takeIf { it.isNotEmpty() },
+            sourceType = "ONLINE_SEARCH",
+        )
+        return LinkSearch.Album(album, count, isPlaylist = !link.isAlbum)
+    }
+
+    /** An album's page as an album, with its songs, which are kept as its listing. Null when it cannot be read. */
+    private suspend fun albumPage(id: String): Pair<AlbumUiModel, List<SongUiModel>>? {
+        val page = withContext(Dispatchers.IO) { runCatching { innertube.getAlbumPage(id) }.getOrNull() }
+        if (page == null || page.tracks.isEmpty()) return null
+        val album = AlbumUiModel(
+            id = id,
+            title = page.title.ifBlank { app.getString(R.string.link_untitled_album) },
+            artist = page.artist,
+            sourceType = "ONLINE_SEARCH",
+            releaseYear = page.year,
+        )
+        val songs = songsOf(page.tracks, album)
+        albumListings[listingKey(album)] = songs
+        return album to songs
+    }
+
+    /**
+     * The song a link names, titled as YouTube Music lists it. If the lookup fails the song
+     * still plays, under a plain title.
+     */
+    private suspend fun linkSong(videoId: String): SongUiModel {
+        // The song is the first thing YouTube lists after itself; that gives its title.
+        val found = runCatching { innertube.getUpNext(videoId).firstOrNull { it.videoId == videoId } }.getOrNull()
+        return found?.toSong(trackNumber = null) ?: SongUiModel(
+            id = videoId,
+            title = app.getString(R.string.link_untitled),
+            artist = "",
+            sourceType = "ONLINE_SEARCH",
+            audioUri = videoId,
+        )
+    }
+
     override suspend fun openLink(text: String): LinkOutcome? {
-        val link = YouTubeLink.parse(YouTubeLink.addressIn(text) ?: text.trim()) ?: return null
+        val link = linkIn(text) ?: return null
+        // An album's page plays the album, in its own order.
+        link.albumId?.let { id ->
+            val songs = albumPage(id)?.second ?: return LinkOutcome.Cannot(R.string.link_album_unreadable)
+            return LinkOutcome.Play(songs)
+        }
         val videoId = link.videoId
         val address = YouTubePlaylist.address(link)
 
@@ -239,16 +351,7 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
             return LinkOutcome.Play(songs, more = more)
         }
 
-        // The song is the first thing YouTube lists after itself; that gives its title. If the
-        // lookup fails the song still plays, under a plain title.
-        val found = runCatching { innertube.getUpNext(videoId).firstOrNull { it.videoId == videoId } }.getOrNull()
-        val song = found?.toSong(trackNumber = null) ?: SongUiModel(
-            id = videoId,
-            title = app.getString(R.string.link_untitled),
-            artist = "",
-            sourceType = "ONLINE_SEARCH",
-            audioUri = videoId,
-        )
+        val song = linkSong(videoId)
         if (address == null) return LinkOutcome.Play(listOf(song))
         // A song in a playlist: the song plays now, and the playlist is read behind it, from
         // the song onwards and then round to the start.

@@ -594,6 +594,15 @@
     <string name="library_search_nothing">Nothing found. Try a different search.</string>
     <!-- Before an album's artist in the search results, where albums sit among songs and artists -->
     <string name="library_search_kind_album">Album</string>
+    <!-- Before the artist of an album or playlist named by a link pasted into search, with how many songs it holds -->
+    <plurals name="search_link_album_count">
+        <item quantity="one">Album • %1$d song</item>
+        <item quantity="other">Album • %1$d songs</item>
+    </plurals>
+    <plurals name="search_link_playlist_count">
+        <item quantity="one">Playlist • %1$d song</item>
+        <item quantity="other">Playlist • %1$d songs</item>
+    </plurals>
     <!-- Second line under an artist's name in the search results, saying the result is an artist -->
     <string name="library_search_result_artist">Artist</string>
 

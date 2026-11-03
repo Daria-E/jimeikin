@@ -59,4 +59,24 @@ class NoOnlineMusicTest {
         // Any other failure is said the usual way.
         assertNull(online.unplayableMessage("java.net.UnknownHostException", "radio.example"))
     }
+
+    @Test
+    fun aPastedLinkIsAnsweredNotSearched() = runBlocking {
+        val online = NoOnlineMusic
+        for (pasted in listOf(
+            "https://music.youtube.com/watch?v=vid00000001",
+            "https://youtu.be/vid00000001",
+            "https://music.youtube.com/browse/MPREb_madeUpAlbum01",
+            "https://music.youtube.com/playlist?list=OLAK5uy_madeUpAlbumList01",
+            "Lantern Road https://www.youtube.com/playlist?list=PLmadeUpList_01-x",
+            "HTTP://example.org/a",
+        )) {
+            assertTrue(pasted, online.isLink(pasted))
+            assertEquals(LinkSearch.Cannot(R.string.search_link_full_edition), online.searchLink(pasted))
+        }
+        // Words, even with a colon or slashes in them, are searched for as before.
+        for (words in listOf("lantern road", "AC/DC", "Live: 1979", "https://", "youtube")) {
+            assertFalse(words, online.isLink(words))
+        }
+    }
 }

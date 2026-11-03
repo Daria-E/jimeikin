@@ -19,6 +19,7 @@ fun createOnlineMusic(@Suppress("UNUSED_PARAMETER") app: CalmMusic): OnlineMusic
  * cannot play. Downloads already made are files, and play as files.
  */
 private const val NO_HOST = "online.invalid"
+private val WEB_ADDRESS = Regex("https?://\\S", RegexOption.IGNORE_CASE)
 
 object NoOnlineMusic : OnlineMusic {
     override val available: Boolean = false
@@ -45,6 +46,11 @@ object NoOnlineMusic : OnlineMusic {
     override suspend fun similar(seedId: String, queue: () -> List<SongUiModel>, count: Int): List<SongUiModel> = emptyList()
 
     override suspend fun openLink(text: String): LinkOutcome? = LinkOutcome.Cannot(R.string.main_not_in_this_edition)
+
+    // Any web address: this edition plays none, and searching the library for the address's
+    // letters would find nothing worth showing.
+    override fun isLink(text: String): Boolean = WEB_ADDRESS.containsMatchIn(text)
+    override suspend fun searchLink(text: String): LinkSearch = LinkSearch.Cannot(R.string.search_link_full_edition)
     override fun precacheSearch(ids: List<String>) = Unit
     override fun clearSearchWindow() = Unit
     override fun updateQueueWindow(ids: List<String>) = Unit

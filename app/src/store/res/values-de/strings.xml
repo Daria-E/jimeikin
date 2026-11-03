@@ -11,6 +11,7 @@
     <string name="origin_online_download">Heruntergeladen</string>
     <string name="library_search_searching">Suche…</string>
     <string name="library_search_failed">Die Suche wurde nicht beendet</string>
+    <string name="search_link_full_edition">Links zu Online-Musik spielt nur die volle Ausgabe dieser App. Diese Ausgabe durchsucht die Musik auf deinem Telefon und deinem Server.</string>
     <string name="library_nothing_added_yet">Wähle den Ordner auf diesem Telefon oder seiner Karte, in dem deine Musik liegt. Music Box K liest nur die Dateien dort, um deine Bibliothek aufzubauen, und ändert sie nie, außer du bearbeitest selbst die Details eines Titels. Oder verbinde deinen eigenen Musikserver.</string>
 
     <!-- About -->

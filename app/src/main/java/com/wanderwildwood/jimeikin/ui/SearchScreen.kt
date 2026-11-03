@@ -35,6 +35,8 @@ fun SearchScreen(
     isSearching: Boolean,
     errorMessage: String?,
     results: List<SearchResult>,
+    /** A plain line in place of results: a link that could not be read, or cannot be played here. */
+    notice: String? = null,
     onPlaySongClick: (SongUiModel) -> Unit,
     onAlbumClick: (AlbumUiModel) -> Unit,
     onLibraryArtistClick: (ArtistUiModel) -> Unit,
@@ -54,6 +56,13 @@ fun SearchScreen(
             if (isSearching) {
                 item {
                     TextMMD(text = stringResource(R.string.library_search_searching))
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
+            if (notice != null) {
+                item {
+                    TextMMD(text = notice)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -88,7 +97,7 @@ fun SearchScreen(
                         album = result.album,
                         onClick = { onAlbumClick(result.album) },
                         showDivider = showDivider,
-                        kindLabel = albumKind,
+                        kindLabel = result.kindLabel ?: albumKind,
                     )
                     is SearchResult.LibraryArtist -> ArtistItem(
                         artist = result.artist,
@@ -103,7 +112,7 @@ fun SearchScreen(
                 }
             }
 
-            if (!isSearching && errorMessage == null && results.isEmpty()) {
+            if (!isSearching && errorMessage == null && notice == null && results.isEmpty()) {
                 item {
                     TextMMD(text = stringResource(R.string.library_search_nothing))
                 }

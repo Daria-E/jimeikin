@@ -24,7 +24,10 @@ interface YouTubeMusicInnertubeClient {
     suspend fun getArtistPage(browseId: String): InnertubeArtistPage
 
     /** An album's tracks, in its own order, from its page (an MPRE browse id). */
-    suspend fun getAlbumTracks(browseId: String): List<InnertubeAlbumTrack>
+    suspend fun getAlbumTracks(browseId: String): List<InnertubeAlbumTrack> = getAlbumPage(browseId).tracks
+
+    /** An album's page (an MPRE browse id): its name, artist and year, and its tracks in order. */
+    suspend fun getAlbumPage(browseId: String): InnertubeAlbumPage
 
     /** What YouTube Music itself would play after [videoId]: its own radio for that song. */
     suspend fun getUpNext(videoId: String): List<InnertubeSongResult>
@@ -274,8 +277,8 @@ internal class YouTubeMusicInnertubeClientImpl(
         }
     }
 
-    override suspend fun getAlbumTracks(browseId: String): List<InnertubeAlbumTrack> {
-        if (browseId.isBlank()) return emptyList()
+    override suspend fun getAlbumPage(browseId: String): InnertubeAlbumPage {
+        if (browseId.isBlank()) return InnertubeAlbumPage.EMPTY
 
         return withContext(Dispatchers.IO) {
             val context = JSONObject().apply {
@@ -296,9 +299,9 @@ internal class YouTubeMusicInnertubeClientImpl(
             applyAuthHeaders(requestBuilder)
 
             httpClient.newCall(requestBuilder.build()).execute().use { response ->
-                if (!response.isSuccessful) return@withContext emptyList()
-                val bodyString = response.body?.string() ?: return@withContext emptyList()
-                parseAlbumTracks(JSONObject(bodyString))
+                if (!response.isSuccessful) return@withContext InnertubeAlbumPage.EMPTY
+                val bodyString = response.body?.string() ?: return@withContext InnertubeAlbumPage.EMPTY
+                parseAlbumPage(JSONObject(bodyString))
             }
         }
     }

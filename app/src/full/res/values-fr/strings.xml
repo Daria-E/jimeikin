@@ -11,6 +11,10 @@
         <item quantity="other">%1$d titres de plus de la playlist sont dans la file d\'attente.</item>
     </plurals>
     <string name="link_untitled">Titre YouTube</string>
+    <string name="link_unreadable">Music Box n\'a pas pu lire ce lien YouTube. Vérifiez qu\'il a été copié en entier.</string>
+    <string name="link_album_unreadable">Music Box n\'a pas pu lire cet album YouTube Music. Il n\'est peut-être pas disponible ici.</string>
+    <string name="link_untitled_album">Album YouTube Music</string>
+    <string name="link_untitled_playlist">Playlist YouTube</string>
     <string name="main_youtube_cannot_play">YouTube indique que cette piste ne peut pas être lue. Elle sera ignorée.</string>
     <string name="player_downloads_online">De YouTube</string>
     <!-- Settings screen: the rows below the folders -->

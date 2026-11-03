@@ -471,6 +471,11 @@ fun CalmMusic(
     var searchedQuery by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) }
     var searchError by remember { mutableStateOf<String?>(null) }
+    // A link typed or pasted into search: what it points at, as the only result, in place of a
+    // search for its letters (null when the search was words). A link that cannot be read, or
+    // played in this edition, says so in [linkNotice].
+    var linkResults by remember { mutableStateOf<List<SearchResult>?>(null) }
+    var linkNotice by remember { mutableStateOf<String?>(null) }
 
     var isRescanningLocal by remember { mutableStateOf(false) }
     var localScanProgress by remember { mutableStateOf(0f) }
@@ -551,6 +556,48 @@ fun CalmMusic(
 
     fun performSearch() {
         if (searchQuery.isBlank()) return
+
+        // A link is not searched for: what it points at is read instead, and shown as one row.
+        val asked = searchQuery.trim()
+        if (app.online.isLink(asked)) {
+            if (isSearching) return
+            searchedQuery = ""
+            searchError = null
+            searchSongs = emptyList()
+            searchAlbums = emptyList()
+            searchArtists = emptyList()
+            linkResults = emptyList()
+            linkNotice = null
+            searchScope.launch {
+                isSearching = true
+                try {
+                    val found = runCatching { app.online.searchLink(asked) }
+                        .getOrElse { LinkSearch.Cannot(R.string.library_search_failed) }
+                    when (found) {
+                        is LinkSearch.Song -> {
+                            linkResults = listOf(SearchResult.Song(found.song))
+                            app.online.precacheSearch(listOf(found.song.id))
+                        }
+                        is LinkSearch.Album -> linkResults = listOf(
+                            SearchResult.Album(
+                                album = found.album,
+                                kindLabel = context.resources.getQuantityString(
+                                    if (found.isPlaylist) R.plurals.search_link_playlist_count else R.plurals.search_link_album_count,
+                                    found.songCount,
+                                    found.songCount,
+                                ),
+                            ),
+                        )
+                        is LinkSearch.Cannot -> linkNotice = context.getString(found.message)
+                    }
+                } finally {
+                    isSearching = false
+                }
+            }
+            return
+        }
+        linkResults = null
+        linkNotice = null
 
         // The library answers at once and without a signal; the online catalogue's results join
         // below it when they come.
@@ -2213,9 +2260,15 @@ fun CalmMusic(
                 composable(Screen.Search.route) {
                     val searchResults = remember(
                         searchedQuery, librarySongs, libraryAlbums, libraryArtists,
-                        searchSongs, searchAlbums, searchArtists, recordedOnlineCopies,
+                        searchSongs, searchAlbums, searchArtists, recordedOnlineCopies, linkResults,
                     ) {
-                        buildSearchResults(
+                        // A link's song is its file where it has been downloaded, as below.
+                        linkResults?.map { result ->
+                            if (result !is SearchResult.Song) result
+                            else SearchResult.Song(
+                                app.online.withCopiesIn(listOf(result.song), recordedOnlineCopies, onlineDownloads).firstOrNull() ?: result.song,
+                            )
+                        } ?: buildSearchResults(
                             query = searchedQuery,
                             librarySongs = librarySongs,
                             libraryAlbums = libraryAlbums,
@@ -2232,6 +2285,7 @@ fun CalmMusic(
                         isSearching = isSearching,
                         errorMessage = searchError,
                         results = searchResults,
+                        notice = linkNotice,
                         onPlaySongClick = { song: SongUiModel ->
                             // Plays on down the list, through whatever songs follow it.
                             val songs = searchResults.filterIsInstance<SearchResult.Song>().map { it.song }

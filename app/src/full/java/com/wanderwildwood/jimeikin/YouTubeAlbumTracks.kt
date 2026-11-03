@@ -12,6 +12,60 @@ data class InnertubeAlbumTrack(
     val trackNumber: Int?,
 )
 
+/** An album page: its name, artist and year as the page's header gives them, and its tracks. */
+data class InnertubeAlbumPage(
+    val title: String,
+    val artist: String?,
+    val year: Int?,
+    val tracks: List<InnertubeAlbumTrack>,
+) {
+    companion object {
+        val EMPTY = InnertubeAlbumPage(title = "", artist = null, year = null, tracks = emptyList())
+    }
+}
+
+/** An album page's header and tracks; see [parseAlbumTracks] and [parseAlbumHeader]. */
+internal fun parseAlbumPage(root: JSONObject): InnertubeAlbumPage {
+    val (title, artist, year) = parseAlbumHeader(root)
+    return InnertubeAlbumPage(title = title, artist = artist, year = year, tracks = parseAlbumTracks(root))
+}
+
+/**
+ * The album's name, artist and year from its page's header (the first section of its first
+ * tab), or from the page's microformat when the header is not there: an empty name and nulls
+ * for whatever neither gives.
+ */
+internal fun parseAlbumHeader(root: JSONObject): Triple<String, String?, Int?> {
+    fun runsText(o: JSONObject?): String? = o?.optJSONArray("runs")?.let { runs ->
+        (0 until runs.length()).joinToString("") { runs.optJSONObject(it)?.optString("text").orEmpty() }
+    }?.trim()?.takeIf { it.isNotEmpty() }
+
+    val header = root.optJSONObject("contents")
+        ?.optJSONObject("twoColumnBrowseResultsRenderer")
+        ?.optJSONArray("tabs")
+        ?.optJSONObject(0)
+        ?.optJSONObject("tabRenderer")
+        ?.optJSONObject("content")
+        ?.optJSONObject("sectionListRenderer")
+        ?.optJSONArray("contents")
+        ?.optJSONObject(0)
+        ?.optJSONObject("musicResponsiveHeaderRenderer")
+    val micro = root.optJSONObject("microformat")?.optJSONObject("microformatDataRenderer")
+
+    val title = runsText(header?.optJSONObject("title"))
+        ?: micro?.optString("title")?.trim().orEmpty()
+    // The page's own description is "Album • Artist" where the header is missing.
+    val artist = runsText(header?.optJSONObject("straplineTextOne"))
+        ?: micro?.optString("description")?.substringAfter(" • ", "")?.trim()?.takeIf { it.isNotEmpty() }
+    // The subtitle is "Album • 1959" (or "EP • 2021"): the year is its four-digit run.
+    val year = header?.optJSONObject("subtitle")?.optJSONArray("runs")?.let { runs ->
+        (0 until runs.length()).firstNotNullOfOrNull { i ->
+            runs.optJSONObject(i)?.optString("text")?.trim()?.takeIf { it.length == 4 }?.toIntOrNull()
+        }
+    }
+    return Triple(title, artist, year)
+}
+
 /**
  * The tracks of an album page (a browse of its MPRE id), in the album's order.
  *

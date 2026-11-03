@@ -11,6 +11,8 @@
     <string name="origin_online_download">Downloaded</string>
     <string name="library_search_searching">Searching…</string>
     <string name="library_search_failed">The search did not finish</string>
+    <!-- Search: a web address pasted in, which this edition does not play -->
+    <string name="search_link_full_edition">Links to online music play only in the full edition of this app. This edition searches the music on your phone and your server.</string>
     <string name="library_nothing_added_yet">Pick the folder on this phone or its card where your music is kept. Music Box K only reads the files there to build your library, and never changes them unless you edit a song\'s details yourself. Or connect your own music server.</string>
 
     <!-- About -->

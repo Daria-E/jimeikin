@@ -47,6 +47,29 @@ object YouTubePlaylist {
     fun artist(uploader: String?): String =
         uploader.orEmpty().trim().removeSuffix(" - Topic").trim()
 
+    /**
+     * The id an album row carries for a playlist or album pasted into search as a link: the
+     * list id behind a mark no YouTube Music album or library album id starts with, so the
+     * album page reads it as the playlist it is (see [listIdOf]).
+     */
+    fun linkListId(list: String): String = LINK_LIST_PREFIX + list
+
+    /** The list id inside an id made by [linkListId], or null for any other album id. */
+    fun listIdOf(albumId: String): String? =
+        albumId.takeIf { it.startsWith(LINK_LIST_PREFIX) }?.removePrefix(LINK_LIST_PREFIX)?.takeIf { it.isNotEmpty() }
+
+    private const val LINK_LIST_PREFIX = "link-list:"
+
+    /**
+     * A playlist's name as a row shows it, or null when it has none. YouTube names an album's
+     * playlist "Album - Its Title"; the word in front is dropped.
+     */
+    fun title(name: String?, isAlbum: Boolean): String? {
+        val trimmed = name.orEmpty().trim()
+        val shown = if (isAlbum) trimmed.removePrefix("Album - ").trim() else trimmed
+        return shown.takeIf { it.isNotEmpty() }
+    }
+
     /** The 11-character video id at the end of a watch address NewPipe lists, or null. */
     fun videoIdOf(url: String?): String? = YouTubeLink.parse(url)?.videoId
 }

@@ -72,6 +72,18 @@ interface OnlineMusic {
      */
     suspend fun openLink(text: String): LinkOutcome?
 
+    /**
+     * Whether [text], typed or pasted into search, is a link for the catalogue (or, in an
+     * edition without one, a web address) rather than words to search for.
+     */
+    fun isLink(text: String): Boolean
+
+    /**
+     * What the link in [text] points at, as search shows it: the song, or the playlist or album
+     * as one row, or the words for why it cannot be had. Never throws.
+     */
+    suspend fun searchLink(text: String): LinkSearch
+
     fun precacheSearch(ids: List<String>)
     fun clearSearchWindow()
     fun updateQueueWindow(ids: List<String>)
@@ -139,6 +151,14 @@ sealed interface LinkOutcome {
         val more: (suspend () -> LinkMore)? = null,
     ) : LinkOutcome
     data class Cannot(val message: Int) : LinkOutcome
+}
+
+/** What a link typed into search came to; see [OnlineMusic.searchLink]. */
+sealed interface LinkSearch {
+    data class Song(val song: SongUiModel) : LinkSearch
+    /** A playlist or an album, as one row: its songs are read when it is opened or queued. */
+    data class Album(val album: AlbumUiModel, val songCount: Int, val isPlaylist: Boolean) : LinkSearch
+    data class Cannot(val message: Int) : LinkSearch
 }
 
 /** What [LinkOutcome.Play.more] fetched: the songs for the end of the queue, and what to say then (or null). */
