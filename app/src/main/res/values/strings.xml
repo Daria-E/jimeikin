@@ -485,12 +485,12 @@
     <string name="about_privacy_close">There are no ads, no analytics and no tracking. Downloaded songs are saved in Music/Music Box, where other apps on the phone can see them. Lock-screen controls, if you turn them on, are an accessibility service that draws this app\'s buttons over the lock screen and reads nothing else. Show what is playing in Glance, if you turn it on, hands the song\'s name to Glance on this phone.</string>
     <string name="about_terms_heading">Terms</string>
     <string name="about_open_source_heading">Open source</string>
-    <string name="licences_title">Licences</string>
+    <string name="licences_title">Licenses</string>
     <string name="licences_back">Back</string>
     <string name="licences_source_heading">Source code</string>
-    <string name="licences_no_text">%s needs no licence text here.</string>
+    <string name="licences_no_text">%s needs no license text here.</string>
     <string name="licences_licence_body">Music Box is free software under the GNU General Public License, version 3 only. Copyright wander wildwood. It comes with no warranty. Built on CalmMusic by David Ray Wilson, also GPL-3.0.</string>
-    <string name="licences_texts_heading">Full licence texts</string>
+    <string name="licences_texts_heading">Full license texts</string>
     <string name="licences_full_gpl" translatable="false">GNU General Public License 3.0 (full text)</string>
     <string name="licences_full_gpl2_cpe" translatable="false">GNU General Public License 2.0 with the Classpath Exception (full text)</string>
     <string name="licences_full_lgpl" translatable="false">GNU Lesser General Public License 2.1 (full text)</string>

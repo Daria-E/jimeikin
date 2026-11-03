@@ -88,4 +88,4 @@ The app is suitable for all ages and does not knowingly collect anything from an
 
 ## Changes
 
-If a later version changes what the app stores or which hosts it contacts, this policy is updated in the same release and the change is described in the release notes. The source is public, so any claim here can be checked against the code: <https://github.com/wanderwildwood/jimeikin>. GitHub reports its licence as GPL-3.0.
+If a later version changes what the app stores or which hosts it contacts, this policy is updated in the same release and the change is described in the release notes. The source is public, so any claim here can be checked against the code: <https://github.com/wanderwildwood/jimeikin>. GitHub reports its license as GPL-3.0.

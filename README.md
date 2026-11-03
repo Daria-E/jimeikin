@@ -87,7 +87,7 @@ for offline playback, one at a time from a song's menu or Now Playing, or a whol
 A song already downloaded is shown as its file wherever YouTube lists it again — an album, an
 artist's songs — and is not offered for download a second time: the album's Download button
 goes once every track on it is here, and pressing it fetches only the ones that are not. The app
-remembers which video each download came from; one downloaded before it did is recognised by
+remembers which video each download came from; one downloaded before it did is recognized by
 its title and artist.
 
 ## Downloads
@@ -263,9 +263,9 @@ configuration.
 ./gradlew :app:installFullDebug
 ```
 
-There are two apps, from one source. **Music Box** (flavour `full`, application id
+There are two apps, from one source. **Music Box** (flavor `full`, application id
 `com.wanderwildwood.jimeikin`) is this one, the GitHub release, tagged `v2.18.x`.
-**Music Box K** (flavour `store`, `:app:assembleStoreRelease`, application id
+**Music Box K** (flavor `store`, `:app:assembleStoreRelease`, application id
 `com.wanderwildwood.jimeikin.k`) is the one offered in Mudita's store: the same app without
 YouTube Music. Its code (`app/src/full`), NewPipeExtractor and the words about it are not in that
 APK at all; `app/src/store` stands in for them. It has its own name, its own version line
@@ -291,6 +291,6 @@ Releases.
 
 Privacy: what the app stores and what it sends is set out in [PRIVACY.md](PRIVACY.md).
 
-## Licence
+## License
 
 GPL-3.0, the same as upstream CalmMusic. See [LICENSE](LICENSE).
