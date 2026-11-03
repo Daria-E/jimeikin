@@ -198,7 +198,7 @@ fun ArtistItem(
                             )
                         }
                         if (onFileUnder != null) {
-                            if (nameEditing != null) HorizontalDividerMMD(thickness = 1.dp)
+                            if (nameEditing != null) DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.library_artist_file_under)) },
                                 onClick = {

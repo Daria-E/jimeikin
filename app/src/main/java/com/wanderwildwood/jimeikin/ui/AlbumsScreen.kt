@@ -267,18 +267,18 @@ fun AlbumItem(
                             text = { TextMMD(text = stringResource(R.string.player_song_play_next)) },
                             onClick = { withSongs { actions.onPlayNext(album, it) } }
                         )
-                        HorizontalDividerMMD(thickness = 1.dp)
+                        DottedRule()
                         DropdownMenuItemMMD(
                             text = { TextMMD(text = stringResource(R.string.player_song_add_to_queue)) },
                             onClick = { withSongs { actions.onAddToQueue(album, it) } }
                         )
-                        HorizontalDividerMMD(thickness = 1.dp)
+                        DottedRule()
                         DropdownMenuItemMMD(
                             text = { TextMMD(text = stringResource(R.string.player_add_to_playlist)) },
                             onClick = { withSongs { actions.onAddToPlaylist(it) } }
                         )
                         if (songs?.hasSongsToKeep(actions.canKeepOnline, isDownloaded) == true) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.player_song_keep_on_phone)) },
                                 onClick = { withSongs { actions.onDownload(album, it) } }
@@ -286,7 +286,7 @@ fun AlbumItem(
                         }
                         val nameEditing = LocalNameEditing.current
                         if (nameEditing != null && nameEditing.canEditAlbum(album)) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.edit_name_menu)) },
                                 onClick = {
