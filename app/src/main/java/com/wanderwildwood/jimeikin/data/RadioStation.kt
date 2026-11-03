@@ -39,4 +39,10 @@ interface RadioStationDao {
 
     @Query("SELECT id FROM radio_stations")
     suspend fun keptIds(): List<String>
+
+    @Query("DELETE FROM radio_stations")
+    suspend fun forgetAll()
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun keepAll(stations: List<RadioStationEntity>)
 }

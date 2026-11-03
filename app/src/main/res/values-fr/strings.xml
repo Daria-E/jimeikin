@@ -663,4 +663,24 @@
     <string name="trouble_fix_internet">Réglages internet</string>
     <string name="trouble_fix_access">Permissions</string>
     <string name="trouble_close">OK</string>
+    <!-- Settings: backup and restore of playlists and kept stations, through the file picker -->
+    <string name="settings_save_backup">Enregistrer une sauvegarde</string>
+    <string name="settings_save_backup_note">Enregistre vos playlists et vos stations de radio gardées dans un fichier de votre choix. Non enregistrés : les titres eux-mêmes, les cœurs, les réglages et les playlists lues depuis des fichiers .m3u.</string>
+    <string name="settings_restore">Restaurer une sauvegarde</string>
+    <string name="settings_restore_armed">Restaurer — vos playlists et stations sont remplacées par celles du fichier ; touchez encore pour le choisir</string>
+    <string name="backup_saved">Sauvegarde enregistrée.</string>
+    <string name="backup_not_saved">La sauvegarde n\'a pas pu être écrite.</string>
+    <string name="restore_done">Restauré : %1$s et %2$s.</string>
+    <string name="restore_not_ours">Ce fichier n\'est pas une sauvegarde de cette application. Rien n\'a été modifié.</string>
+    <string name="restore_newer">Cette sauvegarde vient d\'une version plus récente de l\'application. Mettez-la à jour et réessayez. Rien n\'a été modifié.</string>
+    <string name="restore_damaged">Cette sauvegarde est endommagée ; elle n\'a pas été utilisée. Rien n\'a été modifié.</string>
+    <string name="restore_unreadable">Ce fichier n\'a pas pu être lu. Rien n\'a été modifié.</string>
+    <plurals name="restore_done_playlists">
+        <item quantity="one">%1$d playlist</item>
+        <item quantity="other">%1$d playlists</item>
+    </plurals>
+    <plurals name="restore_done_stations">
+        <item quantity="one">%1$d station de radio</item>
+        <item quantity="other">%1$d stations de radio</item>
+    </plurals>
 </resources>

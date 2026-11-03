@@ -8,6 +8,13 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import android.provider.Settings
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.rememberCoroutineScope
+import com.wanderwildwood.jimeikin.data.LibraryBackup
+import com.wanderwildwood.jimeikin.data.LibraryBackupFiles
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,9 +82,49 @@ fun SettingsScreen(
     localScanIndexedNewOrUpdated: Int?,
     localScanDeletedMissing: Int?,
     localScanUnreadableFolders: Int?,
+    onLibraryRestored: () -> Unit,
 ) {
     val context = LocalContext.current
     val onlineConnected = onlineAccountConnected()
+    val scope = rememberCoroutineScope()
+
+    // Backup and restore through the phone's own file picker, as in Medicine: the file goes
+    // where the reader puts it, and a restore reads all of it before anything changes.
+    val saveBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val ok = LibraryBackupFiles.save(context, uri)
+            Toast.makeText(
+                context,
+                context.getString(if (ok) R.string.backup_saved else R.string.backup_not_saved),
+                if (ok) Toast.LENGTH_SHORT else Toast.LENGTH_LONG,
+            ).show()
+        }
+    }
+    val restoreBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val message = when (val r = LibraryBackupFiles.restore(context, uri)) {
+                is LibraryBackupFiles.Result.Done -> {
+                    onLibraryRestored()
+                    context.getString(
+                        R.string.restore_done,
+                        context.resources.getQuantityString(R.plurals.restore_done_playlists, r.playlists, r.playlists),
+                        context.resources.getQuantityString(R.plurals.restore_done_stations, r.stations, r.stations),
+                    )
+                }
+                is LibraryBackupFiles.Result.Refused -> context.getString(
+                    when (r.kind) {
+                        LibraryBackup.BackupException.Kind.NOT_A_BACKUP -> R.string.restore_not_ours
+                        LibraryBackup.BackupException.Kind.NEWER -> R.string.restore_newer
+                        LibraryBackup.BackupException.Kind.DAMAGED -> R.string.restore_damaged
+                    },
+                )
+                LibraryBackupFiles.Result.Unreadable -> context.getString(R.string.restore_unreadable)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
     PagedColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -309,6 +356,25 @@ fun SettingsScreen(
                     enabled = true,
                 )
             }
+        }
+
+        item {
+            ValueRow(
+                label = stringResource(R.string.settings_save_backup),
+                value = stringResource(R.string.settings_save_backup_note),
+                onClick = { runCatching { saveBackup.launch("music-box-backup-${java.time.LocalDate.now()}.json") } },
+                enabled = true,
+            )
+        }
+
+        item {
+            ArmedRow(
+                label = stringResource(R.string.settings_restore),
+                armedLabel = stringResource(R.string.settings_restore_armed),
+                onConfirm = {
+                    runCatching { restoreBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }
+                },
+            )
         }
 
         onlineAccountRows(onlineConnected, onOpenOnlineAccountClick)

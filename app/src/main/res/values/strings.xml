@@ -734,4 +734,24 @@
     <string name="trouble_fix_internet">Internet settings</string>
     <string name="trouble_fix_access">Permissions</string>
     <string name="trouble_close">OK</string>
+    <!-- Settings: backup and restore of playlists and kept stations, through the file picker -->
+    <string name="settings_save_backup">Save a backup</string>
+    <string name="settings_save_backup_note">Saves your playlists and kept radio stations to one file you pick. Not saved: the songs themselves, hearts, settings, and playlists read from .m3u files.</string>
+    <string name="settings_restore">Restore from a backup</string>
+    <string name="settings_restore_armed">Restore — your playlists and stations are replaced by the file\'s; tap again to choose it</string>
+    <string name="backup_saved">Backup saved.</string>
+    <string name="backup_not_saved">The backup could not be written.</string>
+    <string name="restore_done">Restored. %1$s and %2$s.</string>
+    <string name="restore_not_ours">That file is not a backup from this app. Nothing was changed.</string>
+    <string name="restore_newer">That backup was made by a newer version of this app. Update the app and try again. Nothing was changed.</string>
+    <string name="restore_damaged">That backup is damaged, so it was not used. Nothing was changed.</string>
+    <string name="restore_unreadable">That file could not be read. Nothing was changed.</string>
+    <plurals name="restore_done_playlists">
+        <item quantity="one">%1$d playlist</item>
+        <item quantity="other">%1$d playlists</item>
+    </plurals>
+    <plurals name="restore_done_stations">
+        <item quantity="one">%1$d radio station</item>
+        <item quantity="other">%1$d radio stations</item>
+    </plurals>
 </resources>
