@@ -1,5 +1,6 @@
 package com.wanderwildwood.jimeikin
 
+import com.wanderwildwood.jimeikin.ui.DottedRule
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -348,21 +349,21 @@ private fun CalmMusicTopAppBarActions(
                     onClick = onPlaylistDetailsEditClick,
                 )
 
-                HorizontalDividerMMD(thickness = 1.dp)
+                DottedRule()
 
                 DropdownMenuItemMMD(
                     text = { TextMMD(stringResource(R.string.main_menu_add_songs)) },
                     onClick = onPlaylistDetailsAddSongsClick,
                 )
 
-                HorizontalDividerMMD(thickness = 1.dp)
+                DottedRule()
 
                 DropdownMenuItemMMD(
                     text = { TextMMD(stringResource(R.string.main_menu_rename)) },
                     onClick = onPlaylistDetailsRenameClick,
                 )
 
-                HorizontalDividerMMD(thickness = 1.dp)
+                DottedRule()
 
                 DropdownMenuItemMMD(
                     text = { TextMMD(stringResource(R.string.main_menu_delete)) },

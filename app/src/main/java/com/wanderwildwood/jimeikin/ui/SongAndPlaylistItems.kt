@@ -248,7 +248,7 @@ fun SongItem(
                                     onPlayNext()
                                 }
                             )
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.player_song_add_to_queue)) },
                                 onClick = {
@@ -256,7 +256,7 @@ fun SongItem(
                                     onAddToQueue()
                                 }
                             )
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                         }
 
                         DropdownMenuItemMMD(
@@ -268,7 +268,7 @@ fun SongItem(
                         )
 
                         if (hearts != null && song.sourceType != "RADIO") {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = {
                                     TextMMD(
@@ -290,7 +290,7 @@ fun SongItem(
                         if (song.sourceType == "SUBSONIC" ||
                             (song.sourceType == "ONLINE_SEARCH" && !isDownloadedAlready(song))
                         ) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.player_song_keep_on_phone)) },
                                 onClick = {
@@ -302,7 +302,7 @@ fun SongItem(
 
                         val editDetails = LocalEditDetails.current
                         if (editDetails != null && song.isEditable()) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.player_song_edit_details)) },
                                 onClick = {
@@ -314,7 +314,7 @@ fun SongItem(
 
                         val nameEditing = LocalNameEditing.current
                         if (nameEditing != null && song.sourceType != "RADIO") {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = { TextMMD(text = stringResource(R.string.edit_name_menu)) },
                                 onClick = {
@@ -325,7 +325,7 @@ fun SongItem(
                         }
 
                         if (isDownloaded || isLocal) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = {
                                     // A download is removed, not deleted: a kept server song goes
@@ -357,7 +357,7 @@ fun SongItem(
                         }
 
                         if (isInLibrary && !isLocal && !isDownloaded) {
-                            HorizontalDividerMMD(thickness = 1.dp)
+                            DottedRule()
                             DropdownMenuItemMMD(
                                 text = {
                                     TextMMD(
@@ -386,7 +386,7 @@ fun SongItem(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (showDivider) {
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
         }
     }
 }
@@ -445,7 +445,7 @@ fun PlaylistItem(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (showDivider) {
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
         }
     }
 }
@@ -526,7 +526,7 @@ fun SelectablePlaylistItem(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (showDivider) {
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
         }
     }
 }

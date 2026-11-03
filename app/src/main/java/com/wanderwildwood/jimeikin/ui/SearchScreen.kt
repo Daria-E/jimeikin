@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
@@ -147,7 +146,7 @@ private fun SearchArtistItem(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (showDivider) {
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
         }
     }
 }

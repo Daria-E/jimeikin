@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
@@ -116,7 +115,7 @@ fun UpNextScreen(
                     onMoveDown = { onMove(at, at + 1) },
                     onRemove = { onRemove(at) },
                 )
-                if (at < lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+                if (at < lastIndex) DottedRule(start = 0.dp)
             }
 
             item(key = "save") {
