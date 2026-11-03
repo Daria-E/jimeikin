@@ -253,6 +253,9 @@ fun SettingsScreen(
         // Room, not a rule, between the folders and the switches.
         item { Spacer(Modifier.height(16.dp)) }
 
+        // Album details from MusicBrainz, in the edition that has the lookup (src/full).
+        albumDetailsSwitch(onRescan = onRescanLocalMusicClick)
+
         // The catalogue's own switches, in the edition that has one (src/full).
         onlineSwitches()
 

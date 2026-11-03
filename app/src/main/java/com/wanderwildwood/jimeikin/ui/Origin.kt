@@ -20,10 +20,13 @@ import com.wanderwildwood.jimeikin.R
  * Where something came from, when that was not a file put on the phone.
  *
  * A file in a chosen folder carries no mark - it is most of any library and needs nothing
- * said about it. Anything from the music server or YouTube is marked with where it came
- * from: streamed, by that place's mark alone; downloaded, by the same mark with the
- * available-offline tick before it. A download is still worth telling apart from a file the
- * reader put there themselves, because it is the one that can be removed and fetched again.
+ * said about it. A song streamed online carries a plain cloud: it is not on this phone and
+ * plays only with a signal. One streamed from the reader's own music server carries the
+ * server's mark instead, as it is theirs, at home. A download carries the
+ * available-offline tick instead, and no cloud, as it plays anywhere (one from the music
+ * server keeps the server's mark beside the tick); it is still worth
+ * telling apart from a file the reader put there themselves, because it is the one that can
+ * be removed and fetched again. Which place it is from is said in words, to a screen reader.
  */
 enum class Origin(val streams: Boolean) {
     SERVER(streams = true),
@@ -61,12 +64,17 @@ fun OriginMark(origin: Origin) {
         },
     )
     Row(verticalAlignment = Alignment.CenterVertically) {
-        if (!origin.streams) {
+        // A song downloaded from the music server keeps the server's mark beside the tick.
+        if (origin == Origin.SERVER_DOWNLOAD) {
             Icon(imageVector = Icons.OfflinePin, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(modifier = Modifier.width(2.dp))
         }
         Icon(
-            imageVector = if (origin == Origin.SERVER || origin == Origin.SERVER_DOWNLOAD) Icons.Dns else Icons.Cloud,
+            imageVector = when (origin) {
+                Origin.SERVER, Origin.SERVER_DOWNLOAD -> Icons.Dns
+                Origin.ONLINE_SEARCH -> Icons.Cloud
+                Origin.ONLINE_SEARCH_DOWNLOAD -> Icons.OfflinePin
+            },
             contentDescription = description,
             modifier = Modifier.size(16.dp),
         )

@@ -35,7 +35,6 @@ import com.wanderwildwood.jimeikin.PlaylistsViewModel
 import com.wanderwildwood.jimeikin.R
 import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.checkbox.CheckboxMMD
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import kotlinx.coroutines.launch
 
@@ -350,7 +349,7 @@ private fun EditablePlaylistSongItem(
         Spacer(modifier = Modifier.height(12.dp))
 
         if (showDivider) {
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
         }
     }
 }

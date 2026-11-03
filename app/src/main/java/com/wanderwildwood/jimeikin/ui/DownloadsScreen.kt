@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.DownloadItem
 import com.wanderwildwood.jimeikin.DownloadKind
@@ -178,6 +177,6 @@ private fun DownloadRow(
         TextMMD(text = said, style = MaterialTheme.typography.labelSmall)
 
         Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDividerMMD()
+        DottedRule(start = 0.dp)
     }
 }

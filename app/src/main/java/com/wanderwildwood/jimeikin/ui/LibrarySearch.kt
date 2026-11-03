@@ -61,7 +61,7 @@ fun buildSearchResults(
     }
     libraryArtists.forEach { a ->
         val m = match(q, a.name)
-        add(SearchResult.LibraryArtist(a), artistKey(a.name), placeOf(a.origin), m, KIND_ARTIST, exactArtist = m == 0)
+        add(SearchResult.LibraryArtist(a), artistKey(a.name), placeOf(a.origin), m, KIND_ARTIST, exactArtist = isExactArtist(q, a.name))
     }
     // YouTube has already ranked its own results, and knows better than a name match which
     // of forty albums called Moondance is the one meant. Its order is kept, the three lists
@@ -79,8 +79,9 @@ fun buildSearchResults(
     // "moondance" with whoever has a song of that name, and a row that says only "Sam Smith,
     // Artist" is not an answer to it.
     onlineArtists.forEachIndexed { i, a ->
-        val m = match(q, a.name) ?: return@forEachIndexed
-        add(SearchResult.OnlineArtist(a), artistKey(a.name), PLACE_ONLINE, onlineTurn(i, m == 0), KIND_ARTIST_ONLINE, exactArtist = m == 0)
+        match(q, a.name) ?: return@forEachIndexed
+        val exact = isExactArtist(q, a.name)
+        add(SearchResult.OnlineArtist(a), artistKey(a.name), PLACE_ONLINE, onlineTurn(i, exact), KIND_ARTIST_ONLINE, exactArtist = exact)
     }
 
     return candidates
@@ -107,6 +108,16 @@ private fun placeOf(origin: Origin?): Int = when (origin) {
     Origin.ONLINE_SEARCH -> PLACE_ONLINE
     // A download is on the phone: it plays with no signal, like a file put there.
     else -> PLACE_PHONE
+}
+
+/**
+ * Whether an artist is the one typed: the same name however it is spelled, and with or without
+ * its "The" ("beatles" is The Beatles, "bjork" is Björk). Only a name that is not empty once
+ * folded counts, so a query of punctuation leads with nobody.
+ */
+internal fun isExactArtist(query: String, name: String): Boolean {
+    val k = ArtistNames.artistKey(query)
+    return k.isNotEmpty() && (ArtistNames.artistKey(name) == k || ArtistNames.key(name) == ArtistNames.key(query))
 }
 
 /**

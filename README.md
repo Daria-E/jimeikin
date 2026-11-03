@@ -26,7 +26,16 @@ and on the phone's own Music folder if not. Supported audio files are indexed in
 albums, artists and playlists, and play offline.
 
 Artists are grouped by album artist where the files carry one, so an album credited to a
-single artist stays a single artist however many guests appear on its tracks.
+single artist stays a single artist however many guests appear on its tracks. Songs with no
+album in their tags are grouped by the folder they sit in, and a "CD 2" folder joins its album
+as disc 2.
+
+Albums with gaps in their tags (no album artist, no year, no track numbers) can be filled in
+from MusicBrainz: Settings → **Fill in album details from MusicBrainz**, off to begin with.
+Each such album's title and artist are looked up once on musicbrainz.org, about one album a
+second, and a release is taken only when most of the album's song titles are on it. What it
+finds fills the gaps in the app's library; a tag the file has always wins, and the files are
+not changed. Switch it off and what it found is forgotten.
 
 Any `.m3u` or `.m3u8` file inside a chosen folder becomes a playlist, in file order. Entries
 naming files that are not on the phone are skipped. Editing the file on a computer and
@@ -43,6 +52,11 @@ For any song, album or artist, local, streamed or from a server, hold it and cho
 name**. The new name is kept in the app and shown everywhere in it; the file and the server
 are left as they are. Leave the field empty to go back to the original. **File under** works
 the same way for an artist whose songs are not files on the phone.
+
+A song streamed from YouTube has a small cloud on its row, in every list and in the queue: it
+is not on the phone and plays only with a signal. One streamed from your music server has the
+server's mark instead. A downloaded song has a tick in a circle (one downloaded from your music
+server keeps the server's mark beside it); a file you put on the phone yourself has no mark.
 
 Hold a song and choose **Heart** to mark it; a small heart shows on its row, and a **Hearted**
 list heads Playlists, to play, shuffle or download. Hearts stay on the phone.
@@ -205,7 +219,8 @@ Your settings and local library stay on the phone, and so do your downloads, in
 Music/Music Box. The app goes online only for what you use: your own music server, at the
 address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
 search finds nothing there, and each station's own stream while it
-plays; api.zippopotam.us, only for a US or Canadian postal code typed into the radio search; and
+plays; api.zippopotam.us, only for a US or Canadian postal code typed into the radio search;
+musicbrainz.org, only with Fill in album details from MusicBrainz switched on; and
 YouTube and YouTube Music, to search, stream and download audio, to ask what plays next when
 Keep playing similar songs is on, and once to fetch again as AAC a song downloaded as Opus
 before 2.18.2. There are no ads, no analytics and no tracking SDKs. The same is said in the

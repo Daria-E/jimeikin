@@ -14,8 +14,10 @@ import kotlinx.coroutines.withContext
  * where it used to be split by each track's artist. 3: artists are keyed without their guests
  * (feat./ft.) and without a leading "The", so one artist is one id however a track credits them.
  * 4: a compilation with no Album Artist tag is filed under Various Artists, whole.
+ * 5: a song with no album in its tags takes its folder's name as its album, and placeholder
+ * tags ("Unknown Album", "<unknown>") count as no tag.
  */
-private const val LOCAL_ALBUM_KEY_VERSION = 4
+private const val LOCAL_ALBUM_KEY_VERSION = 5
 
 /**
  * Repository responsible for performing library-related data work against the
@@ -130,7 +132,13 @@ class LibraryRepository(
                         // it is deleted - a card that was slow to mount used to empty the
                         // whole library.
                         val hadUnreadableFolder = scannedAudio.unreadableTreeUris.isNotEmpty()
-                        val normalizedLocalEntities = scannedAudio.audio.map { it.song }
+                        // Gaps in the tags filled from an online lookup, when the reader asked for that.
+                        val albumGaps: AlbumGaps = if (app.settingsManager.getAlbumDetailsLookupSync()) {
+                            withContext(Dispatchers.IO) { AlbumDetailsLookup.gaps(app) }
+                        } else {
+                            NoAlbumGaps
+                        }
+                        val normalizedLocalEntities = scannedAudio.audio.map { albumGaps.fill(it.song) }
 
                         withContext(Dispatchers.IO) {
                             // Rows of their own, keyed as the download itself keys them; the
@@ -165,6 +173,7 @@ class LibraryRepository(
                                 // from its tracks, and taking it for a tag would cost every guest
                                 // on the record their own row.
                                 val effectiveAlbumArtist = explicit?.takeIf { it.isNotBlank() }
+                                    ?: entity.albumId?.let(albumGaps::albumArtist)
                                     ?: entity.albumId
                                         ?.takeUnless { it.startsWith(UNTAGGED_ALBUM_PREFIX) }
                                         ?.let { existingAlbumsMap[it]?.artist }
@@ -218,6 +227,7 @@ class LibraryRepository(
                                     val name = entity.album ?: return@mapNotNull null
 
                                     val artistName = wrapper.albumArtist?.takeIf { it.isNotBlank() }
+                                        ?: albumGaps.albumArtist(id)
                                         ?: mostCommonArtistByAlbumId[id]
                                         ?: existingAlbumsMap[id]?.artist
                                         ?: entity.artist

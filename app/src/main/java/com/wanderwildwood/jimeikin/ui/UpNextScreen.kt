@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
@@ -116,7 +115,7 @@ fun UpNextScreen(
                     onMoveDown = { onMove(at, at + 1) },
                     onRemove = { onRemove(at) },
                 )
-                if (at < lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+                if (at < lastIndex) DottedRule(start = 0.dp)
             }
 
             item(key = "save") {
@@ -176,12 +175,20 @@ private fun UpNextRow(
                     song.durationText?.takeIf { it.isNotBlank() },
                 ).joinToString(" • ")
             }
-            TextMMD(
-                text = subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            // A streamed song carries its cloud here as in every other list: the queue is
+            // where a song that needs a signal is about to be met without one.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                originOf(song.sourceType)?.let { origin ->
+                    OriginMark(origin)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                TextMMD(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
 
         if (isPlaying) {

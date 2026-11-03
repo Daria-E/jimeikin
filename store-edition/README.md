@@ -16,6 +16,7 @@ with the same key. It is offered only on the InkApps portal.
 Settings → **Add a folder**. Supported audio files are indexed into songs, albums, artists and
 playlists, and play offline. Artists are grouped by album artist where the files carry one.
 Any `.m3u` or `.m3u8` file inside a chosen folder becomes a playlist, in file order.
+Songs with no album in their tags are grouped by the folder they sit in.
 
 A song's tags can be changed from its long-press menu → **Edit details**, and a whole album's
 name and album artist from the pencil on its page; the change is written into the file, through
