@@ -16,6 +16,9 @@ with the same key. It is offered only on the InkApps portal.
 Settings → **Add a folder**. Supported audio files are indexed into songs, albums, artists and
 playlists, and play offline. Artists are grouped by album artist where the files carry one.
 Any `.m3u` or `.m3u8` file inside a chosen folder becomes a playlist, in file order.
+Songs with no album in their tags are grouped by the folder they sit in. Settings → **Fill in
+album details from MusicBrainz** (off to begin with) looks up albums whose tags leave gaps on
+musicbrainz.org and fills them in the app's library, never in the files.
 
 A song's tags can be changed from its long-press menu → **Edit details**, and a whole album's
 name and album artist from the pencil on its page; the change is written into the file, through
@@ -67,8 +70,9 @@ picker, which grants only that folder. The same list, with reasons, is in
 
 Your settings and library stay on the phone. The app goes online only for what you use: your
 own music server, at the address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
-search finds nothing there, and each station's own stream while it plays; and api.zippopotam.us, only for a US or Canadian postcode
-typed into the radio search. There are no ads, no analytics and no tracking. A music server's
+search finds nothing there, and each station's own stream while it plays; api.zippopotam.us, only for a US or Canadian postcode
+typed into the radio search; and musicbrainz.org, only with Fill in album details from
+MusicBrainz switched on. There are no ads, no analytics and no tracking. A music server's
 password is sealed with a key in the phone's keystore. The full policy is in
 [PRIVACY.md](PRIVACY.md); the same is said in the app, under **Privacy** and **Terms** in About.
 

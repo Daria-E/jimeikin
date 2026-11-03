@@ -26,7 +26,16 @@ and on the phone's own Music folder if not. Supported audio files are indexed in
 albums, artists and playlists, and play offline.
 
 Artists are grouped by album artist where the files carry one, so an album credited to a
-single artist stays a single artist however many guests appear on its tracks.
+single artist stays a single artist however many guests appear on its tracks. Songs with no
+album in their tags are grouped by the folder they sit in, and a "CD 2" folder joins its album
+as disc 2.
+
+Albums with gaps in their tags (no album artist, no year, no track numbers) can be filled in
+from MusicBrainz: Settings → **Fill in album details from MusicBrainz**, off to begin with.
+Each such album's title and artist are looked up once on musicbrainz.org, about one album a
+second, and a release is taken only when most of the album's song titles are on it. What it
+finds fills the gaps in the app's library; a tag the file has always wins, and the files are
+not changed. Switch it off and what it found is forgotten.
 
 Any `.m3u` or `.m3u8` file inside a chosen folder becomes a playlist, in file order. Entries
 naming files that are not on the phone are skipped. Editing the file on a computer and
@@ -205,7 +214,8 @@ Your settings and local library stay on the phone, and so do your downloads, in
 Music/Music Box. The app goes online only for what you use: your own music server, at the
 address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
 search finds nothing there, and each station's own stream while it
-plays; api.zippopotam.us, only for a US or Canadian postal code typed into the radio search; and
+plays; api.zippopotam.us, only for a US or Canadian postal code typed into the radio search;
+musicbrainz.org, only with Fill in album details from MusicBrainz switched on; and
 YouTube and YouTube Music, to search, stream and download audio, to ask what plays next when
 Keep playing similar songs is on, and once to fetch again as AAC a song downloaded as Opus
 before 2.18.2. There are no ads, no analytics and no tracking SDKs. The same is said in the

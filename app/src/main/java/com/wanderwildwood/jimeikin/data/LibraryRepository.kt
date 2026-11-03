@@ -132,7 +132,13 @@ class LibraryRepository(
                         // it is deleted - a card that was slow to mount used to empty the
                         // whole library.
                         val hadUnreadableFolder = scannedAudio.unreadableTreeUris.isNotEmpty()
-                        val normalizedLocalEntities = scannedAudio.audio.map { it.song }
+                        // Gaps in the tags filled from MusicBrainz, when the reader asked for that.
+                        val musicBrainz = if (app.settingsManager.getMusicBrainzLookupSync()) {
+                            withContext(Dispatchers.IO) { MusicBrainz.matches(app) }
+                        } else {
+                            MusicBrainzMatches.EMPTY
+                        }
+                        val normalizedLocalEntities = scannedAudio.audio.map { musicBrainz.fill(it.song) }
 
                         withContext(Dispatchers.IO) {
                             // Rows of their own, keyed as the download itself keys them; the
@@ -167,6 +173,7 @@ class LibraryRepository(
                                 // from its tracks, and taking it for a tag would cost every guest
                                 // on the record their own row.
                                 val effectiveAlbumArtist = explicit?.takeIf { it.isNotBlank() }
+                                    ?: entity.albumId?.let(musicBrainz::albumArtist)
                                     ?: entity.albumId
                                         ?.takeUnless { it.startsWith(UNTAGGED_ALBUM_PREFIX) }
                                         ?.let { existingAlbumsMap[it]?.artist }
@@ -220,6 +227,7 @@ class LibraryRepository(
                                     val name = entity.album ?: return@mapNotNull null
 
                                     val artistName = wrapper.albumArtist?.takeIf { it.isNotBlank() }
+                                        ?: musicBrainz.albumArtist(id)
                                         ?: mostCommonArtistByAlbumId[id]
                                         ?: existingAlbumsMap[id]?.artist
                                         ?: entity.artist

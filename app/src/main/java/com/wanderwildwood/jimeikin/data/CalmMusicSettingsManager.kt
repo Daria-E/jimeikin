@@ -174,6 +174,13 @@ class CalmMusicSettingsManager(context: Context) {
         prefs.edit { putBoolean(KEY_PLAYING_ON_LOCK_SCREEN, enabled) }
     }
 
+    /** Album details from MusicBrainz for albums whose tags leave gaps; off to begin with. */
+    fun getMusicBrainzLookupSync(): Boolean = prefs.getBoolean(KEY_MUSICBRAINZ_LOOKUP, false)
+
+    fun setMusicBrainzLookup(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_MUSICBRAINZ_LOOKUP, enabled) }
+    }
+
     /**
      * Which of the five places along the bottom was last open. The app always started on
      * Songs, so somebody who lives in Albums or Playlists paid a tap for it every time they
@@ -208,5 +215,6 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_LOCAL_ALBUM_KEY_VERSION = "local_album_key_version"
         private const val KEY_LAST_LIBRARY_TAB = "last_library_tab"
         private const val KEY_PLAYING_ON_LOCK_SCREEN = "playing_on_lock_screen"
+        private const val KEY_MUSICBRAINZ_LOOKUP = "musicbrainz_lookup"
     }
 }

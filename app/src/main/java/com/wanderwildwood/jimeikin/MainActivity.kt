@@ -635,6 +635,8 @@ fun CalmMusic(
 
     suspend fun resyncLocalLibrary(
         folders: Set<String>,
+        /** False for the rescan that takes in what a MusicBrainz pass found. */
+        lookUp: Boolean = true,
     ) {
         if (isRescanningLocal) return
         isRescanningLocal = true
@@ -671,6 +673,17 @@ fun CalmMusic(
         } finally {
             isRescanningLocal = false
             isIngestingLocal = false
+        }
+        // Albums whose tags leave gaps are looked up afterwards, when the reader has turned
+        // that on; what is found is taken in by one more scan. Albums already asked about
+        // are not asked again, so most scans send nothing.
+        if (lookUp && folders.isNotEmpty() && settingsManager.getMusicBrainzLookupSync()) {
+            libraryScope.launch {
+                val found = com.wanderwildwood.jimeikin.data.MusicBrainz.lookUp(appContext) {
+                    settingsManager.getMusicBrainzLookupSync()
+                }
+                if (found > 0 && settingsManager.getMusicBrainzLookupSync()) resyncLocalLibrary(folders, lookUp = false)
+            }
         }
     }
 
