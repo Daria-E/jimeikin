@@ -383,7 +383,7 @@ private fun RowList(
                     TextMMD(row.subtitle, style = MaterialTheme.typography.labelSmall, maxLines = 1)
                 }
             }
-            if (index != rows.lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+            if (index != rows.lastIndex) DottedRule(start = 0.dp)
         }
     }
 }
@@ -418,7 +418,7 @@ private fun ChannelList(
                 onPlay = { onPlay(channel) },
                 onToggleFavourite = { onToggleFavourite(channel) },
             )
-            if (index != channels.lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+            if (index != channels.lastIndex) DottedRule(start = 0.dp)
         }
     }
 }
@@ -451,7 +451,7 @@ private fun RadioHome(
                 TextMMD(stringResource(R.string.player_radio_by_place), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                 TextMMD(stringResource(R.string.player_radio_by_place_subtitle), style = MaterialTheme.typography.labelSmall)
             }
-            HorizontalDividerMMD(thickness = 1.dp)
+            DottedRule(start = 0.dp)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -462,7 +462,7 @@ private fun RadioHome(
                 TextMMD(stringResource(R.string.player_radio_by_address_subtitle), style = MaterialTheme.typography.labelSmall)
             }
             if (hasTuner) {
-                HorizontalDividerMMD(thickness = 1.dp)
+                DottedRule(start = 0.dp)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -500,7 +500,7 @@ private fun RadioHome(
                 onPlay = { onPlayStation(station) },
                 onToggleFavourite = { onForgetStation(station) },
             )
-            if (index != keptStations.lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+            if (index != keptStations.lastIndex) DottedRule(start = 0.dp)
         }
     }
 }
@@ -668,7 +668,7 @@ private fun RadioSearch(
                         maxLines = 1,
                     )
                 }
-                if (index != nearby.lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+                if (index != nearby.lastIndex) DottedRule(start = 0.dp)
             }
             return@PagedColumnMMD
         }
@@ -689,7 +689,7 @@ private fun RadioSearch(
                     onPlay = { onPlay(channel) },
                     onToggleFavourite = { onToggleFavourite(channel) },
                 )
-                HorizontalDividerMMD(thickness = 1.dp)
+                DottedRule(start = 0.dp)
             }
         }
 
@@ -709,7 +709,7 @@ private fun RadioSearch(
                     TextMMD(place.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1)
                     TextMMD(place.country, style = MaterialTheme.typography.labelSmall, maxLines = 1)
                 }
-                if (index != results.places.lastIndex) HorizontalDividerMMD(thickness = 1.dp)
+                if (index != results.places.lastIndex) DottedRule(start = 0.dp)
             }
         }
 
