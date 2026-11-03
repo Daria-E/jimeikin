@@ -22,7 +22,7 @@ import com.wanderwildwood.jimeikin.data.MusicBrainz
 internal fun LazyListScope.albumDetailsSwitch(onRescan: () -> Unit) {
     item {
         // Album details from MusicBrainz, for albums on the phone whose tags leave gaps.
-        // Off to begin with; the note says what is sent and where.
+        // Off to begin with; what is sent and where is in About's privacy lines.
         val context = LocalContext.current
         val settings = (context.applicationContext as com.wanderwildwood.jimeikin.CalmMusic).settingsManager
         var lookUp by remember { mutableStateOf(settings.getAlbumDetailsLookupSync()) }
@@ -42,7 +42,6 @@ internal fun LazyListScope.albumDetailsSwitch(onRescan: () -> Unit) {
                     }
                     onRescan()
                 },
-                note = stringResource(R.string.settings_musicbrainz_note),
             )
             val line = when {
                 !lookUp -> null
