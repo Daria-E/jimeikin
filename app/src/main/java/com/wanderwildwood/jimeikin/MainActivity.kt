@@ -47,6 +47,8 @@ import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -2137,6 +2139,13 @@ fun CalmMusic(
                 navController = navController,
                 startDestination = startTabRoute,
                 modifier = Modifier.weight(1f),
+                // No crossfade: Navigation's own is 700 ms, so the title above changed at once
+                // and the list under it came in some frames later. On e-ink a fade is only a
+                // smear; the page now changes with its title.
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None },
             ) {
                 playlistsNavGraph()
 
