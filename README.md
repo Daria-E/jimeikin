@@ -55,8 +55,8 @@ the same way for an artist whose songs are not files on the phone.
 
 A song streamed from YouTube has a small cloud on its row, in every list and in the queue: it
 is not on the phone and plays only with a signal. One streamed from your music server has the
-server's mark instead. A downloaded song has a tick in a circle; a file you put on the phone
-yourself has no mark.
+server's mark instead. A downloaded song has a tick in a circle (one downloaded from your music
+server keeps the server's mark beside it); a file you put on the phone yourself has no mark.
 
 Hold a song and choose **Heart** to mark it; a small heart shows on its row, and a **Hearted**
 list heads Playlists, to play, shuffle or download. Hearts stay on the phone.

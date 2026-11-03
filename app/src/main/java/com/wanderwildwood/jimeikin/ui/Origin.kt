@@ -23,7 +23,8 @@ import com.wanderwildwood.jimeikin.R
  * said about it. A song streamed online carries a plain cloud: it is not on this phone and
  * plays only with a signal. One streamed from the reader's own music server carries the
  * server's mark instead, as it is theirs, at home. A download carries the
- * available-offline tick instead, and no cloud, as it plays anywhere; it is still worth
+ * available-offline tick instead, and no cloud, as it plays anywhere (one from the music
+ * server keeps the server's mark beside the tick); it is still worth
  * telling apart from a file the reader put there themselves, because it is the one that can
  * be removed and fetched again. Which place it is from is said in words, to a screen reader.
  */
@@ -62,15 +63,22 @@ fun OriginMark(origin: Origin) {
             Origin.ONLINE_SEARCH_DOWNLOAD -> R.string.origin_online_download
         },
     )
-    Icon(
-        imageVector = when (origin) {
-            Origin.SERVER -> Icons.Dns
-            Origin.ONLINE_SEARCH -> Icons.Cloud
-            else -> Icons.OfflinePin
-        },
-        contentDescription = description,
-        modifier = Modifier.size(16.dp),
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        // A song downloaded from the music server keeps the server's mark beside the tick.
+        if (origin == Origin.SERVER_DOWNLOAD) {
+            Icon(imageVector = Icons.OfflinePin, contentDescription = null, modifier = Modifier.size(16.dp))
+            Spacer(modifier = Modifier.width(2.dp))
+        }
+        Icon(
+            imageVector = when (origin) {
+                Origin.SERVER, Origin.SERVER_DOWNLOAD -> Icons.Dns
+                Origin.ONLINE_SEARCH -> Icons.Cloud
+                Origin.ONLINE_SEARCH_DOWNLOAD -> Icons.OfflinePin
+            },
+            contentDescription = description,
+            modifier = Modifier.size(16.dp),
+        )
+    }
 }
 
 /** A row's second line, with the marks before it when there are any: a heart, then where it is from. */
