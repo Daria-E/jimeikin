@@ -406,7 +406,7 @@
     <string name="player_radio_no_favorites">No favorite stations yet</string>
     <string name="player_radio_favorites">Favorite stations</string>
     <string name="player_radio_favorites_hint">Hold a station anywhere in this app to put it here.</string>
-    <string name="player_radio_search_label">Station, town or postcode</string>
+    <string name="player_radio_search_label">Station, town or postal code</string>
     <string name="player_radio_searching">Looking…</string>
     <!-- Radio search: heading over the towns nearest a postcode; %1$s is what was typed -->
     <string name="player_radio_near">Near %1$s</string>

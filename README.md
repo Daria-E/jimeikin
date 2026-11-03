@@ -144,7 +144,7 @@ Two radios, which are not the same thing.
 
 **Stations** are on the internet, browsed by place — country, then town, then what is on the
 air there — or found with the magnifying glass, which on this screen looks for station names,
-towns, and postcodes. A postcode is answered with the towns nearest it, which is what somebody
+towns, and postal codes. A postal code is answered with the towns nearest it, which is what somebody
 typing one is actually asking. Both lists take a filter as well, because France alone has more
 than eighteen hundred stations.
 
@@ -155,7 +155,7 @@ that site is worth browsing: not by searching for a station you already know, bu
 somewhere. Keep one and it sits at the top of the screen. A kept station stores the address of
 the stream itself, so it goes on playing whatever becomes of radio.garden.
 A search that finds nothing on radio.garden is tried on Radio Browser, a community
-directory, by name, then tag, then country; a postcode is answered by radio.garden alone.
+directory, by name, then tag, then country; a postal code is answered by radio.garden alone.
 
 **FM** is the phone's own tuner, if it has one, and the row opens it. The tuner shows the
 frequency, holds the presets and scans; there is nothing to gain from a worse copy of it here.
@@ -205,7 +205,7 @@ Your settings and local library stay on the phone, and so do your downloads, in
 Music/Music Box. The app goes online only for what you use: your own music server, at the
 address you type in; radio.garden, to browse stations, and Radio Browser (radio-browser.info) when a
 search finds nothing there, and each station's own stream while it
-plays; api.zippopotam.us, only for a US or Canadian postcode typed into the radio search; and
+plays; api.zippopotam.us, only for a US or Canadian postal code typed into the radio search; and
 YouTube and YouTube Music, to search, stream and download audio, to ask what plays next when
 Keep playing similar songs is on, and once to fetch again as AAC a song downloaded as Opus
 before 2.18.2. There are no ads, no analytics and no tracking SDKs. The same is said in the
