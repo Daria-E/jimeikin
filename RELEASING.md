@@ -35,7 +35,7 @@ Changing the K version: `versionName` and `versionCode` in the `store` flavour o
 Any string that says "Music Box" in `app/src/main/res` needs a K twin: run `tools/brand-k.py`
 (`MusicBoxKTest` fails otherwise). Store texts for K are in `store-edition/`.
 
-## Where Music Box K lives (David, 30 Oct 2026)
+## Where Music Box K lives (decided 30 Oct 2026)
 Music Box K builds are published only to the PRIVATE repository wanderwildwood/jimeikin-k as release
 assets (tag vX.Y.Z, `jimeikin-k-X.Y.Z.apk`, its `.sha256` and `portal-notes.md`), and from there to the
 InkApps portal. Never on the public jimeikin releases page. `tools/package-k.sh` builds the folder;
