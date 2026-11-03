@@ -4,6 +4,9 @@
     <string name="main_title_online_sign_in">Connecter un compte YouTube</string>
     <!-- Search -->
     <string name="main_search_error">La recherche n’a pas atteint YouTube</string>
+    <string name="link_playlist_unsupported">Music Box ne peut pas ouvrir une liste de lecture YouTube depuis un lien. Ouvrez plutôt un titre de cette liste.</string>
+    <string name="link_playlist_one_song">Lecture du titre de ce lien ; les listes de lecture ne s\'ouvrent pas depuis un lien.</string>
+    <string name="link_untitled">Titre YouTube</string>
     <string name="main_youtube_cannot_play">YouTube indique que cette piste ne peut pas être lue. Elle sera ignorée.</string>
     <string name="player_downloads_online">De YouTube</string>
     <!-- Settings screen: the rows below the folders -->

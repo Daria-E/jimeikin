@@ -231,8 +231,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun takeOpenedFile(intent: Intent?) {
-        if (intent?.action != Intent.ACTION_VIEW) return
-        intent.data?.let { opened.value = it }
+        when (intent?.action) {
+            Intent.ACTION_VIEW -> intent.data?.let { opened.value = it }
+            // Shared text holding a web address (the full edition's manifest is the only one
+            // that offers Music Box for sharing text).
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+                ?.let { Regex("https?://\\S+", RegexOption.IGNORE_CASE).find(it)?.value }
+                ?.let { opened.value = Uri.parse(it) }
+        }
     }
 }
 
@@ -1328,6 +1334,33 @@ fun CalmMusic(
         // key, which cancels the effect, and would cancel the reading with it.
         fileToOpen = null
         libraryScope.launch {
+            // A web address: the catalogue plays it or says why it cannot (never a crash).
+            if (uri.scheme == "http" || uri.scheme == "https") {
+                val outcome = runCatching { app.online.openLink(uri.toString()) }.getOrNull()
+                when (outcome) {
+                    is LinkOutcome.Play -> {
+                        startPlaybackFromQueue(queue = listOf(outcome.song), startIndex = 0)
+                        if (outcome.note != 0) {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(outcome.note),
+                                withDismissAction = false,
+                                duration = SnackbarDurationMMD.Short,
+                            )
+                        }
+                    }
+                    is LinkOutcome.Cannot -> snackbarHostState.showSnackbar(
+                        message = context.getString(outcome.message),
+                        withDismissAction = false,
+                        duration = SnackbarDurationMMD.Short,
+                    )
+                    null -> snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.opened_file_unreadable),
+                        withDismissAction = false,
+                        duration = SnackbarDurationMMD.Short,
+                    )
+                }
+                return@launch
+            }
             val song = withContext(Dispatchers.IO) {
                 if (SongLink.isLink(uri)) SongLink.read(appContext, uri) else OpenedFile.read(appContext, uri)
             }

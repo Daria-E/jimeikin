@@ -213,6 +213,23 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
         return SimilarSongs.pick(found, queue(), copies.recorded.value, seedId, count).map { it.toSong(trackNumber = null) }
     }
 
+    override suspend fun openLink(text: String): LinkOutcome? {
+        val link = YouTubeLink.parse(YouTubeLink.addressIn(text) ?: text.trim()) ?: return null
+        val videoId = link.videoId
+            ?: return LinkOutcome.Cannot(R.string.link_playlist_unsupported)
+        // The song is the first thing YouTube lists after itself; that gives its title. If the
+        // lookup fails the song still plays, under a plain title.
+        val found = runCatching { innertube.getUpNext(videoId).firstOrNull { it.videoId == videoId } }.getOrNull()
+        val song = found?.toSong(trackNumber = null) ?: SongUiModel(
+            id = videoId,
+            title = app.getString(R.string.link_untitled),
+            artist = "",
+            sourceType = "ONLINE_SEARCH",
+            audioUri = videoId,
+        )
+        return LinkOutcome.Play(song, if (link.playlistId != null) R.string.link_playlist_one_song else 0)
+    }
+
     override fun precacheSearch(ids: List<String>) = precache.precacheSearchResults(ids)
     override fun clearSearchWindow() = precache.clearSearchWindow()
     override fun updateQueueWindow(ids: List<String>) = precache.updateQueueWindow(ids)

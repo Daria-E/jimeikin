@@ -4,6 +4,9 @@
     <string name="main_title_online_sign_in">Ein YouTube-Konto verbinden</string>
     <!-- Search -->
     <string name="main_search_error">Die Suche hat YouTube nicht erreicht</string>
+    <string name="link_playlist_unsupported">Music Box kann keine YouTube-Playlist aus einem Link öffnen. Öffne stattdessen einen Titel daraus.</string>
+    <string name="link_playlist_one_song">Der Titel aus diesem Link wird gespielt; Playlists werden nicht aus Links geöffnet.</string>
+    <string name="link_untitled">YouTube-Titel</string>
     <string name="main_youtube_cannot_play">YouTube meldet, dass dieser Titel nicht abgespielt werden kann. Wird übersprungen.</string>
     <string name="player_downloads_online">Von YouTube</string>
     <!-- Downloads: a song already on the phone, fetched again from YouTube as AAC so every player can play it -->

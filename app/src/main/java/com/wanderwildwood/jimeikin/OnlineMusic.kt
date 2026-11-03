@@ -65,6 +65,13 @@ interface OnlineMusic {
     /** Up to [count] songs to play after [seedId] that are not in the queue (as it is once they are found). */
     suspend fun similar(seedId: String, queue: () -> List<SongUiModel>, count: Int): List<SongUiModel>
 
+    /**
+     * A web address (or shared text holding one) another app has handed over, for the catalogue
+     * to play. Null when it is none of the catalogue's; otherwise the song to play, with a plain
+     * note where only part of the link could be used, or the words for why it cannot be played.
+     */
+    suspend fun openLink(text: String): LinkOutcome?
+
     fun precacheSearch(ids: List<String>)
     fun clearSearchWindow()
     fun updateQueueWindow(ids: List<String>)
@@ -118,3 +125,10 @@ data class OnlineArtistPage(
     val albums: List<AlbumUiModel>,
     val singles: List<AlbumUiModel>,
 )
+
+/** What a link handed over by another app came to; see [OnlineMusic.openLink]. */
+sealed interface LinkOutcome {
+    /** [note], when not 0, is a string resource said once the song starts. */
+    data class Play(val song: SongUiModel, val note: Int = 0) : LinkOutcome
+    data class Cannot(val message: Int) : LinkOutcome
+}

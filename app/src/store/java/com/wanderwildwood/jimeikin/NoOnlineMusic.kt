@@ -44,6 +44,7 @@ object NoOnlineMusic : OnlineMusic {
     override fun similarSeed(seed: SongUiModel): String? = null
     override suspend fun similar(seedId: String, queue: () -> List<SongUiModel>, count: Int): List<SongUiModel> = emptyList()
 
+    override suspend fun openLink(text: String): LinkOutcome? = LinkOutcome.Cannot(R.string.main_not_in_this_edition)
     override fun precacheSearch(ids: List<String>) = Unit
     override fun clearSearchWindow() = Unit
     override fun updateQueueWindow(ids: List<String>) = Unit
