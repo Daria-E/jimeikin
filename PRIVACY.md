@@ -65,7 +65,7 @@ Hosts contacted:
 - **radio.garden** (`radio.garden`): when you browse or play a radio station.
 - **Radio Browser** (`de1.api.radio-browser.info`, `de2.api.radio-browser.info`, `all.api.radio-browser.info`): only when a radio search finds nothing on radio.garden, or radio.garden cannot be reached. What you typed in the search is sent, with the app's name and version. Nothing is sent about what you play.
 - **A station you add by its address**: when you add it (it is played once, silently, to check it) and whenever you play it. Its audio comes from the broadcaster's own stream server.
-- **api.zippopotam.us**: when you type a US ZIP code or a Canadian postcode into the radio search, to turn it into a place. Only what you typed is sent.
+- **api.zippopotam.us**: when you type a US ZIP code or a Canadian postal code into the radio search, to turn it into a place. Only what you typed is sent.
 - **Your own music server**: whichever Navidrome or other Subsonic server you configure.
 
 On the phone: with Glance (`com.wanderwildwood.hitome`, the author's lock-screen app) installed, and Settings, "Show what is playing in Glance", turned on (it is off to begin with), the song playing is handed to Glance, and only to Glance, to show on the lock screen, where anyone holding the phone can read it.
@@ -90,4 +90,4 @@ The app is suitable for all ages and does not knowingly collect anything from an
 
 ## Changes
 
-If a later version changes what the app stores or which hosts it contacts, this policy is updated in the same release and the change is described in the release notes. The source is public, so any claim here can be checked against the code: <https://github.com/wanderwildwood/jimeikin>. GitHub reports its licence as GPL-3.0.
+If a later version changes what the app stores or which hosts it contacts, this policy is updated in the same release and the change is described in the release notes. The source is public, so any claim here can be checked against the code: <https://github.com/wanderwildwood/jimeikin>. GitHub reports its license as GPL-3.0.
