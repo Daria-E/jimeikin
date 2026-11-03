@@ -20,8 +20,9 @@ import com.wanderwildwood.jimeikin.R
  * Where something came from, when that was not a file put on the phone.
  *
  * A file in a chosen folder carries no mark - it is most of any library and needs nothing
- * said about it. Anything that streams, from the music server or online, carries a plain
- * cloud: it is not on this phone and plays only with a signal. A download carries the
+ * said about it. A song streamed online carries a plain cloud: it is not on this phone and
+ * plays only with a signal. One streamed from the reader's own music server carries the
+ * server's mark instead, as it is theirs, at home. A download carries the
  * available-offline tick instead, and no cloud, as it plays anywhere; it is still worth
  * telling apart from a file the reader put there themselves, because it is the one that can
  * be removed and fetched again. Which place it is from is said in words, to a screen reader.
@@ -62,7 +63,11 @@ fun OriginMark(origin: Origin) {
         },
     )
     Icon(
-        imageVector = if (origin.streams) Icons.Cloud else Icons.OfflinePin,
+        imageVector = when (origin) {
+            Origin.SERVER -> Icons.Dns
+            Origin.ONLINE_SEARCH -> Icons.Cloud
+            else -> Icons.OfflinePin
+        },
         contentDescription = description,
         modifier = Modifier.size(16.dp),
     )

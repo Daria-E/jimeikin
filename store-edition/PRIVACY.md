@@ -1,6 +1,6 @@
 # Music Box K — Privacy Policy
 
-Version 1.0.0. Last reviewed 3 November 2026.
+Version 1.0.0. Last reviewed 30 October 2026.
 
 ## The short version
 
@@ -62,7 +62,6 @@ Hosts contacted:
 - **A station you add by its address**: when you add it (it is played once, silently, to check it) and whenever you play it. Its audio comes from the broadcaster's own stream server.
 - **api.zippopotam.us**: when you type a US ZIP code or a Canadian postcode into the radio search, to turn it into a place. Only what you typed is sent.
 - **Your own music server**: whichever Navidrome or other Subsonic server you configure.
-- **MusicBrainz** (`musicbrainz.org`): only if you turn on Settings, "Fill in album details from MusicBrainz" (it is off to begin with), and then only for albums on the phone whose tags have no album artist, year or track numbers. For each such album, once, its title and its artist (or, for an album of many artists, its number of tracks) are sent in a search, and then the identifier of a release that may be it, with the app's name and version; no more than one request a second. Nothing about what you play is sent, and nothing is sent again for that album unless its songs change. What comes back fills the gaps in the app's own library; your files are not changed. Turning the switch off deletes what was found. MusicBrainz is run by the MetaBrainz Foundation, an independent controller under its own policy.
 
 On the phone: with Glance (`com.wanderwildwood.hitome`, the author's lock-screen app) installed, and Settings, "Show what is playing in Glance", turned on (it is off to begin with), the song playing is handed to Glance, and only to Glance, to show on the lock screen, where anyone holding the phone can read it.
 
