@@ -295,6 +295,7 @@ object LocalMusicScanner {
                 lastModified = candidate.lastModified,
                 fileSize = candidate.fileSize,
                 existing = existing,
+                folderAlbum = folderAlbumOf(candidate.relativePath),
             )
 
             result.add(scanned)
@@ -315,12 +316,14 @@ object LocalMusicScanner {
         lastModified: Long,
         fileSize: Long,
         existing: SongEntity? = null,
+        /** The album its folder names, for a file whose tags name none; see [folderAlbumOf]. */
+        folderAlbum: FolderAlbum? = null,
     ): ScannedLocalAudio {
         val meta = extractMetadata(context, uri, name)
         val titleFromName = name.substringBeforeLast('.', name)
 
-        val existingArtist = existing?.artist?.takeIf { it.isNotBlank() }
-        val existingAlbum = existing?.album?.takeIf { it.isNotBlank() }
+        val existingArtist = existing?.artist?.takeIf { it.isNotBlank() && !isPlaceholderTag(it) }
+        val existingAlbum = existing?.album?.takeIf { it.isNotBlank() && !isPlaceholderTag(it) }
         val existingArtistId = existing?.artistId
         val existingAlbumId = existing?.albumId
 
@@ -337,8 +340,17 @@ object LocalMusicScanner {
 
         val albumArtistIdComponent = explicitAlbumArtist?.let(ArtistNames::artistKey)
 
-        val albumNameDisplay = meta.album?.trim()?.takeIf { it.isNotBlank() } ?: existingAlbum
+        val taggedAlbum = meta.album?.trim()?.takeIf { it.isNotBlank() } ?: existingAlbum
+        // No album in the tags: the folder it sits in names one, as most people file music
+        // album by album. Without this, such songs were in Songs and nowhere else.
+        // A folder named for the artist ("Mara Quill/Lantern.mp3") is where their loose songs
+        // are kept, not an album of theirs.
+        val fromFolder = taggedAlbum == null && folderAlbum != null &&
+            ArtistNames.artistKey(folderAlbum.name) != trackArtistIdComponent
+        val albumNameDisplay = taggedAlbum ?: folderAlbum?.name
         val albumNameIdComponent = albumNameDisplay?.normalizeForIdComponent()
+        // "Album/CD 2/track.mp3" belongs with "Album/CD 1": keyed by the album's folder.
+        val albumFolder = folderOf(uri).let { if (fromFolder && folderAlbum?.disc != null) it.substringBeforeLast('/', it) else it }
 
         // An album tagged with who it is by is keyed by that. One that is not used to be keyed
         // by each track's own artist, so a record with a guest on two songs became three
@@ -349,7 +361,7 @@ object LocalMusicScanner {
         val albumId = when {
             albumNameIdComponent == null -> existingAlbumId
             albumArtistIdComponent != null -> "LOCAL_FILE:${albumArtistIdComponent}:${albumNameIdComponent}"
-            else -> "$UNTAGGED_ALBUM_PREFIX${folderOf(uri)}:${albumNameIdComponent}"
+            else -> "$UNTAGGED_ALBUM_PREFIX${albumFolder}:${albumNameIdComponent}"
         }
 
         val uriString = uri.toString()
@@ -359,7 +371,7 @@ object LocalMusicScanner {
             artist = trackArtistDisplay,
             album = albumNameDisplay,
             albumId = albumId,
-            discNumber = meta.discNumber ?: existing?.discNumber,
+            discNumber = meta.discNumber ?: existing?.discNumber ?: folderAlbum?.disc?.takeIf { fromFolder },
             trackNumber = meta.trackNumber ?: existing?.trackNumber,
             durationMillis = meta.durationMillis ?: existing?.durationMillis,
             sourceType = "LOCAL_FILE",
@@ -404,9 +416,9 @@ object LocalMusicScanner {
 
             LocalMetadata(
                 title = rawTitle.normalizeTagString(),
-                artist = rawArtist.normalizeTagString(),
-                albumArtist = rawAlbumArtist.normalizeTagString(),
-                album = rawAlbum.normalizeTagString(),
+                artist = rawArtist.normalizeTagString().withoutPlaceholder(),
+                albumArtist = rawAlbumArtist.normalizeTagString().withoutPlaceholder(),
+                album = rawAlbum.normalizeTagString().withoutPlaceholder(),
                 discNumber = discStr?.substringBefore('/')?.trim()?.toIntOrNull(),
                 trackNumber = trackStr?.substringBefore('/')?.trim()?.toIntOrNull(),
                 durationMillis = durationStr?.toLongOrNull(),
@@ -437,15 +449,15 @@ object LocalMusicScanner {
                             runCatching { tag.getFirst(FieldKey.IS_COMPILATION) }.getOrNull(),
                         )
 
-                        if (!deepAlbumArtist.isNullOrBlank()) {
+                        if (!deepAlbumArtist.isNullOrBlank() && !isPlaceholderTag(deepAlbumArtist)) {
                             meta = meta.copy(albumArtist = deepAlbumArtist.normalizeTagString())
                         }
 
                         if (meta.artist.isNullOrBlank()) {
-                            meta = meta.copy(artist = tag.getFirst(FieldKey.ARTIST).normalizeTagString())
+                            meta = meta.copy(artist = tag.getFirst(FieldKey.ARTIST).normalizeTagString().withoutPlaceholder())
                         }
                         if (meta.album.isNullOrBlank()) {
-                            meta = meta.copy(album = tag.getFirst(FieldKey.ALBUM).normalizeTagString())
+                            meta = meta.copy(album = tag.getFirst(FieldKey.ALBUM).normalizeTagString().withoutPlaceholder())
                         }
                     }
                 } catch (_: Exception) {
@@ -543,3 +555,44 @@ fun albumArtistOrCompilation(albumArtist: String?, compilationFlag: String?): St
     val flag = compilationFlag?.trim()?.lowercase() ?: return albumArtist
     return if (flag == "1" || flag == "true" || flag == "yes") COMPILATION_ARTIST else albumArtist
 }
+
+/**
+ * A name a ripper or a phone writes when it knows none: "Unknown Album", "<unknown>". Taken as
+ * a tag, it filed every such song on the card as one album by one artist.
+ */
+fun isPlaceholderTag(value: String): Boolean = value.trim().lowercase() in PLACEHOLDER_TAGS
+
+private val PLACEHOLDER_TAGS = setOf(
+    "<unknown>", "unknown", "unknown album", "unknown artist", "[unknown]", "(unknown)",
+    "unknown album artist", "no album", "no artist",
+)
+
+private fun String?.withoutPlaceholder(): String? = this?.takeUnless { isPlaceholderTag(it) }
+
+/** The album a file's folder names, and the disc, when the folder is one disc of it. */
+data class FolderAlbum(val name: String, val disc: Int?)
+
+/**
+ * The album a folder names, for a file with no album in its tags, from its path inside the
+ * chosen folder ("Mara Quill/Glass Orchard/03 Lantern.flac"). A file at the top of the chosen
+ * folder has no album folder. A disc folder ("CD 2", "Disc 1") is the album above it, with
+ * that disc number. A folder whose name says only that it holds music ("Music", "Downloads")
+ * names no album.
+ */
+fun folderAlbumOf(relativePath: String): FolderAlbum? {
+    val dirs = relativePath.split('/').dropLast(1).map { it.trim() }.filter { it.isNotEmpty() }
+    if (dirs.isEmpty()) return null
+    val disc = DISC_FOLDER.matchEntire(dirs.last())?.groupValues?.get(1)?.toIntOrNull()
+    val name = if (disc != null) dirs.getOrNull(dirs.size - 2) ?: return null else dirs.last()
+    if (name.lowercase() in GENERIC_FOLDERS || DISC_FOLDER.matches(name)) return null
+    return FolderAlbum(name, disc)
+}
+
+private val DISC_FOLDER = Regex("""(?i)(?:cd|disc|disk)\s*[-_.]?\s*(\d{1,2})""")
+
+private val GENERIC_FOLDERS = setOf(
+    "music", "musik", "musique", "música", "musica", "audio", "songs", "mp3", "mp3s", "flac",
+    "download", "downloads", "media", "sounds", "ringtones", "notifications", "alarms",
+    "recordings", "podcasts", "audiobooks", "music box", "music box k", "various", "misc",
+    "unknown", "unknown album", "unknown artist", "new folder",
+)

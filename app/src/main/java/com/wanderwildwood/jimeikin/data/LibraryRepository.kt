@@ -14,8 +14,10 @@ import kotlinx.coroutines.withContext
  * where it used to be split by each track's artist. 3: artists are keyed without their guests
  * (feat./ft.) and without a leading "The", so one artist is one id however a track credits them.
  * 4: a compilation with no Album Artist tag is filed under Various Artists, whole.
+ * 5: a song with no album in its tags takes its folder's name as its album, and placeholder
+ * tags ("Unknown Album", "<unknown>") count as no tag.
  */
-private const val LOCAL_ALBUM_KEY_VERSION = 4
+private const val LOCAL_ALBUM_KEY_VERSION = 5
 
 /**
  * Repository responsible for performing library-related data work against the
