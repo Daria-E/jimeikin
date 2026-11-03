@@ -6,8 +6,12 @@
     <string name="main_search_error">The search did not reach YouTube</string>
     <string name="main_youtube_cannot_play">YouTube reported this track can\'t be played. Skipping.</string>
     <!-- A YouTube link from another app -->
-    <string name="link_playlist_unsupported">Music Box can\'t open a YouTube playlist from a link. Open a song from it instead.</string>
-    <string name="link_playlist_one_song">Playing the song from that link; playlists are not opened from links.</string>
+    <string name="link_playlist_unreadable">Music Box could not read that YouTube playlist. It may be private, or empty.</string>
+    <string name="link_playlist_one_song">Playing the song from that link; its playlist could not be read.</string>
+    <plurals name="link_playlist_queued">
+        <item quantity="one">%1$d more song from the playlist is in the queue.</item>
+        <item quantity="other">%1$d more songs from the playlist are in the queue.</item>
+    </plurals>
     <string name="link_untitled">YouTube song</string>
     <string name="player_downloads_online">From YouTube</string>
     <!-- Downloads: a song already on the phone, fetched again from YouTube as AAC so every player can play it -->

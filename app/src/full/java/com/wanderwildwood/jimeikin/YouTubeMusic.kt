@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
+import org.schabi.newpipe.extractor.Page
+import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.playlist.PlaylistInfo
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -216,7 +220,25 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
     override suspend fun openLink(text: String): LinkOutcome? {
         val link = YouTubeLink.parse(YouTubeLink.addressIn(text) ?: text.trim()) ?: return null
         val videoId = link.videoId
-            ?: return LinkOutcome.Cannot(R.string.link_playlist_unsupported)
+        val address = YouTubePlaylist.address(link)
+
+        if (videoId == null) {
+            // A playlist alone: its first page plays at once, the rest of it follows.
+            val list = address ?: return null
+            val first = runCatching { firstPlaylistPage(list) }.getOrNull()
+                ?: return LinkOutcome.Cannot(R.string.link_playlist_unreadable)
+            val songs = YouTubePlaylist.rest(null, first.first) { it.id }
+            if (songs.isEmpty()) return LinkOutcome.Cannot(R.string.link_playlist_unreadable)
+            val next = first.second
+            val more: (suspend () -> LinkMore)? = next?.let { page ->
+                {
+                    val rest = morePlaylistPages(list, page, songs.map { it.id }, YouTubePlaylist.MAX_SONGS - songs.size)
+                    LinkMore(rest, queuedMessage(rest.size))
+                }
+            }
+            return LinkOutcome.Play(songs, more = more)
+        }
+
         // The song is the first thing YouTube lists after itself; that gives its title. If the
         // lookup fails the song still plays, under a plain title.
         val found = runCatching { innertube.getUpNext(videoId).firstOrNull { it.videoId == videoId } }.getOrNull()
@@ -227,7 +249,67 @@ class YouTubeMusic(private val app: CalmMusic) : OnlineMusic {
             sourceType = "ONLINE_SEARCH",
             audioUri = videoId,
         )
-        return LinkOutcome.Play(song, if (link.playlistId != null) R.string.link_playlist_one_song else 0)
+        if (address == null) return LinkOutcome.Play(listOf(song))
+        // A song in a playlist: the song plays now, and the playlist is read behind it, from
+        // the song onwards and then round to the start.
+        return LinkOutcome.Play(listOf(song), more = {
+            val first = runCatching { firstPlaylistPage(address) }.getOrNull()
+            if (first == null) {
+                LinkMore(emptyList(), app.getString(R.string.link_playlist_one_song))
+            } else {
+                val (page, next) = first
+                val all = if (next == null) page
+                else page + morePlaylistPages(address, next, page.map { it.id }, YouTubePlaylist.MAX_SONGS - page.size)
+                val rest = YouTubePlaylist.rest(videoId, all) { it.id }
+                LinkMore(rest, queuedMessage(rest.size))
+            }
+        })
+    }
+
+    private fun queuedMessage(count: Int): String? =
+        if (count <= 0) null else app.resources.getQuantityString(R.plurals.link_playlist_queued, count, count)
+
+    /** A playlist's first page of songs, and where the next page is (null when there is none). */
+    private suspend fun firstPlaylistPage(address: String): Pair<List<SongUiModel>, Page?> =
+        withContext(Dispatchers.IO) {
+            YouTubeStreamResolver.ensureInitialized(OkHttpClient.Builder().build())
+            val info = PlaylistInfo.getInfo(ServiceList.YouTube, address)
+            val songs = info.relatedItems.mapNotNull { it.toLinkSong() }
+                .take(YouTubePlaylist.MAX_SONGS)
+            songs to info.nextPage?.takeIf { info.hasNextPage() && songs.size < YouTubePlaylist.MAX_SONGS }
+        }
+
+    /**
+     * The playlist's pages from [page] on, up to [room] more songs, none already in [have].
+     * A page that fails ends the reading there, keeping what came before it.
+     */
+    private suspend fun morePlaylistPages(address: String, page: Page, have: List<String>, room: Int): List<SongUiModel> =
+        withContext(Dispatchers.IO) {
+            val found = ArrayList<SongUiModel>()
+            val ids = have.toMutableSet()
+            var next: Page? = page
+            while (next != null && found.size < room) {
+                val items = runCatching { PlaylistInfo.getMoreItems(ServiceList.YouTube, address, next) }.getOrNull() ?: break
+                val fresh = YouTubePlaylist.newOnes(ids, items.items.mapNotNull { it.toLinkSong() }, room - found.size) { it.id }
+                found += fresh
+                ids += fresh.map { it.id }
+                next = items.nextPage?.takeIf { items.hasNextPage() }
+            }
+            found
+        }
+
+    private fun StreamInfoItem.toLinkSong(): SongUiModel? {
+        val id = YouTubePlaylist.videoIdOf(url) ?: return null
+        val millis = duration.takeIf { it > 0 }?.let { it * 1000L }
+        return SongUiModel(
+            id = id,
+            title = name?.takeIf { it.isNotBlank() } ?: app.getString(R.string.link_untitled),
+            artist = YouTubePlaylist.artist(uploaderName),
+            durationText = formatDurationMillis(millis),
+            durationMillis = millis,
+            sourceType = "ONLINE_SEARCH",
+            audioUri = id,
+        )
     }
 
     override fun precacheSearch(ids: List<String>) = precache.precacheSearchResults(ids)

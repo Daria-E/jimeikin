@@ -1339,13 +1339,26 @@ fun CalmMusic(
                 val outcome = runCatching { app.online.openLink(uri.toString()) }.getOrNull()
                 when (outcome) {
                     is LinkOutcome.Play -> {
-                        startPlaybackFromQueue(queue = listOf(outcome.song), startIndex = 0)
+                        startPlaybackFromQueue(queue = outcome.songs, startIndex = 0)
                         if (outcome.note != 0) {
                             snackbarHostState.showSnackbar(
                                 message = context.getString(outcome.note),
                                 withDismissAction = false,
                                 duration = SnackbarDurationMMD.Short,
                             )
+                        }
+                        // The rest of a playlist, read while the first songs play, joins the
+                        // end of the queue.
+                        val more = outcome.more?.let { fetch -> runCatching { fetch() }.getOrNull() }
+                        if (more != null) {
+                            viewModel.enqueue(more.songs, playNext = false, localController = localMediaController)
+                            more.message?.let {
+                                snackbarHostState.showSnackbar(
+                                    message = it,
+                                    withDismissAction = false,
+                                    duration = SnackbarDurationMMD.Short,
+                                )
+                            }
                         }
                     }
                     is LinkOutcome.Cannot -> snackbarHostState.showSnackbar(

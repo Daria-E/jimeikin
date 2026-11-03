@@ -4,8 +4,12 @@
     <string name="main_title_online_sign_in">Ein YouTube-Konto verbinden</string>
     <!-- Search -->
     <string name="main_search_error">Die Suche hat YouTube nicht erreicht</string>
-    <string name="link_playlist_unsupported">Music Box kann keine YouTube-Playlist aus einem Link öffnen. Öffne stattdessen einen Titel daraus.</string>
-    <string name="link_playlist_one_song">Der Titel aus diesem Link wird gespielt; Playlists werden nicht aus Links geöffnet.</string>
+    <string name="link_playlist_unreadable">Music Box konnte diese YouTube-Playlist nicht lesen. Sie ist vielleicht privat oder leer.</string>
+    <string name="link_playlist_one_song">Der Titel aus diesem Link wird gespielt; seine Playlist konnte nicht gelesen werden.</string>
+    <plurals name="link_playlist_queued">
+        <item quantity="one">%1$d weiterer Titel aus der Playlist ist in der Warteschlange.</item>
+        <item quantity="other">%1$d weitere Titel aus der Playlist sind in der Warteschlange.</item>
+    </plurals>
     <string name="link_untitled">YouTube-Titel</string>
     <string name="main_youtube_cannot_play">YouTube meldet, dass dieser Titel nicht abgespielt werden kann. Wird übersprungen.</string>
     <string name="player_downloads_online">Von YouTube</string>

@@ -128,7 +128,18 @@ data class OnlineArtistPage(
 
 /** What a link handed over by another app came to; see [OnlineMusic.openLink]. */
 sealed interface LinkOutcome {
-    /** [note], when not 0, is a string resource said once the song starts. */
-    data class Play(val song: SongUiModel, val note: Int = 0) : LinkOutcome
+    /**
+     * Play [songs] from the first. [note], when not 0, is a string resource said once they
+     * start. [more], when there is one, fetches what follows them (the rest of a playlist),
+     * which then joins the end of the queue; it may be slow, and never throws.
+     */
+    class Play(
+        val songs: List<SongUiModel>,
+        val note: Int = 0,
+        val more: (suspend () -> LinkMore)? = null,
+    ) : LinkOutcome
     data class Cannot(val message: Int) : LinkOutcome
 }
+
+/** What [LinkOutcome.Play.more] fetched: the songs for the end of the queue, and what to say then (or null). */
+class LinkMore(val songs: List<SongUiModel>, val message: String?)

@@ -6,8 +6,8 @@ import java.net.URLDecoder
 /**
  * What a YouTube or YouTube Music web address names, for a link another app hands over
  * (a tap on the link, or Share). Only the two things Music Box can use are read out: a video
- * id and a playlist id. Nothing else in the address is kept, and nothing is fetched from it:
- * the id alone goes to the player, so a link cannot point the app anywhere but YouTube.
+ * id and a playlist id. Nothing else in the address is kept: the ids alone go on, to the player
+ * and to YouTube for the playlist's songs, so a link cannot point the app anywhere but YouTube.
  */
 data class YouTubeLink(val videoId: String?, val playlistId: String?) {
 
