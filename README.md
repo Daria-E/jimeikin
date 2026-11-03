@@ -53,6 +53,10 @@ name**. The new name is kept in the app and shown everywhere in it; the file and
 are left as they are. Leave the field empty to go back to the original. **File under** works
 the same way for an artist whose songs are not files on the phone.
 
+A song that streams, from YouTube or a music server, has a small cloud on its row, in every
+list and in the queue: it is not on the phone and plays only with a signal. A downloaded song
+has a tick in a circle instead; a file you put on the phone yourself has no mark.
+
 Hold a song and choose **Heart** to mark it; a small heart shows on its row, and a **Hearted**
 list heads Playlists, to play, shuffle or download. Hearts stay on the phone.
 

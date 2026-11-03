@@ -176,12 +176,20 @@ private fun UpNextRow(
                     song.durationText?.takeIf { it.isNotBlank() },
                 ).joinToString(" • ")
             }
-            TextMMD(
-                text = subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            // A streamed song carries its cloud here as in every other list: the queue is
+            // where a song that needs a signal is about to be met without one.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                originOf(song.sourceType)?.let { origin ->
+                    OriginMark(origin)
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                TextMMD(
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
 
         if (isPlaying) {
