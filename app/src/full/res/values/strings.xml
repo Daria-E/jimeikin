@@ -55,4 +55,11 @@
     <!-- Empty library: button that opens the YouTube settings -->
     <string name="library_empty_set_up_youtube">Set up YouTube</string>
     <string name="library_artist_online_failed">The rest of their albums could not be fetched from YouTube.</string>
+    <string name="settings_musicbrainz">Fill in album details from MusicBrainz</string>
+    <string name="settings_musicbrainz_note">For albums on the phone with no album artist, year or track numbers in their tags, the album\'s title and artist are sent to musicbrainz.org, one album at a time. What it knows fills the gaps; your files are not changed.</string>
+    <string name="settings_musicbrainz_running">Looking up albums: %1$d of %2$d</string>
+    <plurals name="settings_musicbrainz_matched">
+        <item quantity="one">%1$d album filled in</item>
+        <item quantity="other">%1$d albums filled in</item>
+    </plurals>
 </resources>

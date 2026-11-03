@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 @Suppress("UnusedReceiverParameter")
 internal fun LazyListScope.onlineSwitches() = Unit
 
+@Suppress("UnusedReceiverParameter", "UNUSED_PARAMETER")
+internal fun LazyListScope.albumDetailsSwitch(onRescan: () -> Unit) = Unit
+
 @Composable
 internal fun onlineAccountConnected(): Boolean = false
 

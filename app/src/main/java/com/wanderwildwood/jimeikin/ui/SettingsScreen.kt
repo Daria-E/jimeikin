@@ -31,7 +31,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +49,6 @@ import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
 import kotlinx.coroutines.delay
 import com.wanderwildwood.jimeikin.R
-import com.wanderwildwood.jimeikin.data.MusicBrainz
 
 /**
  * One flat screen. It used to be three tabs holding one, three and five controls between
@@ -255,44 +253,8 @@ fun SettingsScreen(
         // Room, not a rule, between the folders and the switches.
         item { Spacer(Modifier.height(16.dp)) }
 
-        item {
-            // Album details from MusicBrainz, for albums on the phone whose tags leave gaps.
-            // Off to begin with; the note says what is sent and where.
-            val settings = (context.applicationContext as com.wanderwildwood.jimeikin.CalmMusic).settingsManager
-            var lookUp by remember { mutableStateOf(settings.getMusicBrainzLookupSync()) }
-            val status by MusicBrainz.status.collectAsState()
-            Column {
-                SwitchRow(
-                    label = stringResource(R.string.settings_musicbrainz),
-                    checked = lookUp,
-                    onCheckedChange = { on ->
-                        lookUp = on
-                        settings.setMusicBrainzLookup(on)
-                        if (!on) {
-                            // What it found goes, and the next scan reads every file's own
-                            // tags again, so nothing it filled in stays behind.
-                            MusicBrainz.forget(context)
-                            settings.setLocalAlbumKeyVersion(0)
-                        }
-                        onRescanLocalMusicClick()
-                    },
-                    note = stringResource(R.string.settings_musicbrainz_note),
-                )
-                val line = when {
-                    !lookUp -> null
-                    status.running -> stringResource(R.string.settings_musicbrainz_running, status.done, status.total)
-                    status.matched > 0 -> pluralStringResource(R.plurals.settings_musicbrainz_matched, status.matched, status.matched)
-                    else -> null
-                }
-                if (line != null) {
-                    TextMMD(
-                        text = line,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                }
-            }
-        }
+        // Album details from MusicBrainz, in the edition that has the lookup (src/full).
+        albumDetailsSwitch(onRescan = onRescanLocalMusicClick)
 
         // The catalogue's own switches, in the edition that has one (src/full).
         onlineSwitches()

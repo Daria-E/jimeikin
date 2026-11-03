@@ -674,15 +674,15 @@ fun CalmMusic(
             isRescanningLocal = false
             isIngestingLocal = false
         }
-        // Albums whose tags leave gaps are looked up afterwards, when the reader has turned
-        // that on; what is found is taken in by one more scan. Albums already asked about
-        // are not asked again, so most scans send nothing.
-        if (lookUp && folders.isNotEmpty() && settingsManager.getMusicBrainzLookupSync()) {
+        // Albums whose tags leave gaps are looked up afterwards (full edition), when the reader
+        // has turned that on; what is found is taken in by one more scan. Albums already asked
+        // about are not asked again, so most scans send nothing.
+        if (lookUp && folders.isNotEmpty() && settingsManager.getAlbumDetailsLookupSync()) {
             libraryScope.launch {
-                val found = com.wanderwildwood.jimeikin.data.MusicBrainz.lookUp(appContext) {
-                    settingsManager.getMusicBrainzLookupSync()
+                val found = com.wanderwildwood.jimeikin.data.AlbumDetailsLookup.lookUp(appContext) {
+                    settingsManager.getAlbumDetailsLookupSync()
                 }
-                if (found > 0 && settingsManager.getMusicBrainzLookupSync()) resyncLocalLibrary(folders, lookUp = false)
+                if (found > 0 && settingsManager.getAlbumDetailsLookupSync()) resyncLocalLibrary(folders, lookUp = false)
             }
         }
     }

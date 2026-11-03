@@ -132,13 +132,13 @@ class LibraryRepository(
                         // it is deleted - a card that was slow to mount used to empty the
                         // whole library.
                         val hadUnreadableFolder = scannedAudio.unreadableTreeUris.isNotEmpty()
-                        // Gaps in the tags filled from MusicBrainz, when the reader asked for that.
-                        val musicBrainz = if (app.settingsManager.getMusicBrainzLookupSync()) {
-                            withContext(Dispatchers.IO) { MusicBrainz.matches(app) }
+                        // Gaps in the tags filled from an online lookup, when the reader asked for that.
+                        val albumGaps: AlbumGaps = if (app.settingsManager.getAlbumDetailsLookupSync()) {
+                            withContext(Dispatchers.IO) { AlbumDetailsLookup.gaps(app) }
                         } else {
-                            MusicBrainzMatches.EMPTY
+                            NoAlbumGaps
                         }
-                        val normalizedLocalEntities = scannedAudio.audio.map { musicBrainz.fill(it.song) }
+                        val normalizedLocalEntities = scannedAudio.audio.map { albumGaps.fill(it.song) }
 
                         withContext(Dispatchers.IO) {
                             // Rows of their own, keyed as the download itself keys them; the
@@ -173,7 +173,7 @@ class LibraryRepository(
                                 // from its tracks, and taking it for a tag would cost every guest
                                 // on the record their own row.
                                 val effectiveAlbumArtist = explicit?.takeIf { it.isNotBlank() }
-                                    ?: entity.albumId?.let(musicBrainz::albumArtist)
+                                    ?: entity.albumId?.let(albumGaps::albumArtist)
                                     ?: entity.albumId
                                         ?.takeUnless { it.startsWith(UNTAGGED_ALBUM_PREFIX) }
                                         ?.let { existingAlbumsMap[it]?.artist }
@@ -227,7 +227,7 @@ class LibraryRepository(
                                     val name = entity.album ?: return@mapNotNull null
 
                                     val artistName = wrapper.albumArtist?.takeIf { it.isNotBlank() }
-                                        ?: musicBrainz.albumArtist(id)
+                                        ?: albumGaps.albumArtist(id)
                                         ?: mostCommonArtistByAlbumId[id]
                                         ?: existingAlbumsMap[id]?.artist
                                         ?: entity.artist

@@ -312,7 +312,7 @@ object MusicBrainzMatcher {
 }
 
 /** What the lookups found, kept in the app's own files folder. */
-class MusicBrainzMatches private constructor(private val entries: Map<String, Entry>) {
+class MusicBrainzMatches private constructor(private val entries: Map<String, Entry>) : AlbumGaps {
 
     /** One album asked about: its [signature] then, and the match, or null for none. */
     data class Entry(val signature: String, val match: MusicBrainzMatcher.AlbumMatch?)
@@ -326,11 +326,11 @@ class MusicBrainzMatches private constructor(private val entries: Map<String, En
     fun isEmpty(): Boolean = entries.values.none { it.match != null }
 
     /** Who an album no tag names is by, as MusicBrainz has it. A tagged album keeps its tag. */
-    fun albumArtist(albumId: String): String? =
+    override fun albumArtist(albumId: String): String? =
         if (albumId.startsWith(UNTAGGED_ALBUM_PREFIX)) entries[albumId]?.match?.artist?.takeIf { it.isNotBlank() } else null
 
     /** A song with its gaps filled: disc, track and year, each only where its tags had none. */
-    fun fill(song: SongEntity): SongEntity {
+    override fun fill(song: SongEntity): SongEntity {
         val match = song.albumId?.let { entries[it]?.match } ?: return song
         val place = match.tracks[song.id]
         return song.copy(

@@ -174,11 +174,11 @@ class CalmMusicSettingsManager(context: Context) {
         prefs.edit { putBoolean(KEY_PLAYING_ON_LOCK_SCREEN, enabled) }
     }
 
-    /** Album details from MusicBrainz for albums whose tags leave gaps; off to begin with. */
-    fun getMusicBrainzLookupSync(): Boolean = prefs.getBoolean(KEY_MUSICBRAINZ_LOOKUP, false)
+    /** Album details looked up online for albums whose tags leave gaps (full edition); off to begin with. */
+    fun getAlbumDetailsLookupSync(): Boolean = prefs.getBoolean(KEY_ALBUM_DETAILS_LOOKUP, false)
 
-    fun setMusicBrainzLookup(enabled: Boolean) {
-        prefs.edit { putBoolean(KEY_MUSICBRAINZ_LOOKUP, enabled) }
+    fun setAlbumDetailsLookup(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_ALBUM_DETAILS_LOOKUP, enabled) }
     }
 
     /**
@@ -215,6 +215,6 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_LOCAL_ALBUM_KEY_VERSION = "local_album_key_version"
         private const val KEY_LAST_LIBRARY_TAB = "last_library_tab"
         private const val KEY_PLAYING_ON_LOCK_SCREEN = "playing_on_lock_screen"
-        private const val KEY_MUSICBRAINZ_LOOKUP = "musicbrainz_lookup"
+        private const val KEY_ALBUM_DETAILS_LOOKUP = "album_details_lookup"
     }
 }
