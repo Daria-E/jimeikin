@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.text_field.TextFieldMMD
 import com.wanderwildwood.jimeikin.data.SubsonicConfig
-import kotlinx.coroutines.delay
 import com.wanderwildwood.jimeikin.R
 
 /**
@@ -159,13 +157,7 @@ fun MusicServerScreen(
 /** The row asks. Nothing on the server is touched; its songs leave this phone's library. */
 @Composable
 private fun ForgetServerRow(onForget: () -> Unit) {
-    var armed by remember { mutableStateOf(false) }
-    LaunchedEffect(armed) {
-        if (armed) {
-            delay(ARMED_MS)
-            armed = false
-        }
-    }
+    var armed by rememberArmedFlag()
 
     Row(
         modifier = Modifier

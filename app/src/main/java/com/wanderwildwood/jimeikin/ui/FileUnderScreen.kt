@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
@@ -26,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
-import kotlinx.coroutines.delay
 
 /**
  * "File under…": the artists another one can be put under, for a credit the automatic
@@ -36,7 +32,7 @@ import kotlinx.coroutines.delay
  * one, whatever the songs are: files, a music server's, YouTube's. Songs that are files on the
  * phone also have that artist written as their album artist, the same tag Edit details writes,
  * so the filing travels with the files. A first tap arms the row and says how many songs will
- * be filed; a second within six seconds does it.
+ * be filed; a second, before any other touch, does it.
  */
 @Composable
 fun FileUnderScreen(
@@ -49,13 +45,7 @@ fun FileUnderScreen(
     errorText: String?,
     onChoose: (ArtistUiModel) -> Unit,
 ) {
-    var armedId by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(armedId) {
-        if (armedId != null) {
-            delay(ARMED_MS)
-            armedId = null
-        }
-    }
+    var armedId by rememberArmedKey<String>()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {

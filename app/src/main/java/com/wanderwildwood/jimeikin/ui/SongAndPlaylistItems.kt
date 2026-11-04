@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +39,6 @@ import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
-/**
- * How long an armed row waits for its second tap: six seconds, for every "— tap again" in the
- * app. The panel takes a second or two just to show the prompt.
- */
-const val ARMED_MS = 6_000L
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -143,29 +136,6 @@ fun SongItem(
     val hearts = LocalHearts.current
     val isHearted = song.sourceType != "RADIO" && hearts?.isHearted?.invoke(song) == true
 
-    // Deleting erases the file, and removing takes the song out of the library. The row asks
-    // in its own face rather than stacking a dialog on the menu, and disarms itself after
-    // six seconds so a stray tap leaves nothing live.
-    var armedDelete by remember { mutableStateOf(false) }
-    var armedRemove by remember { mutableStateOf(false) }
-    LaunchedEffect(armedDelete) {
-        if (armedDelete) {
-            delay(ARMED_MS)
-            armedDelete = false
-        }
-    }
-    LaunchedEffect(armedRemove) {
-        if (armedRemove) {
-            delay(ARMED_MS)
-            armedRemove = false
-        }
-    }
-    LaunchedEffect(showMenu) {
-        if (!showMenu) {
-            armedDelete = false
-            armedRemove = false
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -238,145 +208,155 @@ fun SongItem(
                         expanded = true,
                         onDismissRequest = { showMenu = false }
                     ) {
-                        // A live stream has no end to queue behind, and is the one thing
-                        // here that cannot wait its turn.
-                        if (song.sourceType != "RADIO") {
-                            DropdownMenuItemMMD(
-                                text = { TextMMD(text = stringResource(R.string.player_song_play_next)) },
-                                onClick = {
-                                    showMenu = false
-                                    onPlayNext()
+                        // The menu is a window of its own, so it watches its own touches. Deleting
+                        // erases the file, and removing takes the song out of the library: the row
+                        // asks in its own face rather than stacking a dialog on the menu, and stays
+                        // armed until the next other touch, Back or the menu closing.
+                        ArmedScope {
+                            Column {
+                                var armedDelete by rememberArmedFlag()
+                                var armedRemove by rememberArmedFlag()
+                                // A live stream has no end to queue behind, and is the one thing
+                                // here that cannot wait its turn.
+                                if (song.sourceType != "RADIO") {
+                                    DropdownMenuItemMMD(
+                                        text = { TextMMD(text = stringResource(R.string.player_song_play_next)) },
+                                        onClick = {
+                                            showMenu = false
+                                            onPlayNext()
+                                        }
+                                    )
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = { TextMMD(text = stringResource(R.string.player_song_add_to_queue)) },
+                                        onClick = {
+                                            showMenu = false
+                                            onAddToQueue()
+                                        }
+                                    )
+                                    DottedRule()
                                 }
-                            )
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = { TextMMD(text = stringResource(R.string.player_song_add_to_queue)) },
-                                onClick = {
-                                    showMenu = false
-                                    onAddToQueue()
-                                }
-                            )
-                            DottedRule()
-                        }
 
-                        DropdownMenuItemMMD(
-                            text = { TextMMD(text = stringResource(R.string.player_add_to_playlist)) },
-                            onClick = {
-                                showMenu = false
-                                onAddToPlaylist()
+                                DropdownMenuItemMMD(
+                                    text = { TextMMD(text = stringResource(R.string.player_add_to_playlist)) },
+                                    onClick = {
+                                        showMenu = false
+                                        onAddToPlaylist()
+                                    }
+                                )
+
+                                if (hearts != null && song.sourceType != "RADIO") {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = {
+                                            TextMMD(
+                                                text = stringResource(
+                                                    if (isHearted) R.string.player_song_unheart else R.string.player_song_heart,
+                                                ),
+                                            )
+                                        },
+                                        onClick = {
+                                            showMenu = false
+                                            hearts.toggle(song)
+                                        }
+                                    )
+                                }
+
+                                // A server song or a YouTube one: a file is already here. A YouTube
+                                // song downloaded already, listed again by YouTube, is here too.
+                                val isDownloadedAlready = LocalIsDownloaded.current
+                                if (song.sourceType == "SUBSONIC" ||
+                                    (song.sourceType == "ONLINE_SEARCH" && !isDownloadedAlready(song))
+                                ) {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = { TextMMD(text = stringResource(R.string.player_song_keep_on_phone)) },
+                                        onClick = {
+                                            showMenu = false
+                                            onKeepOnPhone()
+                                        }
+                                    )
+                                }
+
+                                val editDetails = LocalEditDetails.current
+                                if (editDetails != null && song.isEditable()) {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = { TextMMD(text = stringResource(R.string.player_song_edit_details)) },
+                                        onClick = {
+                                            showMenu = false
+                                            editDetails(listOf(song))
+                                        }
+                                    )
+                                }
+
+                                val nameEditing = LocalNameEditing.current
+                                if (nameEditing != null && song.sourceType != "RADIO") {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = { TextMMD(text = stringResource(R.string.edit_name_menu)) },
+                                        onClick = {
+                                            showMenu = false
+                                            nameEditing.edit(NameTarget.Song(song))
+                                        }
+                                    )
+                                }
+
+                                if (isDownloaded || isLocal) {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = {
+                                            // A download is removed, not deleted: a kept server song goes
+                                            // back to streaming, and a YouTube one can be fetched again.
+                                            // Only a file the reader put on the phone is erased for good.
+                                            val isDownload = isDownloaded ||
+                                                song.sourceType == "ONLINE_SEARCH_DOWNLOAD" ||
+                                                song.sourceType == "SUBSONIC_DOWNLOAD"
+                                            TextMMD(
+                                                text = when {
+                                                    isDownload && !armedDelete ->
+                                                        stringResource(R.string.player_song_remove_download)
+                                                    isDownload ->
+                                                        stringResource(R.string.player_song_remove_download_confirm)
+                                                    !armedDelete -> stringResource(R.string.player_song_delete)
+                                                    else -> stringResource(R.string.player_song_delete_file_confirm)
+                                                },
+                                            )
+                                        },
+                                        onClick = {
+                                            if (armedDelete) {
+                                                showMenu = false
+                                                onDelete()
+                                            } else {
+                                                armedDelete = true
+                                            }
+                                        }
+                                    )
+                                }
+
+                                if (isInLibrary && !isLocal && !isDownloaded) {
+                                    DottedRule()
+                                    DropdownMenuItemMMD(
+                                        text = {
+                                            TextMMD(
+                                                text = if (armedRemove) {
+                                                    stringResource(R.string.player_song_remove_from_library_confirm)
+                                                } else {
+                                                    stringResource(R.string.player_song_remove_from_library)
+                                                },
+                                            )
+                                        },
+                                        onClick = {
+                                            if (armedRemove) {
+                                                showMenu = false
+                                                onRemoveFromLibrary()
+                                            } else {
+                                                armedRemove = true
+                                            }
+                                        }
+                                    )
+                                }
                             }
-                        )
-
-                        if (hearts != null && song.sourceType != "RADIO") {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = {
-                                    TextMMD(
-                                        text = stringResource(
-                                            if (isHearted) R.string.player_song_unheart else R.string.player_song_heart,
-                                        ),
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    hearts.toggle(song)
-                                }
-                            )
-                        }
-
-                        // A server song or a YouTube one: a file is already here. A YouTube
-                        // song downloaded already, listed again by YouTube, is here too.
-                        val isDownloadedAlready = LocalIsDownloaded.current
-                        if (song.sourceType == "SUBSONIC" ||
-                            (song.sourceType == "ONLINE_SEARCH" && !isDownloadedAlready(song))
-                        ) {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = { TextMMD(text = stringResource(R.string.player_song_keep_on_phone)) },
-                                onClick = {
-                                    showMenu = false
-                                    onKeepOnPhone()
-                                }
-                            )
-                        }
-
-                        val editDetails = LocalEditDetails.current
-                        if (editDetails != null && song.isEditable()) {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = { TextMMD(text = stringResource(R.string.player_song_edit_details)) },
-                                onClick = {
-                                    showMenu = false
-                                    editDetails(listOf(song))
-                                }
-                            )
-                        }
-
-                        val nameEditing = LocalNameEditing.current
-                        if (nameEditing != null && song.sourceType != "RADIO") {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = { TextMMD(text = stringResource(R.string.edit_name_menu)) },
-                                onClick = {
-                                    showMenu = false
-                                    nameEditing.edit(NameTarget.Song(song))
-                                }
-                            )
-                        }
-
-                        if (isDownloaded || isLocal) {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = {
-                                    // A download is removed, not deleted: a kept server song goes
-                                    // back to streaming, and a YouTube one can be fetched again.
-                                    // Only a file the reader put on the phone is erased for good.
-                                    val isDownload = isDownloaded ||
-                                        song.sourceType == "ONLINE_SEARCH_DOWNLOAD" ||
-                                        song.sourceType == "SUBSONIC_DOWNLOAD"
-                                    TextMMD(
-                                        text = when {
-                                            isDownload && !armedDelete ->
-                                                stringResource(R.string.player_song_remove_download)
-                                            isDownload ->
-                                                stringResource(R.string.player_song_remove_download_confirm)
-                                            !armedDelete -> stringResource(R.string.player_song_delete)
-                                            else -> stringResource(R.string.player_song_delete_file_confirm)
-                                        },
-                                    )
-                                },
-                                onClick = {
-                                    if (armedDelete) {
-                                        showMenu = false
-                                        onDelete()
-                                    } else {
-                                        armedDelete = true
-                                    }
-                                }
-                            )
-                        }
-
-                        if (isInLibrary && !isLocal && !isDownloaded) {
-                            DottedRule()
-                            DropdownMenuItemMMD(
-                                text = {
-                                    TextMMD(
-                                        text = if (armedRemove) {
-                                            stringResource(R.string.player_song_remove_from_library_confirm)
-                                        } else {
-                                            stringResource(R.string.player_song_remove_from_library)
-                                        },
-                                    )
-                                },
-                                onClick = {
-                                    if (armedRemove) {
-                                        showMenu = false
-                                        onRemoveFromLibrary()
-                                    } else {
-                                        armedRemove = true
-                                    }
-                                }
-                            )
                         }
                     }
                 }

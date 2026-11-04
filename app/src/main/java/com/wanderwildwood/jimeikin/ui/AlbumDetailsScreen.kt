@@ -29,7 +29,6 @@ import com.wanderwildwood.jimeikin.CalmMusicViewModel
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -224,16 +223,10 @@ fun AlbumDetailsScreen(
         }
     }
 }
-/** Pressed once it says what it will do; pressed again within six seconds it does it. */
+/** Pressed once it says what it will do; pressed again, before any other touch, it does it. */
 @Composable
 private fun RemoveAlbumButton(count: Int, onConfirmed: () -> Unit) {
-    var armed by remember { mutableStateOf(false) }
-    LaunchedEffect(armed) {
-        if (armed) {
-            delay(ARMED_MS)
-            armed = false
-        }
-    }
+    var armed by rememberArmedFlag()
     Column(modifier = Modifier.padding(top = 16.dp)) {
         OutlinedButtonMMD(
             onClick = { if (armed) onConfirmed() else armed = true },

@@ -163,6 +163,7 @@ import androidx.media3.datasource.HttpDataSource
 import com.wanderwildwood.jimeikin.playback.PlaybackTrouble
 import com.wanderwildwood.jimeikin.playback.Trouble
 import com.wanderwildwood.jimeikin.ui.TroubleDialog
+import com.wanderwildwood.jimeikin.ui.ArmedScope
 
 class MainActivity : ComponentActivity() {
 
@@ -195,19 +196,21 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             ThemeMMD(colorScheme = monochrome) {
-                // A steady cursor: a blinking one repaints the panel twice a second for as long
-                // as a field has focus. Dialogs and sheets inherit it.
-                CompositionLocalProvider(
-                    LocalTopBarActions provides remember { TopBarActionsSlot() },
-                    LocalCursorBlinkEnabled provides false,
-                ) {
-                    CalmMusic(
-                        app,
-                        openedFile = opened.value,
-                        onOpenedFileTaken = { opened.value = null },
-                        openDownloads = openDownloads.value,
-                        onOpenDownloadsTaken = { openDownloads.value = false },
-                    )
+                ArmedScope {
+                    // A steady cursor: a blinking one repaints the panel twice a second for as long
+                    // as a field has focus. Dialogs and sheets inherit it.
+                    CompositionLocalProvider(
+                        LocalTopBarActions provides remember { TopBarActionsSlot() },
+                        LocalCursorBlinkEnabled provides false,
+                    ) {
+                        CalmMusic(
+                            app,
+                            openedFile = opened.value,
+                            onOpenedFileTaken = { opened.value = null },
+                            openDownloads = openDownloads.value,
+                            onOpenDownloadsTaken = { openDownloads.value = false },
+                        )
+                    }
                 }
             }
         }

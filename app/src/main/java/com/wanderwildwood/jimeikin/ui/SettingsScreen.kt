@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +46,6 @@ import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
-import kotlinx.coroutines.delay
 import com.wanderwildwood.jimeikin.R
 
 /**
@@ -450,8 +448,8 @@ internal fun ValueRow(
 
 /**
  * The row asks, rather than a dialog: one repaint instead of two, and the question is put in
- * the place the answer belongs. It disarms itself, so a stray tap leaves nothing live for
- * whoever picks the phone up next.
+ * the place the answer belongs. It stays armed until the next other touch, Back or leaving
+ * the screen, so a stray tap leaves nothing live for whoever picks the phone up next.
  */
 @Composable
 internal fun ArmedRow(
@@ -459,13 +457,7 @@ internal fun ArmedRow(
     armedLabel: String,
     onConfirm: () -> Unit,
 ) {
-    var armed by remember { mutableStateOf(false) }
-    LaunchedEffect(armed) {
-        if (armed) {
-            delay(6000)
-            armed = false
-        }
-    }
+    var armed by rememberArmedFlag()
 
     Row(
         modifier = Modifier
@@ -495,13 +487,7 @@ internal fun ArmedRow(
  */
 @Composable
 private fun FolderRow(path: String, onRemove: () -> Unit) {
-    var armed by remember { mutableStateOf(false) }
-    LaunchedEffect(armed) {
-        if (armed) {
-            delay(ARMED_MS)
-            armed = false
-        }
-    }
+    var armed by rememberArmedFlag()
 
     Column(
         modifier = Modifier
