@@ -82,7 +82,7 @@ The app is suitable for all ages and does not knowingly collect anything from an
 <!-- shared-about privacy section -->
 ## Who we are
 
-Music Box is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Music Box keeps what you put in it on your phone, apart from what it sends to YouTube Music, radio.garden, Radio Browser, Zippopotam.us and MusicBrainz as described above, and sends nothing to the developer, so the developer holds no data about you.
+Music Box is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. What you put in Music Box stays on your phone. The only things that go out are the requests described above: your searches, plays, downloads and sign-in to YouTube Music; requests for stations and their streams to radio.garden; the words of a radio search to Radio Browser; a ZIP or postal code to Zippopotam.us; requests to your own music server, if you add one; and, only if you turn it on, an album's title and artist to MusicBrainz. Nothing is sent to the developer, so the developer holds no data about you.
 
 ## How to contact us
 
