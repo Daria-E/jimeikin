@@ -61,4 +61,8 @@
         <item quantity="one">%1$d album filled in</item>
         <item quantity="other">%1$d albums filled in</item>
     </plurals>
+    <!-- The shared privacy sections (shared-about) name what the app talks to. Music Box K (the
+         main strings) has no YouTube Music and no MusicBrainz; this edition has both. -->
+    <string name="privacy_who">This app is made by wander wildwood, an independent developer: one person, not a company. That makes wander wildwood the data controller for anything the app itself handles, and that is very little: what you put in stays on this phone unless you send it somewhere yourself, or the app sends it to YouTube Music, radio.garden, Radio Browser, Zippopotam.us and MusicBrainz as described above, and nothing comes to the developer.</string>
+    <string name="privacy_rights">Under the GDPR you can ask to see the data held about you, to have it corrected or deleted, to limit or object to its use, to take a copy with you, to withdraw consent, and to complain to a data protection authority. Since the app keeps what it stores only on your phone, you can do most of this yourself: remove songs, playlists and stations in the app, save your playlists and stations with Save a backup, delete downloaded songs in Music/Music Box (ordinary files that stay after an uninstall), clear the app\'s data in Android\'s settings, or uninstall the app. What YouTube Music, radio.garden, Radio Browser, Zippopotam.us and MusicBrainz receive is covered by their own privacy policies. A server of your own is yours: what it keeps is up to you.</string>
 </resources>

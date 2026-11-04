@@ -758,4 +758,14 @@
         <item quantity="one">%1$d Radiosender</item>
         <item quantity="other">%1$d Radiosender</item>
     </plurals>
+    <!-- shared-about: contact row + privacy section (edit in /opt/projects/shared-about) -->
+    <string name="about_write_to">Schreib an %1$s</string>
+    <string name="about_no_mail_app">Keine E-Mail-App installiert. Die Adresse ist %1$s.</string>
+    <string name="privacy_who_title">Wer wir sind</string>
+    <string name="privacy_who">Diese App stammt von wander wildwood, einem unabhängigen Entwickler: eine Person, keine Firma. Damit ist wander wildwood Verantwortlicher für alles, was die App selbst verarbeitet, und das ist sehr wenig: Was du eingibst, bleibt auf diesem Telefon, außer du schickst es selbst woandershin oder die App sendet es wie oben beschrieben an radio.garden, Radio Browser und Zippopotam.us, und nichts davon erreicht den Entwickler.</string>
+    <string name="privacy_contact_title">So erreichst du uns</string>
+    <string name="privacy_contact">Schreib an email@wanderthe.dev, zu deinen Daten oder zu allem anderen.</string>
+    <string name="privacy_rights_title">Deine Rechte</string>
+    <string name="privacy_rights">Nach der DSGVO kannst du Auskunft über die Daten verlangen, die über dich gespeichert sind, sie berichtigen oder löschen lassen, ihre Verarbeitung einschränken lassen oder ihr widersprechen, eine Kopie mitnehmen, eine Einwilligung widerrufen und dich bei einer Datenschutzbehörde beschweren. Da die App alles, was sie speichert, nur auf deinem Telefon ablegt, kannst du das meiste davon selbst tun: Titel, Playlists und Sender in der App entfernen, Playlists und Sender mit Sicherung speichern sichern, heruntergeladene Titel in Music/Music Box löschen (gewöhnliche Dateien, die nach dem Deinstallieren bleiben), die App-Daten in den Android-Einstellungen löschen oder die App deinstallieren. Für das, was radio.garden, Radio Browser und Zippopotam.us erhalten, gelten deren eigene Datenschutzerklärungen. Ein eigener Server gehört dir: Was er speichert, bestimmst du.</string>
+    <!-- /shared-about -->
 </resources>

@@ -1,18 +1,14 @@
 # Music Box K — Privacy Policy
 
-Version 1.0.0. Last reviewed 30 October 2026.
+Version 1.0.0. Last reviewed 4 November 2026.
 
 ## The short version
 
 The developer collects nothing about you. There is no account, no sign-up, no analytics, no advertising and no crash reporting, and no server belonging to the developer that the app talks to. What the app stores, it stores on your phone. Where it contacts another service, that is listed below and happens because you asked for it.
 
-## Who is responsible
-
-wander wildwood, the author of this version of the app. Contact: email@wanderthe.dev
+## Where it comes from
 
 Music Box K is the version of Music Box offered in Mudita's store, with music on the phone and card, your own server and internet radio, a fork of CalmMusic by David Ray Wilson (GPL-3.0), rebuilt on Mudita's public MMD library.
-
-Because no personal data is transmitted to or held by the developer, there is no data controller relationship for the developer to administer. Where the app processes personal data, that processing happens on your own device, under your control.
 
 ## What the app stores, and where
 
@@ -73,15 +69,38 @@ No data is sold, rented, or shared for advertising. There is no profiling, no pe
 
 Processing on the device is carried out for your own purposes and at your own direction. Where the app contacts an outside service, that request is made at your request and is necessary to provide the feature you asked for (Article 6(1)(b) GDPR); that operator is an independent controller for what it then does, under its own policy.
 
-## Your rights
-
-Under the GDPR and UK GDPR you have rights of access, rectification, erasure, restriction, portability and objection. Under the CCPA/CPRA and comparable North American laws you have rights to know, delete, correct and opt out of sale or sharing.
-
-The developer holds no data about you, so there is nothing to request from them, and nothing has ever been sold or shared. You can exercise every one of these rights directly: the data is on your phone. Clear it in the app or in Android's app settings, or uninstall to remove all of it at once (downloaded songs in Music/Music Box are ordinary files and stay until you delete them).
-
 ## Children
 
 The app is suitable for all ages and does not knowingly collect anything from anyone, of any age, because the developer does not collect anything.
+
+<!-- shared-about privacy section -->
+## Who we are
+
+Music Box K is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Music Box K keeps what you put in it on your phone, apart from what it sends to radio.garden, Radio Browser and Zippopotam.us as described above, and sends nothing to the developer, so the developer holds no data about you.
+
+## How to contact us
+
+Write to email@wanderthe.dev about your data, this policy or anything else. The same address is in the app, under About.
+
+## Your rights
+
+If you are in the EU, the EEA or the UK, the GDPR gives you the right to:
+
+- see the personal data held about you (access)
+- have it corrected (rectification) or deleted (erasure)
+- limit how it is used (restriction)
+- object to its use (objection)
+- get a copy to take elsewhere (portability)
+- withdraw your consent at any time, where something rests on it
+- complain to a data protection supervisory authority, for example the one where you live
+
+Similar laws elsewhere, such as the CCPA in California, give you the right to know, delete and correct, and to opt out of the sale or sharing of your data. Nothing from Music Box K is sold or shared.
+
+Since Music Box K keeps what it stores only on your phone, you can exercise most of these rights yourself: remove songs, playlists and stations in the app, save your playlists and stations with Save a backup, delete downloaded songs in Music/Music Box K (ordinary files that stay after an uninstall), clear the app's data in Android's settings, or uninstall the app, which deletes all of it. For anything you cannot do yourself, write to the address above.
+
+Music Box K connects to radio.garden, Radio Browser and Zippopotam.us. They are separate from this app and from its developer, and what they receive is covered by their own privacy policies; ask them about what they hold.
+If you point Music Box K at a server of your own, what that server keeps is yours to manage.
+<!-- /shared-about privacy section -->
 
 ## Changes
 

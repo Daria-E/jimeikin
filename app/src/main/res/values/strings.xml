@@ -763,4 +763,14 @@
         <item quantity="one">%1$d radio station</item>
         <item quantity="other">%1$d radio stations</item>
     </plurals>
+    <!-- shared-about: contact row + privacy section (edit in /opt/projects/shared-about) -->
+    <string name="about_write_to">Write to %1$s</string>
+    <string name="about_no_mail_app">No email app is installed. The address is %1$s.</string>
+    <string name="privacy_who_title">Who we are</string>
+    <string name="privacy_who">This app is made by wander wildwood, an independent developer: one person, not a company. That makes wander wildwood the data controller for anything the app itself handles, and that is very little: what you put in stays on this phone unless you send it somewhere yourself, or the app sends it to radio.garden, Radio Browser and Zippopotam.us as described above, and nothing comes to the developer.</string>
+    <string name="privacy_contact_title">How to contact us</string>
+    <string name="privacy_contact">Write to email@wanderthe.dev, about your data or anything else.</string>
+    <string name="privacy_rights_title">Your rights</string>
+    <string name="privacy_rights">Under the GDPR you can ask to see the data held about you, to have it corrected or deleted, to limit or object to its use, to take a copy with you, to withdraw consent, and to complain to a data protection authority. Since the app keeps what it stores only on your phone, you can do most of this yourself: remove songs, playlists and stations in the app, save your playlists and stations with Save a backup, delete downloaded songs in Music/Music Box (ordinary files that stay after an uninstall), clear the app\'s data in Android\'s settings, or uninstall the app. What radio.garden, Radio Browser and Zippopotam.us receive is covered by their own privacy policies. A server of your own is yours: what it keeps is up to you.</string>
+    <!-- /shared-about -->
 </resources>
