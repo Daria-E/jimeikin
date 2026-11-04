@@ -479,8 +479,9 @@ private fun TransportButton(
             TextMMD(
                 text = label(),
                 style = MaterialTheme.typography.labelSmall,
-                lineHeight = 14.sp,
-                modifier = Modifier.align(Alignment.BottomCenter),
+                // 16 sp at its own line height: nudged down by what the line grew, so the
+                // label keeps its gap under the arrow instead of climbing into it.
+                modifier = Modifier.align(Alignment.BottomCenter).offset(y = 5.dp),
             )
         }
     }

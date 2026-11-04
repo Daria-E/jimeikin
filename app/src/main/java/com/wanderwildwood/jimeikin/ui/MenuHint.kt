@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
@@ -54,7 +53,6 @@ fun MenuHintLine(hasSongs: Boolean = true) {
     TextMMD(
         text = stringResource(R.string.hint_hold_song),
         style = MaterialTheme.typography.labelSmall,
-        fontSize = 14.sp,
         modifier = Modifier.padding(bottom = 8.dp),
     )
 }

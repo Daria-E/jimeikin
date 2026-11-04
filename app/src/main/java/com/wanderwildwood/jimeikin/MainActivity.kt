@@ -95,6 +95,7 @@ import com.wanderwildwood.jimeikin.ui.UpNextScreen
 import com.wanderwildwood.jimeikin.ui.AboutDialog
 import com.wanderwildwood.jimeikin.ui.EditDetailsScreen
 import com.wanderwildwood.jimeikin.ui.FileUnderScreen
+import com.wanderwildwood.jimeikin.ui.houseTypography
 import com.wanderwildwood.jimeikin.ui.isEditable
 import com.wanderwildwood.jimeikin.ui.LocalIsDownloaded
 import com.wanderwildwood.jimeikin.ui.LocalAlbumActions
@@ -195,7 +196,7 @@ class MainActivity : ComponentActivity() {
             takeOpenDownloads(intent)
         }
         setContent {
-            ThemeMMD(colorScheme = monochrome) {
+            ThemeMMD(colorScheme = monochrome, typography = houseTypography) {
                 ArmedScope {
                     // A steady cursor: a blinking one repaints the panel twice a second for as long
                     // as a field has focus. Dialogs and sheets inherit it.
