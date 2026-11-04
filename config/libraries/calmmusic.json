@@ -1,0 +1,8 @@
+{
+  "uniqueId": "calmmusic",
+  "name": "CalmMusic (this app is a fork)",
+  "description": "Music Box began as a fork of CalmMusic; its code is still the base of this app.",
+  "developers": [{ "name": "David Ray Wilson" }],
+  "website": "https://github.com/davidraywilson/CalmMusic",
+  "licenses": ["GPL-3.0-only"]
+}

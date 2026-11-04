@@ -9,12 +9,14 @@ import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import java.util.Collections
 import java.util.Properties
+import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
 plugins {
     id("com.android.application")
     id("com.google.devtools.ksp") version "2.3.10"
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.mikepenz.aboutlibraries.plugin.android")
 }
 
 android {
@@ -266,3 +268,120 @@ val checkStoreApk = tasks.register("checkStoreApk") {
     }
 }
 tasks.matching { it.name == "assembleStoreRelease" }.configureEach { finalizedBy(checkStoreApk) }
+
+// The Licenses page lists what the build actually packs: this plugin walks each variant's runtime
+// dependencies and writes res/raw/aboutlibraries.json (one entry per artifact, with its POM's
+// licence). What Gradle cannot see (fonts, data sets, native code, desugaring) and licence texts
+// of our own choosing are in config/libraries and config/licenses. Offline: the build fetches
+// nothing; the full texts come from res/raw and config/licenses. The app reads the file with
+// shared-licences' LicencesJson.kt (no AboutLibraries runtime library).
+aboutLibraries {
+    offlineMode.set(true)
+    collect {
+        // config/ and config-full/ merged by licenceConfig, below
+        configPath.set(layout.buildDirectory.dir("licence-config"))
+        fetchRemoteLicense.set(false)
+        fetchRemoteFunding.set(false)
+        includePlatform.set(false)
+    }
+    export {
+        excludeFields.addAll("funding")
+    }
+    library {
+        mergePlatformArtifacts.set(true)
+        // The page lists what the release APK carries. These come only through debugImplementation
+        // (Compose's preview tooling), so a debug build would list them too.
+        exclusionPatterns.addAll(
+            listOf(
+                "androidx.compose.ui:ui-tooling", "androidx.compose.ui:ui-tooling-data",
+                "androidx.compose.ui:ui-test-manifest", "androidx.compose.material:material",
+            ).map { Pattern.compile("^" + Regex.escape(it) + "$") },
+        )
+    }
+}
+
+// Two editions, two lists. config/ is what both carry; config-full/ is what only Music Box has
+// (its YouTube parts' libraries). The plugin reads one folder for every variant and adds a config
+// entry even where the variant lacks that library, so both folders are merged here and Music Box
+// K's lists then drop config-full's entries again: not one word of them reaches its APK
+// (checkStoreApk), and no library it does not carry is on its page.
+val licenceConfig = tasks.register<Sync>("licenceConfig") {
+    from(rootProject.file("config"))
+    from(rootProject.file("config-full"))
+    into(layout.buildDirectory.dir("licence-config"))
+}
+val fullOnlyLibraries: List<String> = rootProject.file("config-full/libraries").listFiles().orEmpty()
+    .filter { it.extension == "json" }
+    .map { (groovy.json.JsonSlurper().parse(it) as Map<*, *>)["uniqueId"].toString() }
+tasks.matching { it.name.startsWith("prepareLibraryDefinitions") }.configureEach {
+    dependsOn(licenceConfig)
+    if (name.startsWith("prepareLibraryDefinitionsStore")) {
+        val drop = fullOnlyLibraries
+        inputs.property("fullOnlyLibraries", drop)
+        doLast {
+            outputs.files.asFileTree.matching { include("**/aboutlibraries.json") }.forEach { f ->
+                @Suppress("UNCHECKED_CAST")
+                val root = groovy.json.JsonSlurper().parse(f) as MutableMap<String, Any?>
+                @Suppress("UNCHECKED_CAST")
+                val libs = (root["libraries"] as List<Map<String, Any?>>).filter { it["uniqueId"] !in drop }
+                val used = libs.flatMap { (it["licenses"] as? List<*>).orEmpty() }.toSet()
+                @Suppress("UNCHECKED_CAST")
+                root["licenses"] = (root["licenses"] as Map<String, Any?>).filterKeys { it in used }
+                root["libraries"] = libs
+                f.writeText(groovy.json.JsonOutput.toJson(root))
+            }
+        }
+    }
+}
+
+// The build fails when a bundled library has no license, or a license with no full text to show
+// (neither its own text from config/licenses nor a family text in res/raw). Mudita review, 4 Nov 2026.
+val licenceRawTexts: List<String> = file("src/main/res/raw").listFiles().orEmpty().map { it.name.lowercase() }
+tasks.matching { it.name.startsWith("prepareLibraryDefinitions") }.configureEach {
+    val raw = licenceRawTexts
+    inputs.property("licenceRawTexts", raw) // so the check reruns when a text is added or removed
+    doLast {
+        fun family(n: String): String? {
+            val l = n.lowercase()
+            return when {
+                "classpath" in l -> "cpe"; "lgpl" in l || "lesser general" in l -> "lgpl"
+                "gpl" in l || "general public licen" in l -> "gpl"; "unicode" in l -> "unicode"; "apache" in l -> "apache"
+                "mpl" in l || "mozilla" in l -> "mpl"; "mit" in l.split(Regex("[^a-z]+")) -> "mit"; "bsd" in l -> "bsd"
+                "ofl" in l || "open font" in l -> "ofl"; "cc-by" in l || "cc by" in l || "cc0" in l || "public domain" in l -> "none"
+                else -> null
+            }
+        }
+        val bad = mutableListOf<String>()
+        outputs.files.asFileTree.matching { include("**/aboutlibraries.json") }.forEach { f ->
+            @Suppress("UNCHECKED_CAST")
+            val root = groovy.json.JsonSlurper().parse(f) as MutableMap<String, Any?>
+            val lics = (root["licenses"] as? Map<String, Map<String, Any?>>).orEmpty()
+            // A library's own license file (config/licenses, with its copyright line) stands in for
+            // the bare family entry its POM names: the plugin merges config entries in, it never
+            // takes one out, so a library would otherwise list "MIT" twice, once with no text.
+            var changed = false
+            (root["libraries"] as? List<MutableMap<String, Any?>>).orEmpty().forEach { lib ->
+                val keys = (lib["licenses"] as? List<String>).orEmpty()
+                fun fam(k: String) = family((lics[k]?.get("spdxId") ?: lics[k]?.get("name") ?: k).toString())
+                fun hasText(k: String) = !(lics[k]?.get("content") as? String).isNullOrBlank()
+                val own = keys.filter { hasText(it) }.mapNotNull { fam(it) }.toSet()
+                val kept = keys.filterNot { !hasText(it) && fam(it) in own }
+                if (kept != keys) { lib["licenses"] = kept; changed = true }
+            }
+            if (changed) f.writeText(groovy.json.JsonOutput.toJson(root))
+            (root["libraries"] as? List<Map<String, Any?>>).orEmpty().forEach { lib ->
+                val keys = (lib["licenses"] as? List<String>).orEmpty()
+                if (keys.isEmpty()) bad += "${lib["uniqueId"]}: no license"
+                keys.forEach { k ->
+                    val e = lics[k].orEmpty()
+                    if ((e["content"] as? String).isNullOrBlank()) {
+                        val fam = family((e["spdxId"] ?: e["name"] ?: k).toString())
+                        if (fam == null || (fam != "none" && raw.none { fam in it }))
+                            bad += "${lib["uniqueId"]}: no text for ${e["name"] ?: k}"
+                    }
+                }
+            }
+        }
+        if (bad.isNotEmpty()) throw GradleException("Licenses page: add the text in config/licenses or res/raw: " + bad.distinct().joinToString("; "))
+    }
+}

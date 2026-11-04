@@ -1,0 +1,18 @@
+{
+  "uniqueId": "com.github.TeamNewPipe:nanojson",
+  "name": "nanojson (NewPipe's fork)",
+  "description": "A small JSON parser, in TeamNewPipe's fork; its source files carry the Apache License 2.0 notice, Copyright 2011 The nanojson Authors.",
+  "developers": [
+    {
+      "name": "The nanojson Authors"
+    }
+  ],
+  "organization": {
+    "name": "Team NewPipe",
+    "url": "https://newpipe.net"
+  },
+  "website": "https://github.com/TeamNewPipe/nanojson",
+  "licenses": [
+    "Apache-2.0"
+  ]
+}
