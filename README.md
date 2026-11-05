@@ -66,10 +66,11 @@ is reported as unread, and nothing under it leaves the library.
 
 ## A music server
 
-Settings → **Music server**. Address, username, password, and it reads the whole library in
-one go — artists, albums and songs appear beside the music on the card rather than in a room
-of their own. Anything Subsonic answers works: Navidrome, Airsonic, Gonic. So does Jellyfin:
-tap **Server type** at the top of the page to switch to it.
+Settings → **Music server**: a Subsonic, Navidrome or Jellyfin server, one server at a time.
+Address, username, password, and it reads the whole library in one go — artists, albums and
+songs appear beside the music on the card rather than in a room of their own. Anything
+Subsonic answers works: Navidrome, Airsonic, Gonic. For Jellyfin, tap **Server type** at the
+top of the page to switch to it; setting up one server replaces the other.
 A swipe down at the top of Artists, Albums, Songs or Playlists reads the server again, where there is one, and the music folders on the phone.
 
 A song held both on the server and on the card is shown once, and it is the copy on the card
