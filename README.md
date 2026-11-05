@@ -180,6 +180,11 @@ Needs headphones — they are the aerial.
 One now-playing queue, mixing local files and YouTube tracks. Shuffle and repeat without
 losing your place. The Now Playing screen is large type and little else.
 
+The skip buttons on headphones, a Bluetooth speaker or the lock screen go through the same
+queue: next plays the next song, and previous starts the song again, or goes back one when
+pressed in its first three seconds. Settings can make them skip ahead 30 seconds and back 10
+instead.
+
 ## Opening a file from another app
 
 Music Box is offered for any audio file — "Open with" in a file manager, a download, an
