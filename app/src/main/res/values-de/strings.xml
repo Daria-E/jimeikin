@@ -461,6 +461,9 @@
 
     <!-- Settings switch: the song playing is handed to the Glance app for its lock-screen panel -->
     <string name="settings_playing_on_lock_screen">Zeigen, was in Glance läuft</string>
+    <string name="settings_skip_buttons">Vor- und Zurück-Tasten am Headset</string>
+    <string name="settings_skip_buttons_songs">Nächster und vorheriger Titel</string>
+    <string name="settings_skip_buttons_seek">30 s vor und 10 s zurück</string>
     <!-- Row title: whether the app may keep playing in the background -->
     <!-- Settings row for the optional lock-screen music controls, which are turned on in Android's Accessibility settings -->
     <string name="settings_lockscreen_controls">Sperrbildschirm-Steuerung</string>
@@ -479,7 +482,6 @@
     <!-- About dialog. Keep the names of the app, people, projects and licences as they are -->
     <!-- Heading. %1$s is the version number, e.g. 2.8.14 -->
     <string name="about_title">Music Box %1$s</string>
-    <string name="about_paging">Lange Listen blättern seitenweise. Die Leiste rechts zeigt, wo du bist: tippe auf einen Pfeil, um umzublättern, oder auf die Leiste, um dorthin zu springen.</string>
     <string name="hint_hold_song">Halte einen Titel gedrückt für „Als Nächstes spielen“ und „Zur Warteschlange hinzufügen“.</string>
     <string name="about_privacy_heading">Datenschutz</string>
     <string name="about_privacy_close">Es gibt keine Werbung, keine Analysen und kein Tracking. Heruntergeladene Titel werden in Music/Music Box gespeichert, wo andere Apps auf dem Telefon sie sehen können. Die Sperrbildschirm-Steuerung ist, wenn du sie einschaltest, ein Bedienungshilfen-Dienst, der die Schaltflächen dieser App über den Sperrbildschirm legt und sonst nichts liest. „Zeigen, was in Glance läuft“ übergibt, wenn du es einschaltest, den Namen des Titels an Glance auf diesem Telefon.</string>
@@ -768,4 +770,8 @@
     <string name="privacy_rights_title">Deine Rechte</string>
     <string name="privacy_rights">Nach der DSGVO kannst du Auskunft über die Daten verlangen, die über dich gespeichert sind, sie berichtigen oder löschen lassen, ihre Verarbeitung einschränken lassen oder ihr widersprechen, eine Kopie mitnehmen, eine Einwilligung widerrufen und dich bei einer Datenschutzbehörde beschweren. Da die App alles, was sie speichert, nur auf deinem Telefon ablegt, kannst du das meiste davon selbst tun: Titel, Playlists und Sender in der App entfernen, Playlists und Sender mit Sicherung speichern sichern, heruntergeladene Titel in Music/Music Box löschen (gewöhnliche Dateien, die nach dem Deinstallieren bleiben), die App-Daten in den Android-Einstellungen löschen oder die App deinstallieren. Für das, was radio.garden, Radio Browser und Zippopotam.us erhalten, gelten deren eigene Datenschutzerklärungen. Ein eigener Server gehört dir: Was er speichert, bestimmst du.</string>
     <!-- /shared-about -->
+    <string name="about_open_drawer">%1$s öffnen</string>
+    <string name="about_close_drawer">%1$s schließen</string>
+    <string name="about_contact_head">Kontakt</string>
+    <string name="about_links_head">Links</string>
 </resources>

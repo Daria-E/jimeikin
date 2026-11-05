@@ -429,6 +429,9 @@
     </plurals>
     <!-- Settings switch: the song playing is handed to the Glance app for its lock-screen panel -->
     <string name="settings_playing_on_lock_screen">Afficher la lecture en cours dans Glance</string>
+    <string name="settings_skip_buttons">Boutons suivant et précédent du casque</string>
+    <string name="settings_skip_buttons_songs">Morceau suivant et précédent</string>
+    <string name="settings_skip_buttons_seek">Avancer de 30 s et reculer de 10 s</string>
     <!-- Row title: whether the app may keep playing in the background -->
     <!-- Settings row for the optional lock-screen music controls, which are turned on in Android's Accessibility settings -->
     <string name="settings_lockscreen_controls">Contrôles sur l\'écran de verrouillage</string>
@@ -691,4 +694,8 @@
         <item quantity="one">%1$d station de radio</item>
         <item quantity="other">%1$d stations de radio</item>
     </plurals>
+    <string name="about_open_drawer">Ouvrir %1$s</string>
+    <string name="about_close_drawer">Fermer %1$s</string>
+    <string name="about_contact_head">Contact</string>
+    <string name="about_links_head">Liens</string>
 </resources>
