@@ -1,5 +1,7 @@
 package com.wanderwildwood.jimeikin
 
+import com.wanderwildwood.jimeikin.data.clientFor
+import com.wanderwildwood.jimeikin.data.serverClient
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import android.app.Activity
@@ -818,12 +820,31 @@ fun CalmMusic(
         isServerBusy = true
         serverStatus = context.getString(R.string.main_server_connecting)
         libraryScope.launch {
-            val client = com.wanderwildwood.jimeikin.data.SubsonicClient(
-                config = entered,
-                resources = context.resources,
-                initialAuth = settingsManager.getSubsonicAuth(entered),
-                onAuthLearned = { settingsManager.setSubsonicAuth(entered, it) },
-            )
+            // Jellyfin is sent the password once, here, and hands back a token to keep instead.
+            // Connecting again with the password left empty uses the sign-in already kept.
+            var login = entered
+            if (entered.kind == com.wanderwildwood.jimeikin.data.ServerKind.JELLYFIN && entered.password.isNotEmpty()) {
+                when (
+                    val signedIn = com.wanderwildwood.jimeikin.data.JellyfinClient.signIn(
+                        entered,
+                        context.resources,
+                        settingsManager.jellyfinDeviceId(),
+                    )
+                ) {
+                    is com.wanderwildwood.jimeikin.data.SubsonicResult.Failure -> {
+                        serverStatus = signedIn.message
+                        isServerBusy = false
+                        return@launch
+                    }
+                    is com.wanderwildwood.jimeikin.data.SubsonicResult.Success -> login = signedIn.value
+                }
+            }
+            val client = settingsManager.clientFor(login, context.resources)
+            if (client == null) {
+                serverStatus = context.getString(R.string.service_subsonic_login_refused)
+                isServerBusy = false
+                return@launch
+            }
             when (val ping = client.ping()) {
                 is com.wanderwildwood.jimeikin.data.SubsonicResult.Failure -> {
                     serverStatus = ping.message
@@ -833,7 +854,7 @@ fun CalmMusic(
                 is com.wanderwildwood.jimeikin.data.SubsonicResult.Success -> Unit
             }
 
-            settingsManager.setSubsonicConfig(entered)
+            settingsManager.setSubsonicConfig(login)
             serverStatus = context.getString(R.string.main_server_reading_library)
 
             val database = com.wanderwildwood.jimeikin.data.CalmMusicDatabase.getDatabase(app)
@@ -890,14 +911,11 @@ fun CalmMusic(
             if (config != null) {
                 isServerBusy = true
                 pullSaid = context.getString(R.string.main_pull_checking_server)
-                val client = com.wanderwildwood.jimeikin.data.SubsonicClient(
-                    config = config,
-                    resources = context.resources,
-                    initialAuth = settingsManager.getSubsonicAuth(config),
-                    onAuthLearned = { settingsManager.setSubsonicAuth(config, it) },
-                )
+                val client = settingsManager.clientFor(config, context.resources)
                 val database = com.wanderwildwood.jimeikin.data.CalmMusicDatabase.getDatabase(app)
-                val result = com.wanderwildwood.jimeikin.data.SubsonicSync.sync(
+                val result = if (client == null) {
+                    com.wanderwildwood.jimeikin.data.SubsonicResult.Failure(context.getString(R.string.service_jellyfin_signed_out))
+                } else com.wanderwildwood.jimeikin.data.SubsonicSync.sync(
                     client = client,
                     songDao = database.songDao(),
                     albumDao = database.albumDao(),
@@ -1049,6 +1067,9 @@ fun CalmMusic(
     /** The server keeps everything; this phone stops listing it. */
     fun forgetMusicServer() {
         libraryScope.launch {
+            // A Jellyfin sign-in is ended on the server too, so the token kept until now stops
+            // working there. Forgetting goes ahead whether or not the server can be reached.
+            (settingsManager.serverClient(context.resources) as? com.wanderwildwood.jimeikin.data.JellyfinClient)?.signOut()
             val database = com.wanderwildwood.jimeikin.data.CalmMusicDatabase.getDatabase(app)
             com.wanderwildwood.jimeikin.data.SubsonicSync.forget(
                 songDao = database.songDao(),

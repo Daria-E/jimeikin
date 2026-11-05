@@ -32,7 +32,7 @@ object SubsonicSync {
     private fun playlistId(id: String) = "SUBSONIC:PLAYLIST:$id"
 
     suspend fun sync(
-        client: SubsonicClient,
+        client: MusicServerClient,
         songDao: SongDao,
         albumDao: AlbumDao,
         artistDao: ArtistDao,
@@ -86,7 +86,7 @@ object SubsonicSync {
         return SubsonicResult.Success(songs.size)
     }
 
-    private fun songEntity(client: SubsonicClient, song: SubsonicSong, album: SubsonicAlbum?) = SongEntity(
+    private fun songEntity(client: MusicServerClient, song: SubsonicSong, album: SubsonicAlbum?) = SongEntity(
         id = songId(song.id),
         title = song.title,
         artist = song.artist,
@@ -121,7 +121,7 @@ object SubsonicSync {
      * Rows already here are left as they are. Null when the server no longer has the song.
      */
     suspend fun addToLibrary(
-        client: SubsonicClient,
+        client: MusicServerClient,
         serverSongId: String,
         songDao: SongDao,
         albumDao: AlbumDao,
@@ -166,7 +166,7 @@ object SubsonicSync {
      * itself, so without this every one of them would arrive twice.
      */
     private suspend fun syncPlaylists(
-        client: SubsonicClient,
+        client: MusicServerClient,
         songDao: SongDao,
         playlistDao: PlaylistDao,
     ) {

@@ -570,6 +570,10 @@
     <string name="hearted_empty">No hearted songs. Hold a song and choose Heart.</string>
 
     <!-- Music server screen: where a Navidrome or other Subsonic server is entered -->
+    <!-- Row at the top of the music server screen; tapping it switches between the two kinds below -->
+    <string name="library_server_kind">Server type</string>
+    <string name="library_server_kind_subsonic">Navidrome or another Subsonic server</string>
+    <string name="library_server_kind_jellyfin" translatable="false">Jellyfin</string>
     <!-- Text field label: the server's address -->
     <string name="library_server_address">Address</string>
     <!-- Text field label -->
@@ -583,6 +587,8 @@
     <string name="library_server_password_note">The password is kept on this phone. It is not sent to the server: each request carries a one-time signature made from it instead. Anyone who can read your network can still replay a request, so a server reachable from outside the house wants https.</string>
     <!-- In place of the note above, once the server has turned out not to take the signature -->
     <string name="library_server_password_note_sent">The password is kept on this phone. This server does not take a one-time signature, so the password itself is sent with each request. Anyone who can read your network can read it, so a server reachable from outside the house wants https.</string>
+    <!-- In place of the notes above for a Jellyfin server -->
+    <string name="library_server_password_note_jellyfin">The password is sent once, to sign in, and is not kept. This phone keeps the sign-in the server hands back instead, sealed with a key in the phone\'s keystore, and every request carries it. Anyone who can read your network can read it, so a server reachable from outside the house wants https.</string>
     <string name="library_server_address_note">A server at home without a certificate: type http:// in front of its address.</string>
     <string name="library_server_plain_http">This is plain http, and the address is not on a home network: anyone between this phone and the server can read what is sent. Use https if the server has it.</string>
     <!-- Settings row under Music server. Tapping it steps through the values below. -->
@@ -708,6 +714,9 @@
     <string name="service_subsonic_not_allowed">That account is not allowed to read the library.</string>
     <string name="service_subsonic_refused">The server refused the request.</string>
     <string name="service_subsonic_unreachable">The server could not be reached.</string>
+    <!-- Jellyfin: the kept sign-in was refused, as when it was signed out from the server's dashboard -->
+    <string name="service_jellyfin_signed_out">The server no longer takes this sign-in. Type the password and connect again.</string>
+    <string name="service_jellyfin_not_jellyfin">That address answered, but not like a Jellyfin server.</string>
 
     <!-- On Glance's lock-screen panel, beside "Song — Artist" -->
     <string name="glance_playing">Playing</string>

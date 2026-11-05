@@ -28,13 +28,14 @@ import androidx.compose.ui.unit.dp
 import com.mudita.mmd.components.buttons.ButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.text_field.TextFieldMMD
+import com.wanderwildwood.jimeikin.data.ServerKind
 import com.wanderwildwood.jimeikin.data.SubsonicConfig
 import com.wanderwildwood.jimeikin.R
 
 /**
- * Where a Navidrome — or any Subsonic — server is entered.
+ * Where a music server is entered: Navidrome or any other Subsonic server, or Jellyfin.
  *
- * Three fields and one button. Connecting reads the whole library in one go rather than
+ * Which kind, three fields and one button. Connecting reads the whole library in one go rather than
  * asking as you browse, so what the server holds is on the Songs, Albums and Artists screens
  * beside the music on the card, and stays listed when the phone is away from the network;
  * playing one then needs the network, which the dotted rule under its row says.
@@ -48,6 +49,7 @@ fun MusicServerScreen(
     onConnectClick: (SubsonicConfig) -> Unit,
     onForgetClick: () -> Unit,
 ) {
+    var kind by rememberSaveable { mutableStateOf(config?.kind ?: ServerKind.SUBSONIC) }
     var address by rememberSaveable { mutableStateOf(config?.baseUrl ?: "") }
     var user by rememberSaveable { mutableStateOf(config?.user ?: "") }
     var password by rememberSaveable { mutableStateOf(config?.password ?: "") }
@@ -59,6 +61,7 @@ fun MusicServerScreen(
     // looks like it kept your password is not much better than one that did.
     LaunchedEffect(config) {
         if (config == null) {
+            kind = ServerKind.SUBSONIC
             address = ""
             user = ""
             password = ""
@@ -76,12 +79,38 @@ fun MusicServerScreen(
                 .fillMaxWidth()
                 .padding(16.dp),
         ) {
+            // A tap steps to the other kind, the value shown under the name as on Settings.
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .clickable(enabled = !isBusy) {
+                        kind = if (kind == ServerKind.SUBSONIC) ServerKind.JELLYFIN else ServerKind.SUBSONIC
+                        // A password typed or kept for one kind is not sent to the other.
+                        password = ""
+                    }
+                    .padding(vertical = 8.dp),
+            ) {
+                TextMMD(text = stringResource(R.string.library_server_kind), style = MaterialTheme.typography.titleSmall)
+                TextMMD(
+                    text = stringResource(
+                        if (kind == ServerKind.JELLYFIN) R.string.library_server_kind_jellyfin
+                        else R.string.library_server_kind_subsonic,
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             TextFieldMMD(
                 modifier = Modifier.fillMaxWidth(),
                 value = address,
                 onValueChange = { address = it },
                 label = { TextMMD(text = stringResource(R.string.library_server_address)) },
-                placeholder = { TextMMD(text = "music.example.org") },
+                placeholder = {
+                    TextMMD(text = if (kind == ServerKind.JELLYFIN) "jellyfin.example.org" else "music.example.org")
+                },
                 singleLine = true,
                 readOnly = isBusy,
             )
@@ -120,7 +149,14 @@ fun MusicServerScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            val entered = SubsonicConfig(address, user, password)
+            // A Jellyfin login kept from before is used again when the password is left empty
+            // and the address and name are the ones it was made for: the password is not kept,
+            // so the field is empty every time this screen opens.
+            val kept = config?.takeIf {
+                kind == ServerKind.JELLYFIN && password.isEmpty() && it.kind == ServerKind.JELLYFIN &&
+                    it.baseUrl.trim() == address.trim() && it.user.trim() == user.trim()
+            }
+            val entered = kept ?: SubsonicConfig(address, user, password, kind)
             ButtonMMD(
                 onClick = { if (entered.isComplete && !isBusy) onConnectClick(entered) },
                 modifier = Modifier.fillMaxWidth(),
@@ -140,8 +176,11 @@ fun MusicServerScreen(
 
             TextMMD(
                 text = stringResource(
-                    if (sendsPassword) R.string.library_server_password_note_sent
-                    else R.string.library_server_password_note,
+                    when {
+                        kind == ServerKind.JELLYFIN -> R.string.library_server_password_note_jellyfin
+                        sendsPassword -> R.string.library_server_password_note_sent
+                        else -> R.string.library_server_password_note
+                    },
                 ),
                 style = MaterialTheme.typography.labelSmall,
             )
