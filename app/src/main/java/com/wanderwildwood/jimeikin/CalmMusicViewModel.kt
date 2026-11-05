@@ -47,7 +47,7 @@ import com.wanderwildwood.jimeikin.data.NamedAlbumDao
 import com.wanderwildwood.jimeikin.data.NamedArtistDao
 import com.wanderwildwood.jimeikin.data.NamedSongDao
 import com.wanderwildwood.jimeikin.data.SubsonicAlbum
-import com.wanderwildwood.jimeikin.data.SubsonicClient
+import com.wanderwildwood.jimeikin.data.MusicServerClient
 import com.wanderwildwood.jimeikin.data.SubsonicDownloader
 import com.wanderwildwood.jimeikin.data.SubsonicResult
 import com.wanderwildwood.jimeikin.data.SubsonicSong
@@ -522,10 +522,10 @@ class CalmMusicViewModel(
         sourceType == SubsonicSync.SOURCE_TYPE || sourceType == SubsonicDownloader.SOURCE_TYPE
 
     /** A client for the music server set up in Settings, or null when there is none. */
-    private fun serverClient(): SubsonicClient? = app.settingsManager.serverClient(app.resources)
+    private fun serverClient(): MusicServerClient? = app.settingsManager.serverClient(app.resources)
 
     /** The server's own record of a song: the album and artist ids its library row does not keep. */
-    private suspend fun serverSongFor(client: SubsonicClient, song: SongUiModel): SubsonicSong? {
+    private suspend fun serverSongFor(client: MusicServerClient, song: SongUiModel): SubsonicSong? {
         val id = SubsonicSync.serverSongId(song.id) ?: return null
         return (client.fetchSong(id) as? SubsonicResult.Success)?.value
     }
@@ -577,7 +577,7 @@ class CalmMusicViewModel(
         java.util.concurrent.ConcurrentHashMap<String, Pair<SubsonicAlbum, List<SubsonicSong>>>()
 
     private suspend fun serverAlbum(
-        client: SubsonicClient,
+        client: MusicServerClient,
         serverAlbumId: String,
     ): SubsonicResult<Pair<SubsonicAlbum, List<SubsonicSong>>> {
         val cacheKey = (app.settingsManager.subsonicConfig.value?.normalisedBaseUrl ?: "") + "\n" + serverAlbumId
@@ -604,7 +604,7 @@ class CalmMusicViewModel(
         asTheLibraryPlaysThem(client, listing.second)
     }
 
-    private suspend fun asTheLibraryPlaysThem(client: SubsonicClient, songs: List<SubsonicSong>): List<SongUiModel> {
+    private suspend fun asTheLibraryPlaysThem(client: MusicServerClient, songs: List<SubsonicSong>): List<SongUiModel> {
         val all = songDao.getAllSongs()
         val rows = all.associateBy { it.id }
         val onThisPhone = all

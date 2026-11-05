@@ -1,7 +1,7 @@
 # Music Box K
 
 A music player for the [Mudita Kompakt](https://mudita.com/products/mudita-kompakt): the music
-on the phone and its card, a Navidrome or other Subsonic server of your own, and internet
+on the phone and its card, a Navidrome, other Subsonic or Jellyfin server of your own, and internet
 radio, on the e-ink screen and in Mudita's MMD design.
 
 Music Box K has no streaming service in it: what it plays is on the phone and card, on a server of your own, or on internet radio. It is the one offered in Mudita's store, and an app of
@@ -28,7 +28,8 @@ Hold a song and choose **Heart** to mark it; a **Hearted** list heads Playlists.
 ## A music server
 
 Settings → **Music server**. Address, username, password, and it reads the whole library in one
-go, beside the music on the card. Anything Subsonic answers works: Navidrome, Airsonic, Gonic.
+go, beside the music on the card. Anything Subsonic answers works: Navidrome, Airsonic, Gonic,
+and so does Jellyfin (tap **Server type** at the top of the page).
 A song held both on the server and on the card is shown once, as the copy on the card. A dotted
 rule under a row means it needs the network.
 

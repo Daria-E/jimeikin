@@ -40,11 +40,16 @@ class CalmMusicSettingsManager(context: Context) {
         prefs.getInt(KEY_SUBSONIC_MAX_BITRATE, 0).takeIf { it > 0 }
 
     /**
-     * The music server's address and login. The password has to be kept, not just a token:
-     * Subsonic signs each request with md5(password + a fresh salt), so the password itself
-     * is needed every time. The About says so.
+     * The music server's address and login.
+     *
+     * For a Subsonic server the password has to be kept, not just a token: Subsonic signs
+     * each request with md5(password + a fresh salt), so the password itself is needed every
+     * time. The About says so. For Jellyfin only the token its sign-in handed back is kept,
+     * and the password is never written: a Jellyfin login that has not been signed in yet is
+     * not stored at all.
      */
     fun setSubsonicConfig(config: SubsonicConfig?) {
+        val keep = config?.takeIf { it.isComplete && (it.kind != ServerKind.JELLYFIN || it.isSignedIn) }
         prefs.edit {
             // What one server wanted says nothing about another, or about another account.
             if (config == null || prefs.getString(KEY_SUBSONIC_AUTH_FOR, null) != authKey(config)) {
@@ -52,20 +57,31 @@ class CalmMusicSettingsManager(context: Context) {
                 remove(KEY_SUBSONIC_AUTH_VERSION)
                 remove(KEY_SUBSONIC_AUTH_PASSWORD_FORM)
             }
-            if (config == null || !config.isComplete) {
+            remove(KEY_SUBSONIC_PASSWORD)
+            remove(KEY_JELLYFIN_TOKEN)
+            remove(KEY_JELLYFIN_USER_ID)
+            if (keep == null) {
                 remove(KEY_SUBSONIC_URL)
                 remove(KEY_SUBSONIC_USER)
-                remove(KEY_SUBSONIC_PASSWORD)
+                remove(KEY_SERVER_KIND)
             } else {
-                putString(KEY_SUBSONIC_URL, config.baseUrl)
-                putString(KEY_SUBSONIC_USER, config.user)
+                putString(KEY_SUBSONIC_URL, keep.baseUrl)
+                putString(KEY_SUBSONIC_USER, keep.user)
+                putString(KEY_SERVER_KIND, keep.kind.name)
                 // Sealed with a key held in the phone's keystore - see [Secrets]. If sealing
-                // fails the password is not written at all rather than written in the clear.
-                putString(KEY_SUBSONIC_PASSWORD, Secrets.seal(config.password))
+                // fails the secret is not written at all rather than written in the clear.
+                when (keep.kind) {
+                    ServerKind.SUBSONIC -> putString(KEY_SUBSONIC_PASSWORD, Secrets.seal(keep.password))
+                    ServerKind.JELLYFIN -> {
+                        putString(KEY_JELLYFIN_TOKEN, Secrets.seal(keep.token))
+                        putString(KEY_JELLYFIN_USER_ID, keep.userId)
+                    }
+                }
             }
         }
-        _subsonicConfig.value = if (config?.isComplete == true) config else null
-        _subsonicSendsPassword.value = _subsonicConfig.value?.let { getSubsonicAuth(it).sendsPassword } ?: false
+        // What is held in memory is what was written: never a Jellyfin password.
+        _subsonicConfig.value = keep?.let { if (it.kind == ServerKind.JELLYFIN) it.copy(password = "") else it }
+        _subsonicSendsPassword.value = _subsonicConfig.value?.takeIf { it.kind == ServerKind.SUBSONIC }?.let { getSubsonicAuth(it).sendsPassword } ?: false
     }
 
     /**
@@ -93,7 +109,7 @@ class CalmMusicSettingsManager(context: Context) {
     }
 
     private val _subsonicSendsPassword = MutableStateFlow(
-        _subsonicConfig.value?.let { getSubsonicAuth(it).sendsPassword } ?: false,
+        _subsonicConfig.value?.takeIf { it.kind == ServerKind.SUBSONIC }?.let { getSubsonicAuth(it).sendsPassword } ?: false,
     )
 
     /** Whether the stored server is one that is sent the password itself, for the server screen's note. */
@@ -110,6 +126,11 @@ class CalmMusicSettingsManager(context: Context) {
             prefs.edit { putString(KEY_SUBSONIC_URL, url) }
         }
         val user = prefs.getString(KEY_SUBSONIC_USER, null) ?: return null
+        if (ServerKind.fromStored(prefs.getString(KEY_SERVER_KIND, null)) == ServerKind.JELLYFIN) {
+            val token = Secrets.open(prefs.getString(KEY_JELLYFIN_TOKEN, null)) ?: return null
+            val userId = prefs.getString(KEY_JELLYFIN_USER_ID, null) ?: return null
+            return SubsonicConfig(url, user, "", ServerKind.JELLYFIN, token, userId).takeIf { it.isComplete }
+        }
         val stored = prefs.getString(KEY_SUBSONIC_PASSWORD, null) ?: return null
         val password = Secrets.open(stored) ?: return null
         // A password written by an older version is in the clear. Seal it where it lies, the
@@ -120,6 +141,18 @@ class CalmMusicSettingsManager(context: Context) {
             }
         }
         return SubsonicConfig(url, user, password).takeIf { it.isComplete }
+    }
+
+    /**
+     * This install's name for itself on a Jellyfin server, made once. Jellyfin lists a sign-in
+     * by device, so signing in again replaces this phone's entry instead of adding another.
+     * Random, and nothing to do with the phone's own identifiers.
+     */
+    fun jellyfinDeviceId(): String {
+        prefs.getString(KEY_JELLYFIN_DEVICE_ID, null)?.takeIf { it.isNotBlank() }?.let { return it }
+        val made = java.util.UUID.randomUUID().toString().replace("-", "")
+        prefs.edit { putString(KEY_JELLYFIN_DEVICE_ID, made) }
+        return made
     }
 
     fun getLastLocalLibraryScanMillis(): Long {
@@ -220,6 +253,10 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_SUBSONIC_AUTH_VERSION = "subsonic_auth_version"
         private const val KEY_SUBSONIC_AUTH_PASSWORD_FORM = "subsonic_auth_password_form"
         private const val KEY_SUBSONIC_MAX_BITRATE = "subsonic_max_bitrate"
+        private const val KEY_SERVER_KIND = "server_kind"
+        private const val KEY_JELLYFIN_TOKEN = "jellyfin_token"
+        private const val KEY_JELLYFIN_USER_ID = "jellyfin_user_id"
+        private const val KEY_JELLYFIN_DEVICE_ID = "jellyfin_device_id"
         private const val KEY_INCLUDE_LOCAL_MUSIC = "include_local_music"
         private const val KEY_LOCAL_MUSIC_FOLDERS = "local_music_folders"
         private const val KEY_LAST_LOCAL_LIBRARY_SCAN_MILLIS = "last_local_library_scan_millis"

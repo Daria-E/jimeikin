@@ -17,8 +17,8 @@
 
     <!-- About -->
     <string name="about_what">Plays the music on this phone and on your own music server, and internet radio.</string>
-    <string name="about_privacy_phone">Your library, playlists, queue, hearts and settings stay on this phone. A music server\'s password is sealed with a key in the phone\'s keystore before it is saved. Nothing is sent to the app\'s maker.</string>
-    <string name="about_privacy_online">The app goes online only for what you use: your own music server (Navidrome or another Subsonic server) at the address you type in; radio.garden, to browse stations (and Radio Browser, when a search finds nothing there), and each station\'s own stream while it plays; and api.zippopotam.us, only for a US or Canadian postal code typed into the radio search. A server on a home network is often plain http, so what goes to it is not encrypted.</string>
+    <string name="about_privacy_phone">Your library, playlists, queue, hearts and settings stay on this phone. A music server\'s password (for Jellyfin, the sign-in it hands back instead; the password is not kept) is sealed with a key in the phone\'s keystore before it is saved. Nothing is sent to the app\'s maker.</string>
+    <string name="about_privacy_online">The app goes online only for what you use: your own music server (Navidrome or another Subsonic server, or Jellyfin) at the address you type in, and nowhere else, each request carrying your sign-in to it; radio.garden, to browse stations (and Radio Browser, when a search finds nothing there), and each station\'s own stream while it plays; and api.zippopotam.us, only for a US or Canadian postal code typed into the radio search. A server on a home network is often plain http, so what goes to it is not encrypted.</string>
     <string name="about_terms">This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk. Radio stations and music servers are run by others, under their own terms.</string>
     <string name="library_artist_online_failed">The rest of their albums could not be fetched.</string>
 </resources>

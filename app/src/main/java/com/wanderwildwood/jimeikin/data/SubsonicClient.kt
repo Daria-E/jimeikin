@@ -41,7 +41,7 @@ class SubsonicClient(
     private val resources: Resources,
     initialAuth: SubsonicAuth = SubsonicAuth(),
     private val onAuthLearned: (SubsonicAuth) -> Unit = {},
-) {
+) : MusicServerClient {
 
     private val http = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
@@ -51,26 +51,26 @@ class SubsonicClient(
         .build()
 
     /** Whether the server is there and the credentials are right. */
-    suspend fun ping(): SubsonicResult<Unit> = request("ping").map { }
+    override suspend fun ping(): SubsonicResult<Unit> = request("ping").map { }
 
     /**
      * Everything the library needs: the albums and the songs on each, by whichever route the
      * server supports. See [SubsonicLibraryReader].
      */
-    suspend fun fetchLibrary(
-        onProgress: suspend (SubsonicProgress) -> Unit = {},
+    override suspend fun fetchLibrary(
+        onProgress: suspend (SubsonicProgress) -> Unit,
     ): SubsonicResult<SubsonicLibrary> =
         SubsonicLibraryReader { method, params -> request(method, params) }.read(onProgress)
 
     /** One album and its songs, straight from the server. See [SubsonicLibraryReader.readAlbum]. */
-    suspend fun fetchAlbum(albumId: String): SubsonicResult<Pair<SubsonicAlbum, List<SubsonicSong>>> =
+    override suspend fun fetchAlbum(albumId: String): SubsonicResult<Pair<SubsonicAlbum, List<SubsonicSong>>> =
         reader.readAlbum(albumId)
 
     /** One song, or null when the server no longer has it. */
-    suspend fun fetchSong(songId: String): SubsonicResult<SubsonicSong?> = reader.readSong(songId)
+    override suspend fun fetchSong(songId: String): SubsonicResult<SubsonicSong?> = reader.readSong(songId)
 
     /** An artist's name and albums. */
-    suspend fun fetchArtist(artistId: String): SubsonicResult<Pair<String, List<SubsonicAlbum>>> =
+    override suspend fun fetchArtist(artistId: String): SubsonicResult<Pair<String, List<SubsonicAlbum>>> =
         reader.readArtist(artistId)
 
     private val reader get() = SubsonicLibraryReader { method, params -> request(method, params) }
@@ -85,7 +85,7 @@ class SubsonicClient(
      * is the whole reason the Subsonic API takes a format at all. Without that those records
      * would be listed and then refuse to play.
      */
-    fun streamUrl(songId: String, suffix: String?): String {
+    override fun streamUrl(songId: String, suffix: String?): String {
         val playable = suffix != null && suffix.lowercase() in PLAYABLE_SUFFIXES
         return url(
             "stream",
@@ -99,7 +99,7 @@ class SubsonicClient(
      *
      * Two calls per playlist is the API's shape: one for the list, one for the contents.
      */
-    suspend fun fetchPlaylists(): SubsonicResult<List<SubsonicPlaylist>> {
+    override suspend fun fetchPlaylists(): SubsonicResult<List<SubsonicPlaylist>> {
         val body = when (val r = request("getPlaylists")) {
             is SubsonicResult.Failure -> return r
             is SubsonicResult.Success -> r.value
@@ -150,7 +150,7 @@ class SubsonicClient(
     private var passwordForm = initialAuth.passwordForm
 
     /** True once the server has turned out not to take tokens: the password goes as itself. */
-    val sendsPassword: Boolean get() = passwordForm || isOlder(apiVersion, TOKENS_SINCE)
+    override val sendsPassword: Boolean get() = passwordForm || isOlder(apiVersion, TOKENS_SINCE)
 
     private suspend fun request(
         method: String,
@@ -276,22 +276,33 @@ class SubsonicClient(
         const val ERROR_NO_TOKENS = 41
         const val CLIENT_NAME = "jimeikin"
 
-        /** What media3 can decode on this phone without help from the server. */
-        val PLAYABLE_SUFFIXES = setOf(
-            "mp3", "m4a", "m4b", "aac", "mp4", "flac", "ogg", "oga", "opus", "wav", "mka",
-        )
     }
 }
 
+/** What media3 can decode on this phone without help from the server. */
+internal val PLAYABLE_SUFFIXES = setOf(
+    "mp3", "m4a", "m4b", "aac", "mp4", "flac", "ogg", "oga", "opus", "wav", "mka",
+)
+
 /** A client for the music server set up in Settings, or null when there is none. */
-fun CalmMusicSettingsManager.serverClient(resources: Resources): SubsonicClient? {
-    val config = subsonicConfig.value?.takeIf { it.isComplete } ?: return null
-    return SubsonicClient(
-        config = config,
-        resources = resources,
-        initialAuth = getSubsonicAuth(config),
-        onAuthLearned = { setSubsonicAuth(config, it) },
-    )
+fun CalmMusicSettingsManager.serverClient(resources: Resources): MusicServerClient? =
+    subsonicConfig.value?.let { clientFor(it, resources) }
+
+/**
+ * A client for [config], of the kind it names. Null for a Jellyfin login that has not signed
+ * in yet: that takes [JellyfinClient.signIn] first.
+ */
+fun CalmMusicSettingsManager.clientFor(config: SubsonicConfig, resources: Resources): MusicServerClient? {
+    if (!config.isComplete) return null
+    return when (config.kind) {
+        ServerKind.SUBSONIC -> SubsonicClient(
+            config = config,
+            resources = resources,
+            initialAuth = getSubsonicAuth(config),
+            onAuthLearned = { setSubsonicAuth(config, it) },
+        )
+        ServerKind.JELLYFIN -> if (config.isSignedIn) JellyfinClient(config, resources, jellyfinDeviceId()) else null
+    }
 }
 
 /**
@@ -306,11 +317,28 @@ data class SubsonicAuth(
     val sendsPassword: Boolean get() = passwordForm || (apiVersion != null && isOlder(apiVersion, "1.13.0"))
 }
 
+/**
+ * A music server's address and login, whichever kind it is.
+ *
+ * For a Subsonic server [password] is the password, kept because every request is signed with
+ * it. A Jellyfin server is sent the password once, to sign in, and hands back a [token] that
+ * every later request carries instead; so for Jellyfin [password] is only ever what was just
+ * typed, and what is kept is the token and the account's [userId].
+ */
 data class SubsonicConfig(
     val baseUrl: String,
     val user: String,
     val password: String,
+    val kind: ServerKind = ServerKind.SUBSONIC,
+    val token: String? = null,
+    val userId: String? = null,
 ) {
+    /** A Jellyfin login that has been through the sign-in and need not send the password again. */
+    val isSignedIn: Boolean get() = !token.isNullOrBlank() && !userId.isNullOrBlank()
+
+    /** Never the password or the token: this is the string a log line or a crash would carry. */
+    override fun toString(): String = "SubsonicConfig(${normalisedBaseUrl}, kind=$kind)"
+
     /**
      * People type "music.example.org", and a trailing slash, and sometimes both. An address
      * with no scheme is https; plain http is used only when it is typed (a server on a home
@@ -327,7 +355,8 @@ data class SubsonicConfig(
         }
 
     val isComplete: Boolean
-        get() = baseUrl.isNotBlank() && user.isNotBlank() && password.isNotBlank()
+        get() = baseUrl.isNotBlank() && user.isNotBlank() &&
+            (password.isNotBlank() || (kind == ServerKind.JELLYFIN && isSignedIn))
 }
 
 sealed interface SubsonicResult<out T> {
@@ -411,7 +440,9 @@ internal fun isOlder(a: String, b: String): Boolean {
  * what is over it.
  */
 fun withBitrateCeiling(url: String, kbps: Int?): String {
-    if (kbps == null || kbps <= 0 || "/rest/stream" !in url) return url
+    if (kbps == null || kbps <= 0) return url
+    if (JellyfinClient.isUniversalStream(url)) return JellyfinClient.withMaxBitrate(url, kbps)
+    if ("/rest/stream" !in url) return url
     val q = url.indexOf('?')
     if (q < 0) return "$url?maxBitRate=$kbps"
     val kept = url.substring(q + 1).split('&').filterNot {
