@@ -274,6 +274,31 @@ fun SettingsScreen(
         }
 
         item {
+            // Read and written here, as the Glance switch is: only the playback service follows
+            // it, and it asks at each press. A tap steps to the other choice.
+            val settings = (context.applicationContext as com.wanderwildwood.jimeikin.CalmMusic).settingsManager
+            var skipMode by remember { mutableStateOf(settings.getSkipButtonModeSync()) }
+            ValueRow(
+                label = stringResource(R.string.settings_skip_buttons),
+                value = stringResource(
+                    when (skipMode) {
+                        com.wanderwildwood.jimeikin.playback.SkipButtonMode.SONGS -> R.string.settings_skip_buttons_songs
+                        com.wanderwildwood.jimeikin.playback.SkipButtonMode.SEEK -> R.string.settings_skip_buttons_seek
+                    },
+                ),
+                onClick = {
+                    val next = when (skipMode) {
+                        com.wanderwildwood.jimeikin.playback.SkipButtonMode.SONGS -> com.wanderwildwood.jimeikin.playback.SkipButtonMode.SEEK
+                        com.wanderwildwood.jimeikin.playback.SkipButtonMode.SEEK -> com.wanderwildwood.jimeikin.playback.SkipButtonMode.SONGS
+                    }
+                    skipMode = next
+                    settings.setSkipButtonMode(next)
+                },
+                enabled = true,
+            )
+        }
+
+        item {
             ValueRow(
                 label = stringResource(R.string.settings_background_playback),
                 value = if (hasBatteryOptimizationExemption) {

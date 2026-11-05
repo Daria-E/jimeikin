@@ -459,6 +459,11 @@
         <item quantity="other">%1$d folders could not be read. Their songs were left alone.</item>
     </plurals>
 
+    <!-- Settings row: what the next and previous buttons on a headset or Bluetooth speaker do. Tapping it switches between the two values below. -->
+    <string name="settings_skip_buttons">Headset skip buttons</string>
+    <string name="settings_skip_buttons_songs">Next and previous song</string>
+    <!-- Ahead 30 seconds, back 10 seconds -->
+    <string name="settings_skip_buttons_seek">Skip ahead 30 s and back 10 s</string>
     <!-- Settings switch: the song playing is handed to the Glance app for its lock-screen panel -->
     <string name="settings_playing_on_lock_screen">Show what is playing in Glance</string>
     <!-- Row title: whether the app may keep playing in the background -->

@@ -38,7 +38,12 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import android.view.KeyEvent
 import com.wanderwildwood.jimeikin.glance.NowPlaying
+import com.wanderwildwood.jimeikin.playback.ButtonAction
+import com.wanderwildwood.jimeikin.playback.QueueSkips
+import com.wanderwildwood.jimeikin.playback.SkipButtonMode
+import com.wanderwildwood.jimeikin.playback.SkipButtons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.ConnectionPool
@@ -179,7 +184,7 @@ class PlaybackService : MediaSessionService() {
                 publishable(super.getMediaMetadata())
 
             override fun addListener(listener: Player.Listener) {
-                super.addListener(wrapped.getOrPut(listener) { NoArtworkListener(listener, ::publishable) })
+                super.addListener(wrapped.getOrPut(listener) { NoArtworkListener(listener, ::publishable, ::withQueueSkips) })
             }
 
             override fun removeListener(listener: Player.Listener) {
@@ -231,6 +236,39 @@ class PlaybackService : MediaSessionService() {
                 super.setPlayWhenReady(playWhenReady)
             }
 
+            // Next and previous mean the app's queue, not the part of it the player holds:
+            // see QueueSkips. Every route comes through here - a headset or Bluetooth button
+            // in "Next and previous song", the notification, and the lock-screen strip.
+            override fun seekToNext() {
+                if (!QueueSkips.next()) super.seekToNext()
+            }
+
+            override fun seekToNextMediaItem() {
+                if (!QueueSkips.next()) super.seekToNextMediaItem()
+            }
+
+            override fun seekToPrevious() {
+                if (!QueueSkips.previousOrRestart()) super.seekToPrevious()
+            }
+
+            override fun seekToPreviousMediaItem() {
+                if (!QueueSkips.previousOrRestart()) super.seekToPreviousMediaItem()
+            }
+
+            // The player offers next only when it holds a song after this one, and the session
+            // refuses a skip the player does not offer - so with the queue's next song outside
+            // what the player held, the button did nothing at all. While the queue is attached
+            // it decides, so both are always offered.
+            // The session is told of a change with the player's own set, so the listeners are
+            // handed it with the queue's added too.
+            override fun getAvailableCommands(): Player.Commands = withQueueSkips(super.getAvailableCommands())
+
+            private fun withQueueSkips(own: Player.Commands): Player.Commands =
+                if (QueueSkips.isAttached) own.buildUpon().addAll(*QUEUE_SKIP_COMMANDS).build() else own
+
+            override fun isCommandAvailable(command: Int): Boolean =
+                (QueueSkips.isAttached && command in QUEUE_SKIP_COMMANDS) || super.isCommandAvailable(command)
+
             private fun catchUpIfLive() {
                 if (player.playWhenReady || player.playbackState == Player.STATE_IDLE) return
                 // An HLS station says it is live; a plain stream has no length to say anything.
@@ -242,6 +280,13 @@ class PlaybackService : MediaSessionService() {
 
         mediaSession = MediaSession.Builder(this, sessionPlayer)
             .setSessionActivity(sessionActivityPendingIntent)
+            .setCallback(object : MediaSession.Callback {
+                override fun onMediaButtonEvent(
+                    session: MediaSession,
+                    controllerInfo: MediaSession.ControllerInfo,
+                    intent: Intent,
+                ): Boolean = onSkipButton(sessionPlayer, intent)
+            })
             .build()
         _activeSession.value = mediaSession
 
@@ -251,6 +296,41 @@ class PlaybackService : MediaSessionService() {
             .build()
 
         setMediaNotificationProvider(notificationProvider)
+    }
+
+    /**
+     * A headset's or a Bluetooth speaker's next and previous, as Settings says they should
+     * act. Anything else - play, pause, and the fast-forward and rewind a long press usually
+     * sends - is left to Media3, which is what false says.
+     */
+    /** When the last skip key seen going down went down; see [SkipButtons.forKey]. */
+    private var lastSkipKeyDown = Long.MIN_VALUE
+
+    @Suppress("DEPRECATION")
+    private fun onSkipButton(player: Player, intent: Intent): Boolean {
+        val key = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return false
+        val mode = (application as? CalmMusic)?.settingsManager?.getSkipButtonModeSync() ?: SkipButtonMode.SONGS
+        // A press is told by when it went down: the up that ends a press whose down came here
+        // is not a second press.
+        val downSeen = key.action == KeyEvent.ACTION_UP && key.downTime == lastSkipKeyDown
+        val action = SkipButtons.forKey(
+            key.keyCode, key.action, key.repeatCount, mode,
+            downSeen = downSeen,
+            canceled = key.flags and KeyEvent.FLAG_CANCELED != 0,
+        ) ?: return false
+        if (key.action == KeyEvent.ACTION_DOWN) lastSkipKeyDown = key.downTime
+        // The key and what it came to, and nothing else: enough to tell from a log what a
+        // particular headset sends.
+        android.util.Log.d("PlaybackService", "media button ${KeyEvent.keyCodeToString(key.keyCode)} action=${key.action} repeat=${key.repeatCount} -> $action (queue ${if (QueueSkips.isAttached) "attached" else "absent"})")
+        when (action) {
+            ButtonAction.NextSong -> player.seekToNext()
+            ButtonAction.PreviousOrRestart -> player.seekToPrevious()
+            is ButtonAction.SeekBy -> if (player.isCurrentMediaItemSeekable && !isRadio(player.currentMediaItem?.mediaId)) {
+                player.seekTo(SkipButtons.seekTarget(player.currentPosition, player.duration, action.deltaMs))
+            }
+            ButtonAction.Swallow -> Unit
+        }
+        return true
     }
 
     @OptIn(UnstableApi::class)
@@ -373,6 +453,14 @@ class PlaybackService : MediaSessionService() {
     }
 }
 
+/** What the queue offers in place of the player whenever it is attached. */
+private val QUEUE_SKIP_COMMANDS = intArrayOf(
+    Player.COMMAND_SEEK_TO_NEXT,
+    Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM,
+    Player.COMMAND_SEEK_TO_PREVIOUS,
+    Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM,
+)
+
 /** Whether a set of queue entries is a live station: stations are queued on their own. */
 internal fun isLiveSet(items: List<MediaItem>): Boolean = items.any { isRadio(it.mediaId) }
 
@@ -437,13 +525,14 @@ internal fun MediaMetadata.forSession(radio: Boolean, icon: ByteArray?): MediaMe
 
 /**
  * Passes every player callback on unchanged, except that a song changing arrives with no
- * picture. Every callback is written out by hand, so none is quietly dropped: each one has a
+ * picture, and the commands on offer arrive with the queue's skips added (see QueueSkips). Every callback is written out by hand, so none is quietly dropped: each one has a
  * default that does nothing, and a callback left out here would never reach the session.
  */
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 private class NoArtworkListener(
     private val inner: Player.Listener,
     private val publishable: (MediaMetadata) -> MediaMetadata,
+    private val commands: (Player.Commands) -> Player.Commands,
 ) : Player.Listener {
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) =
         inner.onMediaMetadataChanged(publishable(mediaMetadata))
@@ -455,7 +544,7 @@ private class NoArtworkListener(
     override fun onPlaylistMetadataChanged(mediaMetadata: MediaMetadata) = inner.onPlaylistMetadataChanged(mediaMetadata)
     override fun onIsLoadingChanged(isLoading: Boolean) = inner.onIsLoadingChanged(isLoading)
     override fun onLoadingChanged(isLoading: Boolean) = inner.onLoadingChanged(isLoading)
-    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) = inner.onAvailableCommandsChanged(availableCommands)
+    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) = inner.onAvailableCommandsChanged(commands(availableCommands))
     override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) = inner.onTrackSelectionParametersChanged(parameters)
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) = inner.onPlayerStateChanged(playWhenReady, playbackState)
     override fun onPlaybackStateChanged(playbackState: Int) = inner.onPlaybackStateChanged(playbackState)

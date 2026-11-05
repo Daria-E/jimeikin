@@ -174,6 +174,17 @@ class CalmMusicSettingsManager(context: Context) {
         prefs.edit { putBoolean(KEY_PLAYING_ON_LOCK_SCREEN, enabled) }
     }
 
+    /**
+     * What a headset's or a Bluetooth speaker's skip buttons do. Read by the playback service
+     * at each press, so a change holds from the next one.
+     */
+    fun getSkipButtonModeSync(): com.wanderwildwood.jimeikin.playback.SkipButtonMode =
+        com.wanderwildwood.jimeikin.playback.SkipButtonMode.fromStored(prefs.getString(KEY_SKIP_BUTTONS, null))
+
+    fun setSkipButtonMode(mode: com.wanderwildwood.jimeikin.playback.SkipButtonMode) {
+        prefs.edit { putString(KEY_SKIP_BUTTONS, mode.name) }
+    }
+
     /** Album details looked up online for albums whose tags leave gaps (full edition); off to begin with. */
     fun getAlbumDetailsLookupSync(): Boolean = prefs.getBoolean(KEY_ALBUM_DETAILS_LOOKUP, false)
 
@@ -216,5 +227,6 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_LAST_LIBRARY_TAB = "last_library_tab"
         private const val KEY_PLAYING_ON_LOCK_SCREEN = "playing_on_lock_screen"
         private const val KEY_ALBUM_DETAILS_LOOKUP = "album_details_lookup"
+        private const val KEY_SKIP_BUTTONS = "skip_buttons"
     }
 }

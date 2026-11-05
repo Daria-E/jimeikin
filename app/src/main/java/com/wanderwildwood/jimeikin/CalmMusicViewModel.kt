@@ -90,13 +90,6 @@ private fun playsOnThisPhone(sourceType: String?): Boolean =
         sourceType == "SUBSONIC_DOWNLOAD" ||
         sourceType == "RADIO"
 
-/**
- * How far into a song "previous" stops meaning the song before it and starts meaning this
- * one from the top. Three seconds is what every other player uses, and the number matters
- * less than having one: without it there was no way to hear a song again except back and
- * then forward, and on a queue of one there was no way at all.
- */
-private const val RESTART_RATHER_THAN_PREVIOUS_MS = 3_000L
 
 /**
  * An artist page asked of the music server rather than read from the library; see
@@ -1316,15 +1309,23 @@ class CalmMusicViewModel(
     fun playPreviousOrRestart(localController: MediaController?) {
         val state = _playbackState.value
         val isLive = state.nowPlayingSong?.sourceType == "RADIO"
-        if (!isLive && state.nowPlayingPositionMs > RESTART_RATHER_THAN_PREVIOUS_MS) {
-            // A seek, not a restart of the queue: re-entering it would resolve a YouTube or
-            // server stream over again for a song the player is already holding.
-            localController?.seekTo(0L)
-            _playbackState.value = state.copy(nowPlayingPositionMs = 0L)
-            persistPlaybackSnapshot()
-            return
+        val index = state.playbackQueueIndex
+        val hasPrevious = index != null && state.playbackQueue.isNotEmpty() &&
+            (index > 0 || state.repeatMode == RepeatMode.QUEUE)
+        // The player's own position where it has one: the state's is a second behind at worst,
+        // and that second sits right on the line between the two meanings.
+        val position = localController?.currentPosition?.takeIf { it >= 0 } ?: state.nowPlayingPositionMs
+        when (com.wanderwildwood.jimeikin.playback.SkipButtons.back(position, hasPrevious, isLive)) {
+            com.wanderwildwood.jimeikin.playback.SkipButtons.Back.RESTART -> {
+                // A seek, not a restart of the queue: re-entering it would resolve a YouTube or
+                // server stream over again for a song the player is already holding.
+                localController?.seekTo(0L)
+                _playbackState.value = state.copy(nowPlayingPositionMs = 0L)
+                persistPlaybackSnapshot()
+            }
+            com.wanderwildwood.jimeikin.playback.SkipButtons.Back.PREVIOUS -> playPreviousInQueue(localController)
+            com.wanderwildwood.jimeikin.playback.SkipButtons.Back.NOTHING -> Unit
         }
-        playPreviousInQueue(localController)
     }
 
     fun toggleShuffleMode(localController: MediaController?) {
@@ -1512,6 +1513,13 @@ class CalmMusicViewModel(
                 }
             }
             controller.addListener(follow)
+            // Skips from outside the app - a headset, a Bluetooth speaker, the notification, the
+            // lock-screen strip - come to the queue, as the app's own buttons do. See QueueSkips.
+            val skips = object : com.wanderwildwood.jimeikin.playback.QueueSkips.Handler {
+                override fun next() = playNextInQueue(controller)
+                override fun previousOrRestart() = playPreviousOrRestart(controller)
+            }
+            com.wanderwildwood.jimeikin.playback.QueueSkips.attach(skips)
             try {
             var lastOnlineQueueIndex: Int? = null
             // Once a second, not five times a second. The seek bar and the clock are the
@@ -1651,6 +1659,7 @@ class CalmMusicViewModel(
             }
             } finally {
                 controller.removeListener(follow)
+                com.wanderwildwood.jimeikin.playback.QueueSkips.detach(skips)
             }
         }
     }
