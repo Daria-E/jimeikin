@@ -43,4 +43,10 @@
     <!-- Body of the empty library, under "No songs yet" / "No albums yet" / "No artists yet" -->
     <!-- Empty library: button that opens the YouTube settings -->
     <string name="library_empty_set_up_youtube">Configurer YouTube</string>
+    <!-- Settings: whether YouTube links tapped in other apps may open here (Android 12+) -->
+    <string name="settings_youtube_links">Ouvrir les liens YouTube dans Music Box</string>
+    <string name="settings_youtube_links_on">Activé</string>
+    <string name="settings_youtube_links_some">Certaines adresses seulement</string>
+    <string name="settings_youtube_links_off">Désactivé</string>
+    <string name="settings_youtube_links_hint">Android envoie les liens web au navigateur tant qu\'on ne lui a pas dit lesquels une appli peut ouvrir. Touchez ici, puis « Ajouter un lien », et cochez les adresses YouTube.</string>
 </resources>

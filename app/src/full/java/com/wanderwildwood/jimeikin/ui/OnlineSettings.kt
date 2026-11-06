@@ -1,6 +1,17 @@
 package com.wanderwildwood.jimeikin.ui
 
+import android.os.Build
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.mudita.mmd.components.text.TextMMD
+import com.wanderwildwood.jimeikin.YouTubeLinks
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.unit.dp
@@ -36,6 +47,44 @@ internal fun LazyListScope.onlineSwitches() {
             checked = keepPlayingSimilar,
             onCheckedChange = online::setKeepPlayingSimilar,
         )
+    }
+
+    // Only Android's own page can let YouTube links from other apps open here (Android 12 and
+    // later); this row says whether it has and goes there. Read again on the way back.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        item {
+            val context = LocalContext.current
+            val lifecycleOwner = LocalLifecycleOwner.current
+            var state by remember { mutableStateOf(YouTubeLinks.read(context)) }
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) state = YouTubeLinks.read(context)
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+            }
+            Column {
+                ValueRow(
+                    label = stringResource(R.string.settings_youtube_links),
+                    value = stringResource(
+                        when (state) {
+                            YouTubeLinks.State.ON -> R.string.settings_youtube_links_on
+                            YouTubeLinks.State.SOME -> R.string.settings_youtube_links_some
+                            else -> R.string.settings_youtube_links_off
+                        },
+                    ),
+                    onClick = { YouTubeLinks.open(context) },
+                    enabled = true,
+                )
+                if (state != YouTubeLinks.State.ON) {
+                    TextMMD(
+                        text = stringResource(R.string.settings_youtube_links_hint),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    )
+                }
+            }
+        }
     }
 }
 
