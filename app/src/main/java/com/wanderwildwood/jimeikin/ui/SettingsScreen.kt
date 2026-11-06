@@ -10,7 +10,8 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import com.wanderwildwood.jimeikin.FilesCreateDocument
+import com.wanderwildwood.jimeikin.FilesOpenDocument
 import androidx.compose.runtime.rememberCoroutineScope
 import com.wanderwildwood.jimeikin.data.LibraryBackup
 import com.wanderwildwood.jimeikin.data.LibraryBackupFiles
@@ -88,7 +89,7 @@ fun SettingsScreen(
 
     // Backup and restore through the phone's own file picker, as in Medicine: the file goes
     // where the reader puts it, and a restore reads all of it before anything changes.
-    val saveBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+    val saveBackup = rememberLauncherForActivityResult(FilesCreateDocument("application/json")) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             val ok = LibraryBackupFiles.save(context, uri)
@@ -99,7 +100,7 @@ fun SettingsScreen(
             ).show()
         }
     }
-    val restoreBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+    val restoreBackup = rememberLauncherForActivityResult(FilesOpenDocument(writable = false)) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             val message = when (val r = LibraryBackupFiles.restore(context, uri)) {

@@ -1637,7 +1637,7 @@ fun CalmMusic(
     // led to Settings left the choosing still to find. The new folder is read at once, by the
     // LaunchedEffect on the folder list.
     val folderPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree(),
+        contract = FilesOpenTree(),
     ) { uri ->
         if (uri != null) {
             val flags =

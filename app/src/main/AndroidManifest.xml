@@ -152,6 +152,7 @@
         <package android:name="com.android.fmradio" />
         <package android:name="com.mediatek.fmradio" />
         <package android:name="com.caf.fmradio" />
+        <package android:name="com.wanderwildwood.tana" />
         <intent>
             <action android:name="androidx.media3.session.MediaSessionService" />
         </intent>
