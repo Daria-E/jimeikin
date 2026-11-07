@@ -90,6 +90,16 @@ private fun playsOnThisPhone(sourceType: String?): Boolean =
         sourceType == "SUBSONIC_DOWNLOAD" ||
         sourceType == "RADIO"
 
+/**
+ * Whether a song is a file here, so nothing about playing it can wait on a network: the
+ * question [playsOnThisPhone] does not answer. Three of the four places that ask this had their
+ * own list without a song kept from the server, and put a kept song through Loading.
+ */
+private fun cannotStall(sourceType: String?): Boolean =
+    sourceType == "LOCAL_FILE" ||
+        sourceType == "ONLINE_SEARCH_DOWNLOAD" ||
+        sourceType == "SUBSONIC_DOWNLOAD"
+
 
 /**
  * An artist page asked of the music server rather than read from the library; see
@@ -838,7 +848,10 @@ class CalmMusicViewModel(
             val index = state.playbackQueueIndex
 
             val needsInit = when (song.sourceType) {
-                "LOCAL_FILE", "ONLINE_SEARCH", "ONLINE_SEARCH_DOWNLOAD" -> !playbackCoordinator.localQueueInitialized
+                // A server song, kept or streamed, was missing here: after a restart the queue
+                // came back on the screen with nothing in the player, and Play did nothing.
+                "LOCAL_FILE", "ONLINE_SEARCH", "ONLINE_SEARCH_DOWNLOAD", "SUBSONIC", "SUBSONIC_DOWNLOAD" ->
+                    !playbackCoordinator.localQueueInitialized
                 else -> false
             }
 
@@ -904,7 +917,7 @@ class CalmMusicViewModel(
         val repeatMode = previous.repeatMode
 
         val queueEntities = queue.map { it.toQueueEntity() }
-        val shouldShowInitialBuffering = song.sourceType != "LOCAL_FILE" && song.sourceType != "ONLINE_SEARCH_DOWNLOAD"
+        val shouldShowInitialBuffering = !cannotStall(song.sourceType)
 
         val newState = previous.copy(
             playbackQueue = queue,
@@ -1240,7 +1253,7 @@ class CalmMusicViewModel(
         }
 
         val nextSong = queue[targetIndex]
-        val shouldShowBuffering = nextSong.sourceType != "LOCAL_FILE" && nextSong.sourceType != "ONLINE_SEARCH_DOWNLOAD"
+        val shouldShowBuffering = !cannotStall(nextSong.sourceType)
 
         _playbackState.value = state.copy(
             playbackQueueIndex = targetIndex,
@@ -1277,7 +1290,7 @@ class CalmMusicViewModel(
         }
 
         val prevSong = queue[targetIndex]
-        val shouldShowBuffering = prevSong.sourceType != "LOCAL_FILE" && prevSong.sourceType != "ONLINE_SEARCH_DOWNLOAD"
+        val shouldShowBuffering = !cannotStall(prevSong.sourceType)
 
         _playbackState.value = state.copy(
             playbackQueueIndex = targetIndex,
@@ -1553,10 +1566,7 @@ class CalmMusicViewModel(
                 // can be handed the uri - and had just been taught to say yes to radio. The
                 // result was a stream that went silent when the network dropped while the
                 // screen went on showing a pause button, and a server song that did the same.
-                val cannotStall = currentSong?.sourceType == "LOCAL_FILE" ||
-                    currentSong?.sourceType == "ONLINE_SEARCH_DOWNLOAD" ||
-                    currentSong?.sourceType == "SUBSONIC_DOWNLOAD"
-                val isBufferingNow = !cannotStall && playbackState == Player.STATE_BUFFERING
+                val isBufferingNow = !cannotStall(currentSong?.sourceType) && playbackState == Player.STATE_BUFFERING
 
                 var newState = state.copy(
                     isPlaybackPlaying = isPlaying,
