@@ -11,6 +11,37 @@ sealed class SearchResult {
     data class OnlineArtist(val artist: OnlineArtistUiModel) : SearchResult()
 }
 
+/** Where a search looks. The reader chooses; see [searchSourcesOn]. */
+enum class SearchSource { PHONE, SERVER, ONLINE }
+
+/**
+ * Which sources something counts as found in. A song kept from the server is both on the phone
+ * and the server's, so it is found with either on. A YouTube download is the phone's: with
+ * YouTube on, YouTube's own listing names it too and it is shown as its file.
+ */
+internal fun searchSourcesOf(origin: Origin?): Set<SearchSource> = when (origin) {
+    Origin.SERVER -> setOf(SearchSource.SERVER)
+    Origin.SERVER_DOWNLOAD -> setOf(SearchSource.PHONE, SearchSource.SERVER)
+    Origin.ONLINE_SEARCH -> setOf(SearchSource.ONLINE)
+    Origin.ONLINE_SEARCH_DOWNLOAD, null -> setOf(SearchSource.PHONE)
+}
+
+/**
+ * The sources in force, from the ones the reader left on ([stored]) and the ones there is a
+ * toggle for ([offered]). One with no toggle is not filtered on: nobody can turn it back on.
+ * If none of those offered is on - only a forgotten server was - all of them are, as a search
+ * of nothing is no use to anyone.
+ */
+fun searchSourcesOn(stored: Set<SearchSource>, offered: List<SearchSource>): Set<SearchSource> =
+    if (offered.none { it in stored }) SearchSource.entries.toSet()
+    else stored + (SearchSource.entries - offered.toSet())
+
+/** [on] with [source] turned over, unless that would leave nothing to search. */
+fun toggledSearchSource(on: Set<SearchSource>, source: SearchSource, offered: List<SearchSource>): Set<SearchSource> {
+    val next = if (source in on) on - source else on + source
+    return if (offered.any { it in next }) next else on
+}
+
 /**
  * Search results, as one list.
  *
@@ -19,6 +50,10 @@ sealed class SearchResult {
  * having in - and then by how well they match. Each song, album or artist appears once, as
  * its best copy: a song on the phone is not listed again from the server or from YouTube,
  * and one on the server is not listed again from YouTube.
+ *
+ * Only [sources] are looked in. An album or an artist is kept when its own mark says so or when
+ * one of the songs kept is theirs: the mark names only what streams, so an artist with songs on
+ * the phone and on the server is marked as the server's and is the phone's too.
  */
 fun buildSearchResults(
     query: String,
@@ -28,9 +63,16 @@ fun buildSearchResults(
     onlineSongs: List<SongUiModel>,
     onlineAlbums: List<AlbumUiModel>,
     onlineArtists: List<OnlineArtistUiModel>,
+    sources: Set<SearchSource> = SearchSource.entries.toSet(),
 ): List<SearchResult> {
     val q = query.trim()
     if (q.isEmpty()) return emptyList()
+
+    fun lookedIn(origin: Origin?) = searchSourcesOf(origin).any { it in sources }
+    val songsLookedIn = librarySongs.filter { lookedIn(originOf(it.sourceType)) }
+    val albumsWithSongs = songsLookedIn.mapNotNullTo(HashSet()) { s -> s.album?.let(ArtistNames::key) }
+    val artistsWithSongs = songsLookedIn.mapTo(HashSet()) { ArtistNames.artistKey(it.artist) }
+    val searchesOnline = SearchSource.ONLINE in sources
 
     class Candidate(
         val result: SearchResult,
@@ -50,16 +92,16 @@ fun buildSearchResults(
         candidates += Candidate(result, key, place, m, if (exactArtist) 0 else 1, kind, candidates.size)
     }
 
-    librarySongs.forEach { s ->
+    songsLookedIn.forEach { s ->
         add(
             SearchResult.Song(s), songKey(s), placeOf(originOf(s.sourceType)),
             match(q, s.title, s.artist, s.album), KIND_SONG,
         )
     }
-    libraryAlbums.forEach { a ->
+    libraryAlbums.filter { lookedIn(it.origin) || ArtistNames.key(it.title) in albumsWithSongs }.forEach { a ->
         add(SearchResult.Album(a), albumKey(a), placeOf(a.origin), match(q, a.title, a.artist), KIND_ALBUM)
     }
-    libraryArtists.forEach { a ->
+    libraryArtists.filter { lookedIn(it.origin) || ArtistNames.artistKey(it.name) in artistsWithSongs }.forEach { a ->
         val m = match(q, a.name)
         add(SearchResult.LibraryArtist(a), artistKey(a.name), placeOf(a.origin), m, KIND_ARTIST, exactArtist = isExactArtist(q, a.name))
     }
@@ -69,16 +111,16 @@ fun buildSearchResults(
     // exactly what was typed put first - and, below, ahead of everything on the phone too:
     // the artist searched for is the answer, wherever the rest of the list comes from.
     fun onlineTurn(index: Int, exact: Boolean) = if (exact) -1 else index
-    onlineSongs.forEachIndexed { i, s ->
+    onlineSongs.takeIf { searchesOnline }.orEmpty().forEachIndexed { i, s ->
         add(SearchResult.Song(s), songKey(s), PLACE_ONLINE, onlineTurn(i, false), KIND_SONG)
     }
-    onlineAlbums.forEachIndexed { i, a ->
+    onlineAlbums.takeIf { searchesOnline }.orEmpty().forEachIndexed { i, a ->
         add(SearchResult.Album(a), albumKey(a), PLACE_ONLINE, onlineTurn(i, false), KIND_ALBUM_ONLINE)
     }
     // An artist is offered only when the name is what was searched for. YouTube answers
     // "moondance" with whoever has a song of that name, and a row that says only "Sam Smith,
     // Artist" is not an answer to it.
-    onlineArtists.forEachIndexed { i, a ->
+    onlineArtists.takeIf { searchesOnline }.orEmpty().forEachIndexed { i, a ->
         match(q, a.name) ?: return@forEachIndexed
         val exact = isExactArtist(q, a.name)
         add(SearchResult.OnlineArtist(a), artistKey(a.name), PLACE_ONLINE, onlineTurn(i, exact), KIND_ARTIST_ONLINE, exactArtist = exact)

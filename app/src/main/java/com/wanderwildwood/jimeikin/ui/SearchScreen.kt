@@ -1,20 +1,31 @@
 package com.wanderwildwood.jimeikin.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.wanderwildwood.jimeikin.R
 
@@ -27,7 +38,8 @@ data class OnlineArtistUiModel(
 /**
  * One list: songs, albums and artists together, the phone's first, then the server's, then
  * YouTube's - see [buildSearchResults]. The library's part is there as soon as the search is
- * made, and with no signal; YouTube's joins it when it comes.
+ * made, and with no signal; YouTube's joins it when it comes. The toggles above it choose which
+ * of the three are looked in; with YouTube off it is not asked at all.
  */
 @Composable
 fun SearchScreen(
@@ -48,9 +60,16 @@ fun SearchScreen(
     onRemoveFromLibraryClick: (SongUiModel) -> Unit = {},
     onDeleteClick: (SongUiModel) -> Unit = {},
     onKeepOnPhoneClick: (SongUiModel) -> Unit = {},
+    /** The sources there are to choose from. With fewer than two there is nothing to choose. */
+    sourcesOffered: List<SearchSource> = emptyList(),
+    sourcesOn: Set<SearchSource> = emptySet(),
+    onToggleSource: (SearchSource) -> Unit = {},
 ) {
     val albumKind = stringResource(R.string.library_search_kind_album)
     Column(modifier = Modifier.fillMaxSize()) {
+        if (sourcesOffered.size > 1) {
+            SearchSourceToggles(sourcesOffered, sourcesOn, onToggleSource)
+        }
         PagedColumnMMD(contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp)) {
             if (isSearching) {
                 item {
@@ -117,6 +136,53 @@ fun SearchScreen(
                 }
             }
         }
+    }
+}
+
+/**
+ * Which sources a search looks in, drawn as [StoneTabs] draws its tabs: on is a black stone with
+ * its label in white, off a plain label. Unlike a tab, any number can be on, so each is a
+ * checkbox to a screen reader.
+ */
+@Composable
+private fun SearchSourceToggles(
+    offered: List<SearchSource>,
+    on: Set<SearchSource>,
+    onToggle: (SearchSource) -> Unit,
+) {
+    val style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            offered.forEach { source ->
+                val isOn = source in on
+                Box(
+                    modifier = Modifier
+                        .heightIn(min = 40.dp)
+                        .then(if (isOn) Modifier.background(Color.Black, RoundedCornerShape(4.dp)) else Modifier)
+                        .toggleable(value = isOn, role = Role.Checkbox, onValueChange = { onToggle(source) })
+                        .padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TextMMD(
+                        text = stringResource(
+                            when (source) {
+                                SearchSource.PHONE -> R.string.search_source_phone
+                                SearchSource.SERVER -> R.string.search_source_server
+                                SearchSource.ONLINE -> R.string.search_source_online
+                            },
+                        ),
+                        style = style,
+                        color = if (isOn) Color.White else Color.Black,
+                        maxLines = 1,
+                    )
+                }
+            }
+        }
+        HorizontalDividerMMD(thickness = 1.dp)
     }
 }
 

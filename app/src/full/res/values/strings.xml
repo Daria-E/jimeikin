@@ -3,6 +3,7 @@
 <resources>
     <string name="main_title_online_sign_in">Connect a YouTube account</string>
     <!-- Search -->
+    <string name="search_source_online" translatable="false">YouTube</string>
     <string name="main_search_error">The search did not reach YouTube</string>
     <string name="main_youtube_cannot_play">YouTube reported this track can\'t be played. Skipping.</string>
     <!-- A YouTube link from another app -->

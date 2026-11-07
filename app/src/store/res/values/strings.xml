@@ -2,6 +2,8 @@
 <!-- The store edition's own words, where the full edition's speak of its online catalogue. -->
 <resources>
     <string name="main_title_online_sign_in">Sign in</string>
+    <!-- No toggle is shown for it in this edition -->
+    <string name="search_source_online" translatable="false">Online</string>
     <string name="main_search_error">The search did not finish</string>
     <!-- Player: a song kept from the full edition's online catalogue, which this edition cannot play -->
     <string name="main_not_in_this_edition">This song streams from a service this app does not include. Skipping.</string>

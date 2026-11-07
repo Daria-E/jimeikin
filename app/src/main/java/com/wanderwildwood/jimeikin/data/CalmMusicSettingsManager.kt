@@ -169,6 +169,13 @@ class CalmMusicSettingsManager(context: Context) {
         prefs.edit { putInt(KEY_LOCAL_ALBUM_KEY_VERSION, value) }
     }
 
+    /** The sources search looks in, by name; null until one has been turned off, which is all of them. */
+    fun getSearchSources(): Set<String>? = prefs.getStringSet(KEY_SEARCH_SOURCES, null)
+
+    fun setSearchSources(sources: Set<String>) {
+        prefs.edit { putStringSet(KEY_SEARCH_SOURCES, sources) }
+    }
+
     fun setIncludeLocalMusic(enabled: Boolean) {
         prefs.edit { putBoolean(KEY_INCLUDE_LOCAL_MUSIC, enabled) }
         _includeLocalMusic.value = enabled
@@ -258,6 +265,7 @@ class CalmMusicSettingsManager(context: Context) {
         private const val KEY_JELLYFIN_USER_ID = "jellyfin_user_id"
         private const val KEY_JELLYFIN_DEVICE_ID = "jellyfin_device_id"
         private const val KEY_INCLUDE_LOCAL_MUSIC = "include_local_music"
+        private const val KEY_SEARCH_SOURCES = "search_sources"
         private const val KEY_LOCAL_MUSIC_FOLDERS = "local_music_folders"
         private const val KEY_LAST_LOCAL_LIBRARY_SCAN_MILLIS = "last_local_library_scan_millis"
         private const val KEY_LOCAL_ALBUM_KEY_VERSION = "local_album_key_version"

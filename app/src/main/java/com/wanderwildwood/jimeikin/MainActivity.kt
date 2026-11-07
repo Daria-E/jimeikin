@@ -91,7 +91,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.wanderwildwood.jimeikin.ui.ArtistUiModel
 import com.wanderwildwood.jimeikin.ui.DarkStatusIconsInSheet
+import com.wanderwildwood.jimeikin.ui.SearchSource
 import com.wanderwildwood.jimeikin.ui.buildSearchResults
+import com.wanderwildwood.jimeikin.ui.searchSourcesOn
+import com.wanderwildwood.jimeikin.ui.toggledSearchSource
 import com.wanderwildwood.jimeikin.ui.SearchResult
 import com.wanderwildwood.jimeikin.ui.UpNextScreen
 import com.wanderwildwood.jimeikin.ui.AboutDialog
@@ -562,6 +565,20 @@ fun CalmMusic(
     }
 
 
+    var searchSources by remember {
+        mutableStateOf(
+            settingsManager.getSearchSources()
+                ?.let { names -> SearchSource.entries.filterTo(HashSet()) { it.name in names } as Set<SearchSource> }
+                ?: SearchSource.entries.toSet(),
+        )
+    }
+    val searchSourcesOffered = buildList {
+        add(SearchSource.PHONE)
+        if (subsonicConfig != null) add(SearchSource.SERVER)
+        if (app.online.available) add(SearchSource.ONLINE)
+    }
+    fun sourcesOn() = searchSourcesOn(searchSources, searchSourcesOffered)
+
     fun performSearch() {
         if (searchQuery.isBlank()) return
 
@@ -611,8 +628,9 @@ fun CalmMusic(
         // below it when they come.
         searchedQuery = searchQuery.trim()
 
-        // An edition without the online catalogue searches the library alone.
-        if (isSearching || !app.online.available) return
+        // An edition without the online catalogue searches the library alone, and so does a
+        // search with YouTube turned off: nothing goes out for it.
+        if (isSearching || !app.online.available || SearchSource.ONLINE !in sourcesOn()) return
 
         searchScope.launch {
             isSearching = true
@@ -2308,6 +2326,7 @@ fun CalmMusic(
                     val searchResults = remember(
                         searchedQuery, librarySongs, libraryAlbums, libraryArtists,
                         searchSongs, searchAlbums, searchArtists, recordedOnlineCopies, linkResults,
+                        searchSources, subsonicConfig,
                     ) {
                         // A link's song is its file where it has been downloaded, as below.
                         linkResults?.map { result ->
@@ -2326,11 +2345,25 @@ fun CalmMusic(
                             onlineSongs = app.online.withCopiesIn(searchSongs, recordedOnlineCopies, onlineDownloads),
                             onlineAlbums = searchAlbums,
                             onlineArtists = searchArtists,
+                            sources = sourcesOn(),
                         )
                     }
                     SearchScreen(
                         isSearching = isSearching,
-                        errorMessage = searchError,
+                        errorMessage = searchError.takeIf { SearchSource.ONLINE in sourcesOn() },
+                        sourcesOffered = searchSourcesOffered,
+                        sourcesOn = sourcesOn(),
+                        onToggleSource = { source ->
+                            val was = sourcesOn()
+                            val now = toggledSearchSource(was, source, searchSourcesOffered)
+                            searchSources = now
+                            settingsManager.setSearchSources(now.mapTo(HashSet()) { it.name })
+                            // Turned on with a search standing: that search has not been to
+                            // YouTube yet, so it goes now rather than at the next one.
+                            if (SearchSource.ONLINE in now && SearchSource.ONLINE !in was && searchedQuery.isNotBlank()) {
+                                performSearch()
+                            }
+                        },
                         results = searchResults,
                         notice = linkNotice,
                         onPlaySongClick = { song: SongUiModel ->

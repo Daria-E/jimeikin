@@ -535,6 +535,8 @@
     <!-- Row at the foot of the screen; the second label is shown in bold after one tap -->
     <string name="library_server_forget">Oublier le serveur</string>
     <string name="library_server_forget_armed">Oublier le serveur — ses pistes seront retirées de la bibliothèque ; appuyez à nouveau</string>
+    <string name="search_source_phone">Téléphone</string>
+    <string name="search_source_server">Serveur</string>
     <string name="library_search_nothing">Rien n\'a été trouvé. Essayez une autre recherche.</string>
     <!-- Before an album's artist in the search results, where albums sit among songs and artists -->
     <string name="library_search_kind_album">Album</string>

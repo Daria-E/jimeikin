@@ -95,7 +95,9 @@ and forgetting the server ends that sign-in on the server too.
 
 ## YouTube Music
 
-Start typing in Search. No account is needed to search or to stream.
+Start typing in Search. No account is needed to search or to stream. The toggles above the
+results choose where a search looks: Phone, Server, YouTube, any of them. With YouTube off,
+nothing is sent to it. The choice is remembered.
 
 Artist pages list an artist's top songs, albums and singles. An album's page lists its tracks
 in the album's own order, as YouTube Music's album page gives them. When you are looking at a

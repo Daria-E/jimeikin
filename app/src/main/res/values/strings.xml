@@ -601,6 +601,9 @@
     <string name="library_server_forget_armed">Forget this server — its songs leave the library; tap again</string>
 
 
+    <!-- Toggles above the search results: where a search looks -->
+    <string name="search_source_phone">Phone</string>
+    <string name="search_source_server">Server</string>
     <string name="library_search_nothing">Nothing found. Try a different search.</string>
     <!-- Before an album's artist in the search results, where albums sit among songs and artists -->
     <string name="library_search_kind_album">Album</string>

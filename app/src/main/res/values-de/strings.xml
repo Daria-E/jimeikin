@@ -588,6 +588,8 @@
     <string name="library_server_forget_armed">Diesen Server vergessen — seine Titel verlassen die Bibliothek; tippe erneut</string>
 
 
+    <string name="search_source_phone">Telefon</string>
+    <string name="search_source_server">Server</string>
     <string name="library_search_nothing">Nichts gefunden. Versuche eine andere Suche.</string>
     <!-- Before an album's artist in the search results, where albums sit among songs and artists -->
     <string name="library_search_kind_album">Album</string>

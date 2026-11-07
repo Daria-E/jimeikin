@@ -73,4 +73,92 @@ class LibrarySearchTest {
         assertFalse(isExactArtist("iron", "Iron & Wine"))
         assertFalse(isExactArtist("!!", "!!!"))
     }
+
+    private fun find(
+        sources: Set<SearchSource>,
+        songs: List<SongUiModel> = emptyList(),
+        albums: List<AlbumUiModel> = emptyList(),
+        artists: List<ArtistUiModel> = emptyList(),
+        online: List<SongUiModel> = emptyList(),
+    ) = buildSearchResults(
+        query = "lantern",
+        librarySongs = songs,
+        libraryAlbums = albums,
+        libraryArtists = artists,
+        onlineSongs = online,
+        onlineAlbums = emptyList(),
+        onlineArtists = emptyList(),
+        sources = sources,
+    ).map(::describe)
+
+    @Test
+    fun onlyTheChosenSourcesAreLookedIn() {
+        val songs = listOf(
+            song("s1", "Lantern on the card", "Ada Whitlock"),
+            song("s2", "Lantern on the server", "Mara Quill", source = "SUBSONIC"),
+        )
+        val online = listOf(song("v1", "Lantern on YouTube", "Tomas Reyes", source = "ONLINE_SEARCH"))
+        assertEquals(
+            listOf("song:Lantern on the card"),
+            find(setOf(SearchSource.PHONE), songs, online = online),
+        )
+        assertEquals(
+            listOf("song:Lantern on the server"),
+            find(setOf(SearchSource.SERVER), songs, online = online),
+        )
+        assertEquals(
+            listOf("song:Lantern on YouTube"),
+            find(setOf(SearchSource.ONLINE), songs, online = online),
+        )
+    }
+
+    @Test
+    fun aSongKeptFromTheServerIsFoundWithEitherOn() {
+        val kept = listOf(song("s1", "Lantern", "Mara Quill", source = "SUBSONIC_DOWNLOAD"))
+        assertEquals(listOf("song:Lantern"), find(setOf(SearchSource.PHONE), kept))
+        assertEquals(listOf("song:Lantern"), find(setOf(SearchSource.SERVER), kept))
+        assertTrue(find(setOf(SearchSource.ONLINE), kept).isEmpty())
+    }
+
+    @Test
+    fun anArtistMarkedAsTheServersIsStillThePhonesWhenTheirSongsAreThere() {
+        // The mark names what streams, so one on both is marked as the server's.
+        val artist = ArtistUiModel("ar1", "Lantern Choir", 2, 1, origin = Origin.SERVER)
+        val album = AlbumUiModel("a1", "Lantern Songs", "Lantern Choir", "SUBSONIC", origin = Origin.SERVER)
+        val songs = listOf(
+            song("s1", "First", "Lantern Choir", album = "Lantern Songs"),
+            song("s2", "Second", "Lantern Choir", album = "Lantern Songs", source = "SUBSONIC"),
+        )
+        val found = find(setOf(SearchSource.PHONE), songs, listOf(album), listOf(artist))
+        assertTrue("artist:Lantern Choir" in found)
+        assertTrue("album:Lantern Songs" in found)
+    }
+
+    @Test
+    fun aServerArtistWithNothingOnThePhoneIsNotThePhones() {
+        val artist = ArtistUiModel("ar1", "Lantern Choir", 1, 1, origin = Origin.SERVER)
+        val songs = listOf(song("s1", "Elsewhere", "Lantern Choir", source = "SUBSONIC"))
+        assertTrue(find(setOf(SearchSource.PHONE), songs, artists = listOf(artist)).isEmpty())
+    }
+
+    @Test
+    fun theLastSourceOnCannotBeTurnedOff() {
+        val offered = listOf(SearchSource.PHONE, SearchSource.ONLINE)
+        val on = setOf(SearchSource.PHONE)
+        assertEquals(on, toggledSearchSource(on, SearchSource.PHONE, offered))
+        assertEquals(setOf(SearchSource.PHONE, SearchSource.ONLINE), toggledSearchSource(on, SearchSource.ONLINE, offered))
+    }
+
+    @Test
+    fun aSourceWithNoToggleIsNotFilteredOn() {
+        // No server connected: its toggle is gone, and what was stored about it means nothing.
+        val on = searchSourcesOn(setOf(SearchSource.PHONE), listOf(SearchSource.PHONE, SearchSource.ONLINE))
+        assertEquals(setOf(SearchSource.PHONE, SearchSource.SERVER), on)
+    }
+
+    @Test
+    fun onlyAForgottenSourceOnMeansAllOfThem() {
+        val on = searchSourcesOn(setOf(SearchSource.SERVER), listOf(SearchSource.PHONE, SearchSource.ONLINE))
+        assertEquals(SearchSource.entries.toSet(), on)
+    }
 }
