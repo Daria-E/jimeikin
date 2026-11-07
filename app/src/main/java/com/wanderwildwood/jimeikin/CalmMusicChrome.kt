@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -467,6 +470,36 @@ private fun CalmMusicTopAppBarActions(
     }
 }
 
+/**
+ * A label on the bottom bar, always on one line and centred under its icon. The chosen tab's
+ * label is bold, and bold is wider: "Playlists" fits its cell in regular type and did not in
+ * bold, so choosing the tab broke the word and left its "s" on a line of its own. A label
+ * wider than its cell is drawn at its own width and narrowed to fit, which costs a few percent
+ * of its width rather than a letter.
+ */
+@Composable
+private fun BarLabel(text: String, bold: Boolean) {
+    Layout(
+        content = {
+            TextMMD(
+                text = text,
+                fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal,
+                maxLines = 1,
+                softWrap = false,
+            )
+        },
+    ) { measurables, constraints ->
+        val label = measurables.single().measure(constraints.copy(minWidth = 0, maxWidth = Constraints.Infinity))
+        val width = label.width.coerceAtMost(constraints.maxWidth)
+        layout(width, label.height) {
+            label.placeWithLayer((width - label.width) / 2, 0) {
+                scaleX = width.toFloat() / label.width.coerceAtLeast(1)
+                transformOrigin = TransformOrigin.Center
+            }
+        }
+    }
+}
+
 @Composable
 fun CalmMusicBottomBar(
     currentDestination: NavDestination?,
@@ -490,10 +523,7 @@ fun CalmMusicBottomBar(
                         )
                     },
                     label = {
-                        TextMMD(
-                            text = label,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        )
+                        BarLabel(text = label, bold = isSelected)
                     },
                     selected = isSelected,
                     onClick = { onNavigate(screen.route) },
